@@ -1,2 +1,5 @@
 
 Obligatory-Assignment-1/config.env
+/Obligatory-Assignment-1/server/api/bin
+/Obligatory-Assignment-1/server/api/bin/Debug
+/Obligatory-Assignment-1/server/api/obj/Debug/net8.0

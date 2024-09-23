@@ -4,6 +4,8 @@ import AccountIcon from '../assets/icons/AccountIcon';
 import BasketIcon from '../assets/icons/BasketIcon';
 import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
 import React, { useState, useEffect } from 'react';
+import {searchAtom} from "../atoms/atoms.ts";
+import {useAtom} from "jotai";
 
 // Define prop types for NavLinks
 interface NavLinksProps {
@@ -107,7 +109,7 @@ const NavBar: React.FC = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false); // Track burger menu open state
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Track active dropdown
     const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false); // Track user login state
-
+    const [searchValue, setSearchValue] = useAtom(searchAtom);
 
     const handleLogin = () => {
         setUserLoggedIn(true); // Set user as logged in
@@ -173,7 +175,13 @@ const NavBar: React.FC = () => {
 
                 {/* Search Field (Always Visible) */}
                 <div className="flex-grow mx-4">
-                    <input type="text" placeholder="Search" className="input input-bordered w-full"/>
+                    <input
+                        type="text"
+                        placeholder="Search"
+                        className="input input-bordered w-full"
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                    />
                 </div>
 
                 {/* Navigation Icons (Always Visible) */}

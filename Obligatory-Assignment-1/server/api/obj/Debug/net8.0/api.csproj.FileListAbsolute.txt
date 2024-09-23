@@ -40,3 +40,7 @@ C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Dr
 C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\api\obj\Debug\net8.0\api.pdb
 C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\api\obj\Debug\net8.0\api.genruntimeconfig.cache
 C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\api\obj\Debug\net8.0\ref\api.dll
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\api\bin\Debug\net8.0\dataAccess.dll
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\api\bin\Debug\net8.0\service.dll
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\api\bin\Debug\net8.0\service.pdb
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\api\bin\Debug\net8.0\dataAccess.pdb

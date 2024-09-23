@@ -1,15 +1,18 @@
+using service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApiDocument();
+builder.Services.AddSingleton<ProductService>();
 builder.Services.AddCors();
-
-
 
 
 var app = builder.Build();
 app.UseOpenApi();
 app.UseSwaggerUi();
+
+app.MapControllers();
 
 app.UseCors( opts => {
 
@@ -21,7 +24,5 @@ app.UseCors( opts => {
 
 });
 
-
-app.MapGet("/", () => "Hello World!");
 
 app.Run();

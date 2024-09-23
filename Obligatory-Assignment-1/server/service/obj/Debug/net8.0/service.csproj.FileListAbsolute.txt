@@ -1,0 +1,16 @@
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\bin\Debug\net8.0\service.deps.json
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\bin\Debug\net8.0\service.dll
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\bin\Debug\net8.0\service.pdb
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\bin\Debug\net8.0\dataAccess.dll
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\bin\Debug\net8.0\dataAccess.pdb
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.csproj.AssemblyReference.cache
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.AssemblyInfoInputs.cache
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.AssemblyInfo.cs
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.csproj.CoreCompileInputs.cache
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.sourcelink.json
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.csproj.Up2Date
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.dll
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\refint\service.dll
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\service.pdb
+C:\Users\nayli\Documents\GitHub\Obligatory-Assignment-1---3rd-Semester---Team-Drop-Table\Obligatory-Assignment-1\server\service\obj\Debug\net8.0\ref\service.dll

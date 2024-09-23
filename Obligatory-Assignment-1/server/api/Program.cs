@@ -3,7 +3,14 @@ using service;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApiDocument();
+
+builder.Services.AddOpenApiDocument(configure =>
+{
+    configure.Title = "Dunder Mifflin Infinity"; // Set your API title
+    configure.Description = "Try and test"; // Set your API description
+    configure.Version = "v1";
+});
+
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddCors();
 

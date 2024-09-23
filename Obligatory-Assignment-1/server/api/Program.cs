@@ -8,7 +8,7 @@ builder.Services.AddOpenApiDocument(configure =>
 {
     configure.Title = "Dunder Mifflin Infinity"; // Set your API title
     configure.Description = "Try and test"; // Set your API description
-    configure.Version = "v1";
+    configure.Version = "v1"; //test of my branch
 });
 
 builder.Services.AddSingleton<ProductService>();

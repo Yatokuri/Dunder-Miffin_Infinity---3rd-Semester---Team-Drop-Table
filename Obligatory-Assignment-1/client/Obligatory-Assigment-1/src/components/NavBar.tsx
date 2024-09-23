@@ -67,23 +67,36 @@ const NavLinks: React.FC<NavLinksProps> = ({ toggleDropdown, activeDropdown }) =
 interface AccountDropdownProps {
     isOpen: boolean;
     toggle: () => void;
+    userLoggedIn: boolean; // Check if the user is logged in
+    handleLogin: () => void; // Function to handle login
+    handleLogout: () => void; // Function to handle logout
 }
 
-const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle }) => (
+const AccountDropdown: React.FC<AccountDropdownProps> = ({isOpen, toggle, userLoggedIn, handleLogin, handleLogout,}) => (
     <div className="relative">
         <button onClick={toggle} className="btn btn-ghost">
             <AccountIcon className="w-6 h-6 text-icon-color" />
         </button>
         {isOpen && (
-            <ul
-                className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}
-            >
-                <li className="hover:bg-gray-200">
-                    <Link to="/profile">My Profile</Link>
-                </li>
-                <li className="hover:bg-gray-200">
-                    <Link to="/logout">Logout</Link> {/* Make logout function */}
-                </li>
+            <ul className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}>
+                {userLoggedIn ? (
+                    <>
+                        <li className="hover:bg-gray-200">
+                            <Link to="/profile">My Profile</Link>
+                        </li>
+                        <li className="hover:bg-gray-200">
+                            <button onClick={handleLogout} className="w-full text-left">
+                                Logout
+                            </button>
+                        </li>
+                    </>
+                ) : (
+                    <li className="hover:bg-gray-200">
+                        <button onClick={handleLogin} className="w-full text-left">
+                            Login
+                        </button>
+                    </li>
+                )}
             </ul>
         )}
     </div>
@@ -93,6 +106,16 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle }) => 
 const NavBar: React.FC = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false); // Track burger menu open state
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Track active dropdown
+    const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false); // Track user login state
+
+
+    const handleLogin = () => {
+        setUserLoggedIn(true); // Set user as logged in
+    };
+
+    const handleLogout = () => {
+        setUserLoggedIn(false); // Set user as logged out
+    };
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -169,6 +192,9 @@ const NavBar: React.FC = () => {
                         <AccountDropdown
                             isOpen={activeDropdown === 'account'}
                             toggle={() => toggleDropdown('account')}
+                            userLoggedIn={userLoggedIn} // Pass the login state
+                            handleLogin={handleLogin} // Pass the login function
+                            handleLogout={handleLogout} // Pass the logout function
                         />
                     </div>
 

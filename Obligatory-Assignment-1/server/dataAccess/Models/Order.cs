@@ -1,11 +1,23 @@
-﻿namespace dataAccess.Models;
+﻿using System;
+using System.Collections.Generic;
 
-public class Order
+namespace dataAccess.Models;
+
+public partial class Order
 {
+    public int Id { get; set; }
+
     public DateTime OrderDate { get; set; }
-    public DateOnly DeliveryDate { get; set; }
-    public String Status { get; set; }
+
+    public DateOnly? DeliveryDate { get; set; }
+
+    public string Status { get; set; } = null!;
+
     public double TotalAmount { get; set; }
-    public int CustomerId { get; set; }
-    public int OrderId { get; set; }
+
+    public int? CustomerId { get; set; }
+
+    public virtual Customer? Customer { get; set; }
+
+    public virtual ICollection<OrderEntry> OrderEntries { get; set; } = new List<OrderEntry>();
 }

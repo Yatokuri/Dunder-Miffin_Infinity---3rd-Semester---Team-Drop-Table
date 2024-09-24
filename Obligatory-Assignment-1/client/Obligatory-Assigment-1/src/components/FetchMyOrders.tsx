@@ -22,7 +22,7 @@ function AddOrder() {
     const [orders, setOrders] = useAtom(orderAtom);
 
     useEffect(() => {
-        MyApi.api.orderGetAllOrders()
+        MyApi.api.orderGetMyOrders()
             .then((response) => {
                 setOrders(response.data);
             })

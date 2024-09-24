@@ -101,7 +101,9 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
 
     return (
         <div className="modal modal-open">
-            <div className="text-white modal-box rounded-lg bg-blue-400">
+            {/* Overlay with reduced opacity */}
+            <div className="fixed inset-0 bg-black opacity-50 z-10" />
+            <div className="text-white modal-box rounded-lg bg-blue-500 z-20 relative">
                 <img src={logo} alt="Our Logo" style={{ width: '50px', height: 'auto' }} />
                 <h3 className="font-bold text-lg text-left">Login</h3>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">

@@ -179,6 +179,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Product
+     * @name orderGetAllOrders
+     * @request GET:/api/order
+     */
+    orderGetAllOrders: (params: RequestParams = {}) =>
+        this.request<File, any>({
+          path: `/api/order`,
+          method: "GET",
+          ...params,
+        }),
+    /**
+     * No description
+     *
+     * @tags Product
      * @name ProductAddProduct
      * @request POST:/api/product
      */

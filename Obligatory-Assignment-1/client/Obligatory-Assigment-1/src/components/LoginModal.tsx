@@ -39,11 +39,11 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         const updatedAuthForm = { ...authForm, [name]: value } as AuthFormType;
-        setTouchedFields((prev) => ({ ...prev, [name]: true })); // Mark field as touched
-        // Validate the form with the updated authForm and the current touchedFields
+        setAuthForm(updatedAuthForm);
+        setTouchedFields((prev) => ({...prev, [name]: true,})); // Mark the field as touched
         validateForm(updatedAuthForm, {
-            email: touchedFields.email || name === 'email',
-            password: touchedFields.password || name === 'password',
+            email: name === 'email' ? true : touchedFields.email,
+            password: name === 'password' ? true : touchedFields.password,
         });
     };
 

@@ -10,8 +10,8 @@ function App() {
         <>
             <BrowserRouter>
                 <NavBar />
-                <div style={{ paddingTop: '4rem' }}> {/* Adjust according to NavBar height */}
-                    <div className="m-2"> {/* Global Margin */}
+                <div>
+                    <div className="m-2 pt-1">
                         <Routes>
                             <Route path={'/'} element={<Home />} />
                             <Route path={'/home'} element={<Home />} />

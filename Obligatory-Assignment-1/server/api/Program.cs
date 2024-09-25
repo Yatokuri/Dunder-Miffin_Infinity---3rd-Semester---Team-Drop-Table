@@ -1,6 +1,5 @@
 using dataAccess;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using service; // Assuming your services are defined here
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,11 +23,11 @@ if (File.Exists(envFilePath))
 }
 
 // Construct the PostgreSQL connection string using environment variables
-string user = Environment.GetEnvironmentVariable("POSTGRES_USER");
-string password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-string database = Environment.GetEnvironmentVariable("POSTGRES_DB");
+var user = Environment.GetEnvironmentVariable("POSTGRES_USER");
+var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
 
-string connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
+var connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
 
 // Register services
 builder.Services.AddScoped<CustomerService>(); // Add CustomerService

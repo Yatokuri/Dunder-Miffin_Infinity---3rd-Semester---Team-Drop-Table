@@ -3,12 +3,14 @@ import Home from './pages/Home.tsx';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound.tsx";
 import NavBar from "./components/NavBar.tsx";
+import {Toaster} from "react-hot-toast";
 import Footer from "./components/Footer.tsx";
 
 function App() {
     return (
         <>
             <BrowserRouter>
+                <Toaster/>
                 <NavBar />
                 <div>
                     <div className="m-2 pt-1">

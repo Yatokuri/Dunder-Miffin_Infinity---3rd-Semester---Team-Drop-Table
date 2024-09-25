@@ -39,12 +39,15 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         const updatedAuthForm = { ...authForm, [name]: value } as AuthFormType;
-        setAuthForm(updatedAuthForm);
         setTouchedFields((prev) => ({ ...prev, [name]: true })); // Mark field as touched
-        validateForm(updatedAuthForm); // Validate form on each change
+        // Validate the form with the updated authForm and the current touchedFields
+        validateForm(updatedAuthForm, {
+            email: touchedFields.email || name === 'email',
+            password: touchedFields.password || name === 'password',
+        });
     };
 
-    const validateForm = (authForm: AuthFormType) => {
+    const validateForm = (authForm: AuthFormType, touchedFields: { email: boolean; password: boolean; }) => {
         const errors: AuthFormErrors = {};
 
         if (touchedFields.email && !authForm.email) {
@@ -65,7 +68,14 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
 
     const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
         if (e) e.preventDefault();
-        if (validateForm(authForm)) {
+
+        // Prepare a local variable to hold the touched fields state
+        const updatedTouchedFields = {
+            email: true,
+            password: true,
+        };
+
+        if (validateForm(authForm, updatedTouchedFields)) {
             // Save user login state without the password in authAtom
             setAuth({
                 email: authForm.email,

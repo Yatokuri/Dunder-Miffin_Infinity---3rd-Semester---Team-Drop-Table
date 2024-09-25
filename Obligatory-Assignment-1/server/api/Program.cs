@@ -1,11 +1,50 @@
-using Microsoft.AspNetCore.Builder;
+using dataAccess;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using service;
+using service; // Assuming your services are defined here
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load configuration from .env file
+var envFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "config.env");
+if (File.Exists(envFilePath))
+{
+    var envVariables = File.ReadAllLines(envFilePath);
+    foreach (var variable in envVariables)
+    {
+        if (variable.Contains('='))
+        {
+            var parts = variable.Split('=');
+            if (parts.Length == 2)
+            {
+                Environment.SetEnvironmentVariable(parts[0], parts[1]);
+            }
+        }
+    }
+}
+
+// Construct the PostgreSQL connection string using environment variables
+string user = Environment.GetEnvironmentVariable("POSTGRES_USER");
+string password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+string database = Environment.GetEnvironmentVariable("POSTGRES_DB");
+
+string connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
+
+// Register services
+builder.Services.AddScoped<CustomerService>(); // Add CustomerService
+builder.Services.AddScoped<OrderService>();    // Add OrderService
+builder.Services.AddScoped<OrderEntryService>(); // Add OrderEntryService
+
 builder.Services.AddControllers();
 
+// Register the DbContext with PostgreSQL using the constructed connection string
+builder.Services.AddDbContext<DMIContext>(options =>
+{
+    options.UseNpgsql(connectionString);
+    options.EnableSensitiveDataLogging();
+});
+
+// Add OpenAPI documentation
 builder.Services.AddOpenApiDocument(configure =>
 {
     configure.Title = "Dunder Mifflin Infinity"; // Set your API title

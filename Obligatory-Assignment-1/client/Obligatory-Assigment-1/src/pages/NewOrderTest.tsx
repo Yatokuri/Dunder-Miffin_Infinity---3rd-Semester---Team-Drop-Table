@@ -1,30 +1,61 @@
-
 import axios from 'axios';
 import { useState } from "react";
+
+// Define the interface for order entries
+interface OrderEntry {
+    productId: number;
+    quantity: number;
+    price: number;
+}
 
 const NewOrderTest = () => {
     const [orderDate, setOrderDate] = useState('');
     const [deliveryDate, setDeliveryDate] = useState('');
     const [status, setStatus] = useState('');
-    const [totalAmount, setTotalAmount] = useState('');
+    const [totalAmount, setTotalAmount] = useState(0);
     const [customerId, setCustomerId] = useState('');
     const [customerName, setCustomerName] = useState('');
     const [customerAddress, setCustomerAddress] = useState('');
     const [customerEmail, setCustomerEmail] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
 
-    // Function to fill the fields with predefined test data
+
+    const [orderEntries, setOrderEntries] = useState<OrderEntry[]>([{ productId: 1, quantity: 1, price: 100.00 }]); // Default entry
+    const [numberOfEntries, setNumberOfEntries] = useState(1); // New field for number of order entries
+
+    // Autofill predefined test data
     const fillFields = () => {
         const currentDate = new Date();
         setOrderDate(new Date().toISOString().slice(0, 16));
         setDeliveryDate(new Date(currentDate.setDate(currentDate.getDate() + 2)).toISOString().slice(0, 10)); // Two days from now
         setStatus('Pending');
-        setTotalAmount('100.00');
         setCustomerId('1');
         setCustomerName('John Doe');
         setCustomerEmail('johndoe@example.com');
         setCustomerPhone('123-456-7890');
         setCustomerAddress('123 Main St, Springfield, IL 62701, USA');
+
+        // Reset number of entries and order entries remember to have this in you db for testing purpose and right id
+        setNumberOfEntries(1); // Reset number of entries to 1
+        setOrderEntries([{ productId: 1, quantity: 1, price: 100.00 }]); // Reset to default entry
+        calculateTotalAmount([{ productId: 1, quantity: 1, price: 100.00 }]); // Calculate initial total amount
+    };
+
+    // Function to update the number of entries
+    const handleNumberOfEntriesChange = (e: { target: { value: string; }; }) => {
+        const count = parseInt(e.target.value);
+        setNumberOfEntries(count);
+
+        // Update orderEntries array based on the number of entries
+        const newEntries = Array.from({ length: count }, () => ({ productId: 1, quantity: 1, price: 100.00 }));
+        setOrderEntries(newEntries);
+        calculateTotalAmount(newEntries);
+    };
+
+    // Function to calculate total amount
+    const calculateTotalAmount = (entries: OrderEntry[]) => {
+        const total = entries.reduce((sum: number, entry: OrderEntry) => sum + (entry.price * entry.quantity), 0);
+        setTotalAmount(total);
     };
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
@@ -42,15 +73,8 @@ const NewOrderTest = () => {
                 orderDate,
                 deliveryDate,
                 status,
-                totalAmount: parseFloat(totalAmount),
-                orderEntries: [
-                    {
-                        productId: 1, // Example product ID
-                        quantity: 2,   // Example quantity
-                        price: 100.00  // Example price
-                    }
-                    // Add more order entries as needed
-                ]
+                totalAmount,
+                orderEntries: orderEntries // Use the orderEntries state
             }
         };
 
@@ -61,8 +85,10 @@ const NewOrderTest = () => {
             setOrderDate('');
             setDeliveryDate('');
             setStatus('');
-            setTotalAmount('');
+            setTotalAmount(0);
             setCustomerId('');
+            setNumberOfEntries(1); // Reset number of entries to 1
+            setOrderEntries([{ productId: 1, quantity: 1, price: 100.00 }]); // Reset to default entry
         } catch (error) {
             console.error('There was an error creating the order!', error);
             alert('Failed to create order. Please check console for details.');
@@ -72,7 +98,7 @@ const NewOrderTest = () => {
 
     return (
         <div className="flex flex-col items-center bg-gray-100 min-h-screen p-4">
-            <h1 className="text-3xl font-bold mb-4">Order Management System Beta 0.1</h1>
+            <h1 className="text-3xl font-bold mb-4">Order Management System Beta 0.2</h1>
 
             <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 py-6 mb-4 w-full max-w-md">
                 <h2 className="text-xl font-semibold mb-4">Place an Order</h2>
@@ -85,6 +111,22 @@ const NewOrderTest = () => {
                 >
                     Fill Fields with Test Data
                 </button>
+
+                {/* Number of Order Entries */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="numberOfEntries">
+                        Number of Order Entries:
+                    </label>
+                    <input
+                        type="number"
+                        id="numberOfEntries"
+                        min="1"
+                        value={numberOfEntries}
+                        onChange={handleNumberOfEntriesChange}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required
+                    />
+                </div>
 
                 {/* Order Date */}
                 <div className="mb-4">
@@ -141,8 +183,7 @@ const NewOrderTest = () => {
                         id="totalAmount"
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         value={totalAmount}
-                        onChange={(e) => setTotalAmount(e.target.value)}
-                        required
+                        readOnly // Make it read-only since it's calculated
                     />
                 </div>
 

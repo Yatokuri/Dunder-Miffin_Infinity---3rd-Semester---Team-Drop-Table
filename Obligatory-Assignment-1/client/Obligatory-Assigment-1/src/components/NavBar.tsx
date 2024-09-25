@@ -1,11 +1,15 @@
+import React, { useState, useEffect } from 'react';
+import { useAtom } from 'jotai';
 import { Link } from 'react-router-dom';
 import logo from '../assets/LogoDMI.png';
 import AccountIcon from '../assets/icons/AccountIcon';
 import BasketIcon from '../assets/icons/BasketIcon';
 import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
-import React, { useState, useEffect } from 'react';
-import {searchAtom} from "../atoms/atoms.ts";
-import {useAtom} from "jotai";
+import { searchAtom } from "../atoms/atoms.ts";
+import { loginFormAtom, authAtom } from '../atoms/LoginAtoms.ts'; // Importing the atoms
+import { LoginModal } from './LoginModal.tsx';
+import { toast} from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 // Define prop types for NavLinks
 interface NavLinksProps {
@@ -108,15 +112,25 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({isOpen, toggle, userLo
 const NavBar: React.FC = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false); // Track burger menu open state
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Track active dropdown
-    const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false); // Track user login state
+    const [isLoginModalOpen, setLoginModalOpen] = useState<boolean>(false); // Track login modal state
     const [searchValue, setSearchValue] = useAtom(searchAtom);
+    const [authState, setAuthState] = useAtom(authAtom); // Get authAtom state
+    const [, setLoginForm] = useAtom(loginFormAtom); // Get loginFormAtom state
+    const navigate = useNavigate(); // Create navigate instance
 
     const handleLogin = () => {
-        setUserLoggedIn(true); // Set user as logged in
+        setLoginModalOpen(true); // Show login modal
+    };
+
+    const handleCloseModal = () => {
+        setLoginModalOpen(false); // Close login modal
     };
 
     const handleLogout = () => {
-        setUserLoggedIn(false); // Set user as logged out
+        setAuthState({ email: '', isLoggedIn: false }); // Set user as logged out
+        setLoginForm({ email: '', password: '' }); // Reset login form state
+        toast.success("You have logged out successfully!", {duration: 3000,});
+        navigate('/'); // Navigate to home page
     };
 
     const toggleMenu = () => {
@@ -200,7 +214,7 @@ const NavBar: React.FC = () => {
                         <AccountDropdown
                             isOpen={activeDropdown === 'account'}
                             toggle={() => toggleDropdown('account')}
-                            userLoggedIn={userLoggedIn} // Pass the login state
+                            userLoggedIn={authState.isLoggedIn} // Check from authAtom
                             handleLogin={handleLogin} // Pass the login function
                             handleLogout={handleLogout} // Pass the logout function
                         />
@@ -212,6 +226,16 @@ const NavBar: React.FC = () => {
                     </Link>
                 </div>
             </div>
+
+            {isLoginModalOpen && (
+                <LoginModal
+                    onConfirm={() => {
+                        handleCloseModal(); // Close modal
+                    }}
+                    onCancel={handleCloseModal} // Close modal on cancel
+                />
+            )}
+
         </nav>
     );
 };

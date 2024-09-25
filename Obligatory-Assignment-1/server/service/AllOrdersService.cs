@@ -1,19 +1,31 @@
-﻿using dataAccess.Models;
+﻿using dataAccess;
+using dataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace service
 {
     public class AllOrdersService
     {
-        public List<Order> AllOrders { get; set; } = new List<Order>();
+        private readonly DMIContext _context;
 
-        public List<Order> GetAllOrders()
+        public AllOrdersService(DMIContext context)
         {
-            return AllOrders;
+            _context = context;
+        }
+        
+        public List<Order> MyOrders { get; set; } = new List<Order>();
+
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.Customer)           // Include Customer details
+                .Include(o => o.OrderEntries)       // Include OrderEntries
+                .ToListAsync();
         }
         
         public Order AddOrder(Order order)
         {
-            AllOrders.Add(order);
+            MyOrders.Add(order);
             return order;
         }
     }

@@ -33,12 +33,11 @@ function AddOrder() {
 
     return (
         <div>
-            <h1>Products:</h1>
+            <h1>Orders:</h1>
             <table border={1} className="table-lg">
                 <thead>
                 <tr>
                     <th>Id</th>
-                    <th>Customer Id</th>
                     <th>Status</th>
                     <th>Total Amount</th>
                     <th>Order Date</th>
@@ -50,7 +49,6 @@ function AddOrder() {
                     orders.map((order) => (
                         <tr key={order.id}>
                             <td>{order.id}</td>
-                            <td>{order.CustomerId}</td>
                             <td>{order.status}</td>
                             <td>{order.TotalAmount}</td>
                             <td>{order.OrderDate}</td>

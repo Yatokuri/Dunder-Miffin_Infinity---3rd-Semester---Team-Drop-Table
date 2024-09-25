@@ -5,6 +5,7 @@ import NotFound from "./pages/NotFound.tsx";
 import NavBar from "./components/NavBar.tsx";
 import MyOrders from "./pages/MyOrders.tsx";
 import AllOrders from "./pages/AllOrders.tsx";
+import About from "./pages/About.tsx";
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                             <Route path={'/*'} element={<NotFound />} />
                             <Route path={'/myOrders'} element={<MyOrders />} />
                             <Route path={'/allOrders'} element={<AllOrders />} />
+                            <Route path={'/about'} element={<About />} />
                         </Routes>
                     </div>
                 </div>

@@ -10,9 +10,9 @@ public class MyOrdersController(MyOrderService service) : ControllerBase
     
     [HttpGet]
     [Route("api/order")]
-    public ActionResult GetAllOrders()
+    public ActionResult GetAllOrders(int customerId)
     {
-        var orders = service.GetAllOrders();
+        var orders = service.GetOrdersByCustomerIdAsync(customerId);
         return Ok(orders);
     }
     

@@ -33,7 +33,7 @@ function AddOrder() {
 
     return (
         <div>
-            <h1>Products:</h1>
+            <h1>All Orders:</h1>
             <table border={1} className="table-lg">
                 <thead>
                 <tr>

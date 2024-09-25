@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAtom } from 'jotai';
 import { loginFormAtom, authAtom } from '../atoms/LoginAtoms.ts';
 import EyeOnIcon from '../assets/icons/EyeOnIcon.tsx';
@@ -30,6 +30,7 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
     const [authFormErrors, setAuthFormErrors] = useState<AuthFormErrors>({});
     const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for password visibility
     const [touchedFields, setTouchedFields] = useState({ email: false, password: false }); // Track touched fields
+    const modalRef = useRef<HTMLDivElement>(null); // Ref for the modal
 
     useEffect(() => {
         // Clear form fields when the component mounts
@@ -109,11 +110,25 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
         setIsPasswordVisible((prev) => !prev);
     };
 
+    // Close modal if clicked outside the square
+    const handleClickOutside = (event: MouseEvent) => {
+        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+            onCancel(); // Call onCancel to close the modal
+        }
+    };
+
+    useEffect(() => { // Add event listener for clicks outside the modal
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     return (
         <div className="modal modal-open">
             {/* Overlay with reduced opacity */}
             <div className="fixed inset-0 bg-black opacity-50 z-10" />
-            <div className="text-white modal-box rounded-lg bg-blue-500 z-20 relative">
+            <div ref={modalRef} className="text-white modal-box rounded-lg bg-blue-500 z-20 relative">
                 <img src={logo} alt="Our Logo" style={{ width: '50px', height: 'auto' }} />
                 <h3 className="font-bold text-lg text-left">Login</h3>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">

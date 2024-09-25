@@ -19,8 +19,18 @@ namespace api.Controllers
         [HttpPost]
         public ActionResult<Customer> CreateCustomer([FromBody] Customer customer)
         {
+            // Check if a customer with the same email already exists
+            var existingCustomer = _service.GetCustomerByEmail(customer.Email);
+
+            if (existingCustomer != null)
+            {
+                // Customer already exists, return a message indicating this
+                return Conflict(new { message = "Customer with this email already exists.", customerId = existingCustomer.Id });
+            }
+
+            // If the customer does not exist, create a new one
             var newCustomer = _service.CreateCustomer(customer);
-            return Ok(newCustomer);
+            return CreatedAtAction(nameof(CreateCustomer), new { id = newCustomer.Id }, newCustomer);
         }
 
         // Get All Customers

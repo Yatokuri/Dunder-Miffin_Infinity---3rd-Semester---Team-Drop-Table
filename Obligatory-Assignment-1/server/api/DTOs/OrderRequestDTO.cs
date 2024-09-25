@@ -1,6 +1,6 @@
 ﻿namespace API.DTOs
 {
-    public class OrderRequestDTO
+    public class OrderRequestDto
     {
         public CustomerDto Customer { get; set; } // Use a DTO for customer
         public OrderDto Order { get; set; }       // Use a DTO for order
@@ -22,7 +22,7 @@
         public string Status { get; set; }
         public double TotalAmount { get; set; }
         public int CustomerId { get; set; }
-        public List<OrderEntryDto> OrderEntries { get; set; } = new List<OrderEntryDto>();
+        public List<OrderEntryDto> OrderEntries { get; set; }
     }
 
     public class OrderEntryDto

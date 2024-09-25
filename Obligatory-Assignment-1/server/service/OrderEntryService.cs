@@ -19,6 +19,13 @@ namespace service
             _context.SaveChanges();
             return entry;
         }
+        
+        public void AddOrderEntries(IEnumerable<OrderEntry> entries)
+        {
+            _context.OrderEntries.AddRange(entries); // Adds multiple entries at once
+            _context.SaveChanges(); // Save all changes in one go
+        }
+
 
         // Read All
         public IEnumerable<OrderEntry> GetAllOrderEntries()

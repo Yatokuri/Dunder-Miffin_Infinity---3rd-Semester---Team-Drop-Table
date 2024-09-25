@@ -21,13 +21,14 @@ namespace api.Controllers
         }
 
         // Create Order
-        [Route("api/fullOrder")]
+        [Route("/api/fullOrder")]
         [HttpPost]
-        public IActionResult CreateFullOrder([FromBody] OrderRequestDTO orderRequestDto)
+        public IActionResult CreateFullOrder([FromBody] OrderRequestDto orderRequestDto)
         {
             // Check if the customer exists
-            var existingCustomer = _customerService.GetCustomerById(orderRequestDto.Customer.Id);
+            var existingCustomer = _customerService.GetCustomerByEmail(orderRequestDto.Customer.Email);
 
+            
             if (existingCustomer == null)
             {
                 // Create a new customer if not found
@@ -43,14 +44,12 @@ namespace api.Controllers
                 // Add the new customer to the database
                 _customerService.CreateCustomer(newCustomer);
 
-                // You might want to update the existingCustomer variable
-                existingCustomer = newCustomer;
             }
 
             // Create the order from the DTO
             var order = new Order
             {
-                OrderDate = orderRequestDto.Order.OrderDate,
+                OrderDate = orderRequestDto.Order.OrderDate.ToUniversalTime(),
                 DeliveryDate = orderRequestDto.Order.DeliveryDate,
                 Status = orderRequestDto.Order.Status,
                 TotalAmount = orderRequestDto.Order.TotalAmount,
@@ -59,20 +58,17 @@ namespace api.Controllers
 
             // Save the order using your order service
             var newOrder = _service.CreateOrder(order);
-
-            // Create and save order entries using your order entry service
-            foreach (var entry in orderRequestDto.Order.OrderEntries)
+            
+            // Using LINQ to create a list of OrderEntry objects
+            var orderEntries = orderRequestDto.Order.OrderEntries.Select(entry => new OrderEntry
             {
-                var orderEntry = new OrderEntry
-                {
-                    ProductId = entry.ProductId,
-                    Quantity = entry.Quantity,
-                    OrderId = newOrder.Id
-                };
+                ProductId = entry.ProductId,
+                Quantity = entry.Quantity,
+                OrderId = newOrder.Id
+            }).ToList();
 
-                // Use the OrderEntryService to add the order entry
-                _orderEntryService.AddOrderEntry(orderEntry);
-            }
+            // Now add all order entries at once
+            _orderEntryService.AddOrderEntries(orderEntries);
 
             return CreatedAtAction(nameof(CreateOrder), new { id = newOrder.Id }, newOrder);
         }

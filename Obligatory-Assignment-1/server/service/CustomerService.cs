@@ -31,6 +31,13 @@ namespace service
         {
             return _context.Customers.Find(id);
         }
+        
+        // Get Customer by email
+        public Customer GetCustomerByEmail(string email)
+        {
+            return _context.Customers.FirstOrDefault(c => c.Email == email);
+        }
+
 
         // Update
         public Customer UpdateCustomer(int id, Customer customer)

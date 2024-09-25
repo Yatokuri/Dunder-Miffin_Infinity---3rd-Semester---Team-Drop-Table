@@ -9,6 +9,7 @@ const NewOrderTest = () => {
     const [totalAmount, setTotalAmount] = useState('');
     const [customerId, setCustomerId] = useState('');
     const [customerName, setCustomerName] = useState('');
+    const [customerAddress, setCustomerAddress] = useState('');
     const [customerEmail, setCustomerEmail] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
 
@@ -23,6 +24,7 @@ const NewOrderTest = () => {
         setCustomerName('John Doe');
         setCustomerEmail('johndoe@example.com');
         setCustomerPhone('123-456-7890');
+        setCustomerAddress('123 Main St, Springfield, IL 62701, USA');
     };
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
@@ -30,7 +32,11 @@ const NewOrderTest = () => {
 
         const orderData = {
             customer: {
-                id: parseInt(customerId), // Assuming you only need the ID for existing customers
+                id: parseInt(customerId),
+                name: customerName,
+                address: customerAddress,
+                phone: customerPhone,
+                email: customerEmail
             },
             order: {
                 orderDate,
@@ -166,6 +172,21 @@ const NewOrderTest = () => {
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         value={customerName}
                         onChange={(e) => setCustomerName(e.target.value)}
+                        required
+                    />
+                </div>
+
+                {/* Customer Address */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="customerAddress">
+                        Customer Address:
+                    </label>
+                    <input
+                        type="text"
+                        id="customerAddress"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        value={customerAddress}
+                        onChange={(e) => setCustomerAddress(e.target.value)}
                         required
                     />
                 </div>

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using dataAccess;
 using Microsoft.EntityFrameworkCore;
 using service; // Assuming your services are defined here
@@ -34,7 +35,12 @@ builder.Services.AddScoped<CustomerService>(); // Add CustomerService
 builder.Services.AddScoped<OrderService>();    // Add OrderService
 builder.Services.AddScoped<OrderEntryService>(); // Add OrderEntryService
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
+
 
 // Register the DbContext with PostgreSQL using the constructed connection string
 builder.Services.AddDbContext<DMIContext>(options =>

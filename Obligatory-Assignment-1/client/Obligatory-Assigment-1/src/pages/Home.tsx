@@ -6,15 +6,21 @@ import CarouselPicture4 from "../components/Carousel/Carousel_Assets/CarouselPic
 
 function Home() {
     return (
-        <div className="mt-32">
+        <div className="mt-16 px-4 md:px-8 lg:px-16">
             <div>
-                <h1 className="text-5xl font-bold text-center">Dunder Mifflin Infinity</h1>
-                <h1 className="text-5xl font-bold text-center">One stop shop for all your paper needs.</h1>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
+                    Dunder Mifflin Infinity
+                </h1>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mt-2">
+                    One stop shop for all your paper needs.
+                </h2>
             </div>
             <div className="text-center mt-8">
-                <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Go to shop</button>
+                <button className="btn btn-md lg:btn-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-200">
+                    Go to shop
+                </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-1 mt-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-12">
                 <Carousel text={"Any color of the rainbow"} imageSrc={CarouselPicture1} />
                 <Carousel text={"Made by Chinese children"} imageSrc={CarouselPicture2} />
                 <Carousel text={"All profits go to space"} imageSrc={CarouselPicture3} />

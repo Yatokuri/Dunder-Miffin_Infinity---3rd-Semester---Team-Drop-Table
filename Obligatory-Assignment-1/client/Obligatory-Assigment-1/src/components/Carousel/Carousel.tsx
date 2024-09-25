@@ -7,8 +7,8 @@ interface CarouselProps {
 
 const Carousel: React.FC<CarouselProps> = ({ text, imageSrc }) => {
     return (
-        <div className="carousel-container flex flex-col items-center">
-            <div className="carousel rounded-box w-64" style={{ marginRight: '2rem', marginLeft: '2rem' }}>
+        <div className="carousel-container flex flex-col items-center mb-5">
+            <div className="carousel rounded-box w-80 mr-32 ml-32">
                 <div className="carousel-item w-full">
                     <img
                         src={imageSrc}

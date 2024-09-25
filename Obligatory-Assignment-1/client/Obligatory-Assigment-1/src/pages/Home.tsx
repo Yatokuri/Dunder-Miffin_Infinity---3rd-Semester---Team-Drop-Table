@@ -4,7 +4,6 @@ import CarouselPicture2 from "../components/Carousel/Carousel_Assets/CarouselPic
 import CarouselPicture3 from "../components/Carousel/Carousel_Assets/CarouselPicture3.png";
 import CarouselPicture4 from "../components/Carousel/Carousel_Assets/CarouselPicture4.png";
 
-
 function Home() {
     return (
         <div className="mt-32">
@@ -15,7 +14,7 @@ function Home() {
             <div className="text-center mt-8">
                 <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Go to shop</button>
             </div>
-            <div className="flex justify-center items-center mt-12 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-1 mt-12">
                 <Carousel text={"Any color of the rainbow"} imageSrc={CarouselPicture1} />
                 <Carousel text={"Made by Chinese children"} imageSrc={CarouselPicture2} />
                 <Carousel text={"All profits go to space"} imageSrc={CarouselPicture3} />

@@ -7,6 +7,7 @@ import {Toaster} from "react-hot-toast";
 import Footer from "./components/Footer.tsx";
 import About from "./pages/About.tsx";
 import Contact from "./pages/Contact.tsx";
+import Profile from "./pages/Profile.tsx";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                             <Route path={'/*'} element={<NotFound />} />
                             <Route path={'/about'} element={<About />} />
                             <Route path={'/contact-us'} element={<Contact />} />
+                            <Route path={'/profile'} element={<Profile />} />
                         </Routes>
                     </div>
                 </div>

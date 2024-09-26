@@ -6,6 +6,7 @@ import NewOrderTest from "./pages/NewOrderTest.tsx";
 import NavBar from "./components/NavBar.tsx";
 import {Toaster} from "react-hot-toast";
 import Footer from "./components/Footer.tsx";
+import About from "./pages/About.tsx";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                             <Route path={'/home'} element={<Home />} />
                             <Route path={'/ipsum'} element={<NewOrderTest />} />
                             <Route path={'/*'} element={<NotFound />} />
+                            <Route path={'/about'} element={<About />} />
                         </Routes>
                     </div>
                 </div>

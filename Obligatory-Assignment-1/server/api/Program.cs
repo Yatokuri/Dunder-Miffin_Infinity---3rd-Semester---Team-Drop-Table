@@ -13,7 +13,7 @@ builder.Services.AddOpenApiDocument(configure =>
     configure.Version = "v1"; //test of my branch
 });
 
-builder.Services.AddSingleton<ProductService>();
+builder.Services.AddSingleton<PaperService>();
 builder.Services.AddCors();
 
 

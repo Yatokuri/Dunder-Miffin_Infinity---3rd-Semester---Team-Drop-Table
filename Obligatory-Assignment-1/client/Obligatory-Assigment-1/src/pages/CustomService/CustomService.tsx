@@ -104,9 +104,9 @@ function CustomService() {
                                         </picture>
                                     </div>
                                     <div className="flex flex-col flex-grow justify-between p-4">
-                                        <h3 className="font-bold text-2xl mb-4">Sales and Delivery Conditions</h3>
-                                        <p className="mb-4">Here you will find detailed information about our sales and
-                                            delivery conditions - both for business customers and private customers.</p>
+                                        <h3 className="font-bold text-2xl mb-2 leading-tight">Sales and Delivery Conditions</h3>
+                                        <p className="mb-4 flex-grow">Here you will find detailed information about our
+                                            sales and delivery conditions - both for business customers and private customers.</p>
                                         <span className="button button-tertiary text-xl inline-block">Sales and Delivery Conditions</span>
                                     </div>
                                 </a>
@@ -124,8 +124,8 @@ function CustomService() {
                                         </picture>
                                     </div>
                                     <div className="flex flex-col flex-grow justify-between p-4">
-                                        <h3 className="font-bold text-2xl mb-4">GDPR - Data Protection Policy</h3>
-                                        <p className="mb-4">Want to know more about how we protect your information?</p>
+                                        <h3 className="font-bold text-2xl mb-2 leading-tight">GDPR - Data Protection Policy</h3>
+                                        <p className="mb-4 flex-grow">Want to know more about how we protect your information?</p>
                                         <span className="button button-tertiary text-xl inline-block">Data Protection Policy</span>
                                     </div>
                                 </a>
@@ -143,8 +143,8 @@ function CustomService() {
                                         </picture>
                                     </div>
                                     <div className="flex flex-col flex-grow justify-between p-4">
-                                        <h3 className="font-bold text-2xl mb-4">Cookies</h3>
-                                        <p className="mb-4">To make your shopping experience better, we use cookies.</p>
+                                        <h3 className="font-bold text-2xl mb-2 leading-tight">Cookies</h3>
+                                        <p className="mb-4 flex-grow">To make your shopping experience better, we use cookies.</p>
                                         <span className="button button-tertiary text-xl inline-block">Cookies</span>
                                     </div>
                                 </a>
@@ -162,9 +162,8 @@ function CustomService() {
                                         </picture>
                                     </div>
                                     <div className="flex flex-col flex-grow justify-between p-4">
-                                        <h3 className="font-bold text-2xl mb-4">Whistleblowing in the Organization</h3>
-                                        <p className="mb-4">Dunder Mifflin Infinity A/S is obliged to act with honesty
-                                            and integrity.</p>
+                                        <h3 className="font-bold text-2xl mb-2 leading-tight">Whistleblowing in the Organization</h3>
+                                        <p className="mb-4 flex-grow">Dunder Mifflin Infinity A/S is obliged to act with honesty and integrity.</p>
                                         <span
                                             className="button button-tertiary text-xl inline-block">Whistleblowing</span>
                                     </div>
@@ -172,7 +171,6 @@ function CustomService() {
                             </li>
                         </ul>
                     </div>
-
                 </div>
             </div>
         </div>

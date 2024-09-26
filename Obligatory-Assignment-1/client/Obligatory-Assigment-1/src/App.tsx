@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar.tsx";
 import {Toaster} from "react-hot-toast";
 import Footer from "./components/Footer.tsx";
 import About from "./pages/About.tsx";
+import Contact from "./pages/Contact.tsx";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                             <Route path={'/home'} element={<Home />} />
                             <Route path={'/*'} element={<NotFound />} />
                             <Route path={'/about'} element={<About />} />
+                            <Route path={'/contact-us'} element={<Contact />} />
                         </Routes>
                     </div>
                 </div>

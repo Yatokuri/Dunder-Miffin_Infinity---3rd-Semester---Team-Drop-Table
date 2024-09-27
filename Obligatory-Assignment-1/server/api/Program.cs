@@ -1,7 +1,8 @@
+
 using System.Text.Json.Serialization;
 using dataAccess;
 using Microsoft.EntityFrameworkCore;
-using service; // Assuming your services are defined here
+using service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,7 +50,8 @@ builder.Services.AddDbContext<DMIContext>(options =>
     options.EnableSensitiveDataLogging();
 });
 
-// Add OpenAPI documentation
+builder.Services.AddDbContext<DMIContext>(opt => opt.UseInMemoryDatabase("DMI"));
+
 builder.Services.AddOpenApiDocument(configure =>
 {
     configure.Title = "Dunder Mifflin Infinity"; // Set your API title
@@ -57,7 +59,6 @@ builder.Services.AddOpenApiDocument(configure =>
     configure.Version = "v1"; //test of my branch
 });
 
-builder.Services.AddSingleton<ProductService>();
 builder.Services.AddCors();
 
 

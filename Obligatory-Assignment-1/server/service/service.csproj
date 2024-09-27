@@ -10,4 +10,8 @@
     <ProjectReference Include="..\dataAccess\dataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Response\" />
+  </ItemGroup>
+
 </Project>

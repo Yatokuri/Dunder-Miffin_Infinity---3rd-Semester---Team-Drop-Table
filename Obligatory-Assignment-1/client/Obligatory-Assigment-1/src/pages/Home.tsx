@@ -20,7 +20,7 @@ function Home() {
                     Go to shop
                 </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
                 <Carousel text={"Any color of the rainbow"} imageSrc={CarouselPicture1} />
                 <Carousel text={"Made by Chinese children"} imageSrc={CarouselPicture2} />
                 <Carousel text={"All profits go to space"} imageSrc={CarouselPicture3} />

@@ -31,10 +31,6 @@ var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
 
 var connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
 
-// Register services
-builder.Services.AddScoped<CustomerService>(); // Add CustomerService
-builder.Services.AddScoped<OrderService>();    // Add OrderService
-builder.Services.AddScoped<OrderEntryService>(); // Add OrderEntryService
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

@@ -1,104 +1,64 @@
-﻿using API.DTOs;
-using Microsoft.AspNetCore.Mvc;
+﻿using dataAccess;
 using dataAccess.Models;
-using service;
+using Microsoft.AspNetCore.Mvc;
+using service.Request.OrderDto;
 
-namespace api.Controllers
+namespace api.Controllers;
+
+public class OrderController(DMIContext context) : ControllerBase
 {
-    [ApiController]
+    [HttpGet]
     [Route("api/order")]
-    public class OrderController : ControllerBase
+    public ActionResult GetAllOrders()
     {
-        private readonly OrderService _service;
-        private readonly CustomerService _customerService;
-
-        public OrderController(OrderService service, CustomerService customerService)
+        var result = context.Orders.ToList();
+        return Ok(result);
+    }
+    
+    [HttpPost]
+    [Route("api/order")]
+    public ActionResult<Order> CreateOrder([FromBody]CreateOrderDto order)
+    {
+        var orderEntity = new Order()
         {
-            _service = service; 
-            _customerService = customerService; 
-        }
-
-        // Create Order
-        [Route("/api/fullOrder")]
-        [HttpPost]
-        public IActionResult CreateFullOrder([FromBody] OrderRequestDto orderRequestDto)
+            OrderDate = order.OrderDate,
+            DeliveryDate = order.DeliveryDate,
+            Status = order.Status,
+            TotalAmount = order.TotalAmount
+        };
+        var result = context.Orders.Add(orderEntity);
+        context.SaveChanges();
+        return Ok(orderEntity);
+    }
+    
+    [HttpPut]
+    [Route("api/order/{id}")]
+    public ActionResult<Order> UpdateOrder(int id, [FromBody]EditOrderDto order)
+    {
+        var orderEntity = context.Orders.FirstOrDefault(p => p.Id == id);
+        if (orderEntity == null)
         {
-            // Check if the customer exists
-            var existingCustomer = _customerService.GetCustomerByEmail(orderRequestDto.Customer.Email);
-
-            // Use existing customer or create a new one
-            var customerId = existingCustomer?.Id ?? _customerService.CreateCustomer(new Customer
-            {
-                Name = orderRequestDto.Customer.Name,
-                Address = orderRequestDto.Customer.Address,
-                Phone = orderRequestDto.Customer.Phone,
-                Email = orderRequestDto.Customer.Email
-            }).Id;
-
-
-            // Create the order from the DTO
-            var order = new Order
-            {
-                OrderDate = orderRequestDto.Order.OrderDate.ToUniversalTime(),
-                DeliveryDate = orderRequestDto.Order.DeliveryDate,
-                Status = orderRequestDto.Order.Status,
-                TotalAmount = orderRequestDto.Order.TotalAmount,
-                CustomerId = customerId, // Use the correct customer ID
-                OrderEntries = orderRequestDto.Order.OrderEntries.Select(entry => new OrderEntry
-                {
-                    ProductId = entry.ProductId,
-                    Quantity = entry.Quantity
-                }).ToList()
-            };
-
-            // Save the order using your order service
-            var newOrder = _service.CreateOrder(order);
-
-            // Return the created order with its URI
-            return CreatedAtAction(nameof(CreateFullOrder), new { id = newOrder.Id }, newOrder);
+            return NotFound();
         }
-        
-        // Create Order
-        [HttpPost]
-        public ActionResult<Order> CreateOrder([FromBody] Order order)
+        orderEntity.OrderDate = order.OrderDate;
+        orderEntity.DeliveryDate = order.DeliveryDate;
+        orderEntity.Status = order.Status;
+        orderEntity.TotalAmount = order.TotalAmount;
+        context.SaveChanges();
+        return Ok(orderEntity);
+    }
+    
+    [HttpDelete]
+    [Route("api/order/{id}")]
+    public ActionResult DeleteOrder(int id)
+    {
+        var orderEntity = context.Orders.FirstOrDefault(p => p.Id == id);
+        if (orderEntity == null)
         {
-            var newOrder = _service.CreateOrder(order);
-            return Ok(newOrder);
+            return NotFound();
         }
-
-        // Get All Orders
-        [HttpGet]
-        public ActionResult<IEnumerable<Order>> GetAllOrders()
-        {
-            var orders = _service.GetAllOrders();
-            return Ok(orders);
-        }
-
-        // Get Order by ID
-        [HttpGet("{id}")]
-        public ActionResult<Order> GetOrderById(int id)
-        {
-            var order = _service.GetOrderById(id);
-            if (order == null) return NotFound();
-            return Ok(order);
-        }
-
-        // Update Order
-        [HttpPut("{id}")]
-        public ActionResult<Order> UpdateOrder(int id, [FromBody] Order order)
-        {
-            var updatedOrder = _service.UpdateOrder(id, order);
-            if (updatedOrder == null) return NotFound();
-            return Ok(updatedOrder);
-        }
-
-        // Delete Order
-        [HttpDelete("{id}")]
-        public ActionResult DeleteOrder(int id)
-        {
-            var deleted = _service.DeleteOrder(id);
-            if (!deleted) return NotFound();
-            return NoContent();
-        }
+        context.Orders.Remove(orderEntity);
+        context.SaveChanges();
+        return Ok();
     }
 }

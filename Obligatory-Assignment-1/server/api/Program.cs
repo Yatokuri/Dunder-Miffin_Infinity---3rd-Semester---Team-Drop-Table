@@ -3,13 +3,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using dataAccess.Models;
-using service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<PaperContext>(opt => opt.UseInMemoryDatabase("Paper"));
+builder.Services.AddDbContext<DMIContext>(opt => opt.UseInMemoryDatabase("Paper"));
 
 builder.Services.AddOpenApiDocument(configure =>
 {
@@ -18,7 +17,6 @@ builder.Services.AddOpenApiDocument(configure =>
     configure.Version = "v1"; //test of my branch
 });
 
-builder.Services.AddSingleton<PaperService>();
 builder.Services.AddCors();
 
 

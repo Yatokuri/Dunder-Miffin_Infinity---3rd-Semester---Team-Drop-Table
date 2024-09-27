@@ -21,7 +21,7 @@ public partial class DMIContext : DbContext
     public virtual DbSet<Paper> Papers { get; set; }
 
     public virtual DbSet<Property> Properties { get; set; }
-/*
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Customer>(entity =>
@@ -154,5 +154,4 @@ public partial class DMIContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-    */
 }

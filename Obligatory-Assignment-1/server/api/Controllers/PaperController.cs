@@ -18,7 +18,7 @@ public class PaperController(DMIContext context) : ControllerBase
 
     [HttpPost]
     [Route("api/paper")]
-    public ActionResult<Paper> CreatePaper([FromBody]CreatePaperDto paper)
+    public ActionResult<Paper> CreatePaper(CreatePaperDto paper)
     {
         var paperEntity = new Paper()
         {
@@ -29,6 +29,36 @@ public class PaperController(DMIContext context) : ControllerBase
         var result = context.Papers.Add(paperEntity);
         context.SaveChanges();
         return Ok(paperEntity);
+    }
+    
+    [HttpPut]
+    [Route("api/paper/{id}")]
+    public ActionResult<Paper> UpdatePaper(int id, EditPaperDto paper)
+    {
+        var paperEntity = context.Papers.FirstOrDefault(p => p.Id == id);
+        if (paperEntity == null)
+        {
+            return NotFound();
+        }
+        paperEntity.Name = paper.name;
+        paperEntity.Stock = paper.stock;
+        paperEntity.Price = paper.price;
+        context.SaveChanges();
+        return Ok(paperEntity);
+    }
+    
+    [HttpDelete]
+    [Route("api/paper/{id}")]
+    public ActionResult DeletePaper(int id)
+    {
+        var paperEntity = context.Papers.FirstOrDefault(p => p.Id == id);
+        if (paperEntity == null)
+        {
+            return NotFound();
+        }
+        context.Papers.Remove(paperEntity);
+        context.SaveChanges();
+        return Ok();
     }
     
 }

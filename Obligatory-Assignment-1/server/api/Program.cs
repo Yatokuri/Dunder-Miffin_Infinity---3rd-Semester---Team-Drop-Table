@@ -1,8 +1,6 @@
-
 using System.Text.Json.Serialization;
 using dataAccess;
 using Microsoft.EntityFrameworkCore;
-using service;
 
 var builder = WebApplication.CreateBuilder(args);
 

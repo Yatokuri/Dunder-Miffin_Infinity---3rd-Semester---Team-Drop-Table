@@ -9,14 +9,70 @@
  * ---------------------------------------------------------------
  */
 
-export interface Product {
+export interface Paper {
   /** @format int32 */
   id?: number;
   name?: string;
   discontinued?: boolean;
   /** @format int32 */
   stock?: number;
-  /** @format float */
+  /** @format double */
+  price?: number;
+  orderEntries?: OrderEntry[];
+  properties?: Property[];
+}
+
+export interface OrderEntry {
+  /** @format int32 */
+  id?: number;
+  /** @format int32 */
+  quantity?: number;
+  /** @format int32 */
+  productId?: number | null;
+  /** @format int32 */
+  orderId?: number | null;
+  order?: Order | null;
+  product?: Paper | null;
+}
+
+export interface Order {
+  /** @format int32 */
+  id?: number;
+  /** @format date-time */
+  orderDate?: string;
+  /** @format date */
+  deliveryDate?: string | null;
+  status?: string;
+  /** @format double */
+  totalAmount?: number;
+  /** @format int32 */
+  customerId?: number | null;
+  customer?: Customer | null;
+  orderEntries?: OrderEntry[];
+}
+
+export interface Customer {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  orders?: Order[];
+}
+
+export interface Property {
+  /** @format int32 */
+  id?: number;
+  propertyName?: string;
+  papers?: Paper[];
+}
+
+export interface CreatePaperDto {
+  name?: string;
+  /** @format int32 */
+  stock?: number;
+  /** @format int32 */
   price?: number;
 }
 
@@ -155,22 +211,24 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title My Title
- * @version 1.0.0
+ * @title Dunder Mifflin Infinity
+ * @version v1
  * @baseUrl http://localhost:5261
+ *
+ * Try and test
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
     /**
      * No description
      *
-     * @tags Product
-     * @name ProductGetAllProducts
-     * @request GET:/api/product
+     * @tags Paper
+     * @name PaperGetAllPapers
+     * @request GET:/api/paper
      */
-    productGetAllProducts: (params: RequestParams = {}) =>
+    paperGetAllPapers: (params: RequestParams = {}) =>
       this.request<File, any>({
-        path: `/api/product`,
+        path: `/api/paper`,
         method: "GET",
         ...params,
       }),
@@ -178,44 +236,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
-     * @tags Product
-     * @name orderGetAllOrders
-     * @request GET:/api/order
+     * @tags Paper
+     * @name PaperCreatePaper
+     * @request POST:/api/paper
      */
-    orderGetAllOrders: (params: RequestParams = {}) =>
-        this.request<File, any>({
-          path: `/api/order`,
-          method: "GET",
-          ...params,
-        }),
-
-    /**
-     * No description
-     *
-     * @tags Product
-     * @name orderGetAllOrders
-     * @request GET:/api/order
-     */
-    orderGetMyOrders: (params: RequestParams = {}) =>
-        this.request<File, any>({
-          path: `/api/order`,
-          method: "GET",
-          ...params,
-        }),
-    
-    /**
-     * No description
-     *
-     * @tags Product
-     * @name ProductAddProduct
-     * @request POST:/api/product
-     */
-    productAddProduct: (data: Product, params: RequestParams = {}) =>
-      this.request<File, any>({
-        path: `/api/product`,
+    paperCreatePaper: (data: CreatePaperDto, params: RequestParams = {}) =>
+      this.request<Paper, any>({
+        path: `/api/paper`,
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
   };

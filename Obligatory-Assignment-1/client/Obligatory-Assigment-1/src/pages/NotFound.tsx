@@ -1,6 +1,3 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
 const NotFound = () => {
     return (
         <section className="flex items-center h-full p-16 dark:bg-gray-50 dark:text-gray-800">

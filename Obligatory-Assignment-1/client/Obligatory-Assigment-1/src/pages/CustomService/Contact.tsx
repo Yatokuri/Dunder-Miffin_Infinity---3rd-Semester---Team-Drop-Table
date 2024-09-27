@@ -1,5 +1,5 @@
-﻿import PageHeader from "../components/PageHeader.tsx";
-import ContactUs from "../components/ContactUs.tsx";
+﻿import PageHeader from "../../components/PageHeader.tsx";
+import ContactUs from "../../components/ContactUs.tsx";
 
 
 function Contact() {

@@ -64,7 +64,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ toggleDropdown, activeDropdown }) =
             </div>
             <Link to="/ipsum" className="btn btn-ghost">Lorem</Link>
             <Link to="/about" className="btn btn-ghost">About Us</Link>
-            <Link to="/contact-us" className="btn btn-ghost">Contact</Link>
+            <Link to="/customer-service/contact-us" className="btn btn-ghost">Contact</Link>
         </>
     );
 };

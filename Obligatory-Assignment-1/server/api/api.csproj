@@ -22,4 +22,12 @@
     <ProjectReference Include="..\service\service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Paper\Create.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Paper\Delete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Paper\Details.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Paper\Edit.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Paper\Index.cshtml" />
+  </ItemGroup>
+
 </Project>

@@ -1,4 +1,3 @@
-﻿
 function AboutUs() {
     return (
         <div className="hero bg-base-200 ">

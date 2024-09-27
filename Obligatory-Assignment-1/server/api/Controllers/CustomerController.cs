@@ -1,71 +1,64 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using dataAccess;
 using dataAccess.Models;
-using service;
+using Microsoft.AspNetCore.Mvc;
+using service.Request.CustomerDto;
 
-namespace api.Controllers
+namespace api.Controllers;
+
+public class CustomerController(DMIContext context) : ControllerBase
 {
-    [ApiController]
+    [HttpGet]
     [Route("api/customer")]
-    public class CustomerController : ControllerBase
+    public ActionResult GetAllCustomers()
     {
-        private readonly CustomerService _service;
-
-        public CustomerController(CustomerService service)
+        var result = context.Customers.ToList();
+        return Ok(result);
+    }
+    
+    [HttpPost]
+    [Route("api/customer")]
+    public ActionResult<Customer> CreateCustomer([FromBody]CreateCustomerDto order)
+    {
+        var customerEntity = new Customer()
         {
-            _service = service;
-        }
-
-        // Create Customer
-        [HttpPost]
-        public ActionResult<Customer> CreateCustomer([FromBody] Customer customer)
+            Name = order.Name,
+            Address = order.Address,
+            Phone = order.Phone,
+            Email = order.Email
+        };
+        var result = context.Customers.Add(customerEntity);
+        context.SaveChanges();
+        return Ok(customerEntity);
+    }
+    
+    [HttpPut]
+    [Route("api/customer/{id}")]
+    public ActionResult<Customer> UpdateCustomer(int id, [FromBody]EditCustomerDto order)
+    {
+        var customerEntity = context.Customers.FirstOrDefault(x => x.Id == id);
+        if (customerEntity == null)
         {
-            // Check if a customer with the same email already exists
-            var existingCustomer = _service.GetCustomerByEmail(customer.Email);
-
-            if (existingCustomer != null)
-            {
-                // Customer already exists, return a message indicating this
-                return Conflict(new { message = "Customer with this email already exists.", customerId = existingCustomer.Id });
-            }
-
-            // If the customer does not exist, create a new one
-            var newCustomer = _service.CreateCustomer(customer);
-            return CreatedAtAction(nameof(CreateCustomer), new { id = newCustomer.Id }, newCustomer);
+            return NotFound();
         }
-
-        // Get All Customers
-        [HttpGet]
-        public ActionResult<IEnumerable<Customer>> GetAllCustomers()
+        customerEntity.Name = order.Name;
+        customerEntity.Address = order.Address;
+        customerEntity.Phone = order.Phone;
+        customerEntity.Email = order.Email;
+        context.SaveChanges();
+        return Ok(customerEntity);
+    }
+    
+    [HttpDelete]
+    [Route("api/customer/{id}")]
+    public ActionResult DeleteCustomer(int id)
+    {
+        var customerEntity = context.Customers.FirstOrDefault(x => x.Id == id);
+        if (customerEntity == null)
         {
-            var customers = _service.GetAllCustomers();
-            return Ok(customers);
+            return NotFound();
         }
-
-        // Get Customer by ID
-        [HttpGet("{id}")]
-        public ActionResult<Customer> GetCustomerById(int id)
-        {
-            var customer = _service.GetCustomerById(id);
-            if (customer == null) return NotFound();
-            return Ok(customer);
-        }
-
-        // Update Customer
-        [HttpPut("{id}")]
-        public ActionResult<Customer> UpdateCustomer(int id, [FromBody] Customer customer)
-        {
-            var updatedCustomer = _service.UpdateCustomer(id, customer);
-            if (updatedCustomer == null) return NotFound();
-            return Ok(updatedCustomer);
-        }
-
-        // Delete Customer
-        [HttpDelete("{id}")]
-        public ActionResult DeleteCustomer(int id)
-        {
-            var deleted = _service.DeleteCustomer(id);
-            if (!deleted) return NotFound();
-            return NoContent();
-        }
+        context.Customers.Remove(customerEntity);
+        context.SaveChanges();
+        return Ok();
     }
 }

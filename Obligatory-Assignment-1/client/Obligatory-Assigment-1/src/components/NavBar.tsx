@@ -91,6 +91,12 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({isOpen, toggle, userLo
                             <Link to="/profile">My Profile</Link>
                         </li>
                         <li className="hover:bg-gray-200">
+                            <Link to="/myOrders">My Orders</Link>
+                        </li>
+                        <li className="hover:bg-gray-200">
+                            <Link to="/allOrders">All Orders</Link>
+                        </li>
+                        <li className="hover:bg-gray-200">
                             <button onClick={handleLogout} className="w-full text-left">
                                 Logout
                             </button>

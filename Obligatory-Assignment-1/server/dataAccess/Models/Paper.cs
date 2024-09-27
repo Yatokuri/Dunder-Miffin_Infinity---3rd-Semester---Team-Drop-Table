@@ -14,8 +14,5 @@ public partial class Paper
     public int Stock { get; set; }
 
     public double Price { get; set; }
-
-    public virtual ICollection<OrderEntry> OrderEntries { get; set; } = new List<OrderEntry>();
-
-    public virtual ICollection<Property> Properties { get; set; } = new List<Property>();
+    
 }

@@ -1,10 +1,15 @@
+using dataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using dataAccess.Models;
 using service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<PaperContext>(opt => opt.UseInMemoryDatabase("Paper"));
 
 builder.Services.AddOpenApiDocument(configure =>
 {

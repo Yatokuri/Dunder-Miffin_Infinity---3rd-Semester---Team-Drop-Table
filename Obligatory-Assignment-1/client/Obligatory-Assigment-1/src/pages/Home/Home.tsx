@@ -1,8 +1,8 @@
-import Carousel from "../components/Carousel/Carousel.tsx";
-import CarouselPicture1 from "../components/Carousel/Carousel_Assets/CarouselPicture1.png";
-import CarouselPicture2 from "../components/Carousel/Carousel_Assets/CarouselPicture2.png";
-import CarouselPicture3 from "../components/Carousel/Carousel_Assets/CarouselPicture3.png";
-import CarouselPicture4 from "../components/Carousel/Carousel_Assets/CarouselPicture4.png";
+import Carousel from "../../components/Carousel/Carousel.tsx";
+import CarouselPicture1 from "../../components/Carousel/Carousel_Assets/CarouselPicture1.png";
+import CarouselPicture2 from "../../components/Carousel/Carousel_Assets/CarouselPicture2.png";
+import CarouselPicture3 from "../../components/Carousel/Carousel_Assets/CarouselPicture3.png";
+import CarouselPicture4 from "../../components/Carousel/Carousel_Assets/CarouselPicture4.png";
 
 function Home() {
     return (

@@ -1,5 +1,5 @@
 import './App.css';
-import Home from './pages/Home.tsx';
+import Home from './pages/Home/Home.tsx';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NotFound from "./pages/NotFound.tsx";
 import NewOrderTest from "./pages/NewOrderTest.tsx";
@@ -16,6 +16,7 @@ import WhistleBlowingPolicy from "./pages/CustomService/WhistleBlowingPolicy.tsx
 import FAQ from "./pages/CustomService/FAQ.tsx";
 import MyOrders from "./pages/MyOrders.tsx";
 import AllOrders from "./pages/AllOrders.tsx";
+import Admin from "./pages/Admin/Admin.tsx";
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
+                        <Route path="/admin" element={<Admin />} />
                         <Route path="/ipsum" element={<NewOrderTest />} />
                         <Route path="/customer-service" element={<CustomService />} />
                         <Route path="/customer-service/contact-us" element={<Contact />} />

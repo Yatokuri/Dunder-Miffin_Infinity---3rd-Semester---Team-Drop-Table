@@ -26,7 +26,7 @@ function ProductManagement() {
     };
 
     return (
-        <div className="flex flex-col justify-center mt-32">
+        <div className="flex flex-col justify-center">
             <div>
                 <h1 className="text-black text-6xl">Product Management</h1>
             </div>

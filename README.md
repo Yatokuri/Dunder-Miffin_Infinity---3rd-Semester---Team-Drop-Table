@@ -5,7 +5,7 @@
 
 ## Description
 
-School project in autumn 2024
+School project in Autumn 2024
 
 ## Authors
 

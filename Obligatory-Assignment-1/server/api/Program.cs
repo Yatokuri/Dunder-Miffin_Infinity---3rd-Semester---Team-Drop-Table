@@ -30,11 +30,7 @@ var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
 var connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
 
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    });
+builder.Services.AddControllers();
 
 
 // Register the DbContext with PostgreSQL using the constructed connection string

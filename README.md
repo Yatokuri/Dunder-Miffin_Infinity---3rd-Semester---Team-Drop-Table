@@ -5,7 +5,25 @@
 
 ## Description
 
-School project in Autumn 2024
+# EASV Project Autumn 2024
+# Frontend:
+- React, Typescript (npm create vite@latest)
+- React router dom
+- Jotai
+- Tailwindcss, DaisyUI
+- React Hot Toast
+
+# Backend:
+- C#, ASP.NET
+- Axios
+- Swagger
+- Swagger-typescript-api
+- PostgreSQL
+- Entity Framework Core
+- Docker
+
+# Unit tests:
+- xUnit
 
 ## Authors
 
@@ -18,9 +36,10 @@ Thomas O [GitHub](https://github.com/Yatokuri/)<br />
 ## Version History
 * 0.1
     * Initial Release
+* 0.2
+    * Updated alpha 
 
 
 ## License
 
 This project is licensed under the Create Common License - see the LICENSE.md file for details
-

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using dataAccess;
+﻿using dataAccess;
 using dataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -77,7 +76,7 @@ public class OrderController(DMIContext context) : ControllerBase
             }).ToList()
         };
 
-        var stockUpdateResult = UpdateStockLevels(orderRequestDto.OrderEntries);
+        var stockUpdateResult = UpdateStockLevels(orderRequestDto.OrderEntries, null);
         if (stockUpdateResult.Errors.Count > 0) 
         {
             return BadRequest(stockUpdateResult); // Return any error from stock update
@@ -112,6 +111,8 @@ public class OrderController(DMIContext context) : ControllerBase
         // Update order entries if provided in the DTO
         if (orderDto.OrderEntries.Count > 0)
         {
+            var restockEntries = new Dictionary<int, int>(); // To keep track of restock quantities
+
             foreach (var orderEntryDto in orderDto.OrderEntries)
             {
                 var orderEntryEntity = orderEntity.OrderEntries
@@ -119,20 +120,41 @@ public class OrderController(DMIContext context) : ControllerBase
 
                 if (orderEntryEntity != null)
                 {
-                    orderEntryEntity.Quantity = orderEntryDto.Quantity; 
+                    // If quantity is zero, remove the order entry and restock the product
+                    if (orderEntryDto.Quantity == 0)
+                    {
+                        // Ensure ProductId is non-nullable before using it
+                        int productId = orderEntryEntity.ProductId.GetValueOrDefault(); // or use .Value if you are sure it's not null
+                        if (productId != 0) // Check to avoid adding 0 as a product ID
+                        {
+                            restockEntries[productId] = orderEntryEntity.Quantity; // Keep track for restocking
+                        }
+                        context.OrderEntries.Remove(orderEntryEntity); // Remove the entry
+                    }
+                    else
+                    {
+                        // Update quantity if it's greater than 0
+                        restockEntries[orderEntryEntity.ProductId.GetValueOrDefault()] = orderEntryEntity.Quantity; // Use GetValueOrDefault() safely
+                        orderEntryEntity.Quantity = orderEntryDto.Quantity; // Update to new quantity
+                    }
                 }
                 else
                 {
-                    var newOrderEntry = new OrderEntry
+                    // If the entry does not exist, add a new one if the quantity is greater than 0
+                    if (orderEntryDto.Quantity > 0)
                     {
-                        ProductId = orderEntryDto.ProductId,
-                        Quantity = orderEntryDto.Quantity,
-                    };
-                    orderEntity.OrderEntries.Add(newOrderEntry);
+                        var newOrderEntry = new OrderEntry
+                        {
+                            ProductId = orderEntryDto.ProductId,
+                            Quantity = orderEntryDto.Quantity,
+                        };
+                        orderEntity.OrderEntries.Add(newOrderEntry);
+                    }
                 }
             }
 
-            var stockUpdateResult = UpdateStockLevels(orderDto.OrderEntries);
+            // Now handle the stock levels after all modifications
+            var stockUpdateResult = UpdateStockLevels(orderDto.OrderEntries, restockEntries);
             if (stockUpdateResult.Errors.Count > 0) 
             {
                 return BadRequest(stockUpdateResult); // Return any error from stock update
@@ -142,6 +164,8 @@ public class OrderController(DMIContext context) : ControllerBase
         context.SaveChanges(); 
         return Ok(orderEntity); 
     }
+
+
 
     
     [HttpPut]
@@ -204,14 +228,23 @@ public class OrderController(DMIContext context) : ControllerBase
 
         return Ok();
     }
+    
+// Method for updating stock levels with restocking
+private ErrorResponse UpdateStockLevels(List<CreateOrderEntryDto> orderEntries, Dictionary<int, int>? restockEntries)
+{
+    var errorResponse = new ErrorResponse();
 
-    private ErrorResponse UpdateStockLevels(List<CreateOrderEntryDto> orderEntries)
-    {
-        var errorResponse = new ErrorResponse();
+    // Create a list of products to deduct stock from
+    var productIdsToDeduct = orderEntries
+        .Where(entry => entry.Quantity > 0) // Only consider entries with positive quantities
+        .Select(entry => entry.ProductId)
+        .Distinct()
+        .ToList();
 
+        // Deduct stock for the existing quantities
         foreach (var entry in orderEntries)
         {
-            var product = context.Papers.Find(entry.ProductId); // Assuming you have a Products DbSet
+            var product = context.Papers.Find(entry.ProductId);
 
             if (product == null)
             {
@@ -219,18 +252,33 @@ public class OrderController(DMIContext context) : ControllerBase
                 continue; // Skip to the next product
             }
 
-            // Check stock levels
-            if (product.Stock < entry.Quantity)
+            // If the product is in the deduction list, check and deduct stock
+            if (productIdsToDeduct.Contains(entry.ProductId) && entry.Quantity > 0)
             {
-                errorResponse.Errors.Add($"Insufficient stock for product ID {entry.ProductId}. Available: {product.Stock}, Requested: {entry.Quantity}.");
-            }
-            else
-            {
-                // Deduct the stock
-                product.Stock -= entry.Quantity;
+                // Check stock levels
+                if (product.Stock < entry.Quantity)
+                {
+                    errorResponse.Errors.Add($"Insufficient stock for product ID {entry.ProductId}. Available: {product.Stock}, Requested: {entry.Quantity}.");
+                }
+                else
+                {
+                    // Deduct the stock
+                    product.Stock -= entry.Quantity;
+                }
             }
         }
 
+        // Restock the quantities for products that were removed
+        foreach (var restockEntry in restockEntries ?? new Dictionary<int, int>())
+        {
+            var product = context.Papers.Find(restockEntry.Key); 
+            if (product != null)
+            {
+                product.Stock += restockEntry.Value; // Restock the product
+            }
+        }
+
+        // Return error response only if there are errors
         return errorResponse;
     }
 

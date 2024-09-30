@@ -1,3 +1,20 @@
 .table-cell-padding {
     padding: 10px;
 }
+
+.action-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust the gap as needed */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9; /* Optional: to give a background color */
+}
+
+.action-item {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff; /* Optional: to give a background color */
+}

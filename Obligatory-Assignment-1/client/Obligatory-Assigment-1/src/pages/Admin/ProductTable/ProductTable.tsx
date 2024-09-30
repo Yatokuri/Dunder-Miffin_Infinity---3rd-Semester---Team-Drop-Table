@@ -9,7 +9,7 @@ interface Product {
     name: string;
     stock: number;
     price: number;
-    discontinued: boolean; // Add the discontinued property
+    discontinued: boolean;
 }
 
 export const MyApi = new Api();

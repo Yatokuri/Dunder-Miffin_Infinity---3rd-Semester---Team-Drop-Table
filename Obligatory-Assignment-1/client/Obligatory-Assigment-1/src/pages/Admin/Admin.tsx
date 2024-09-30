@@ -8,8 +8,8 @@ function Admin() {
                 <h1 className="text-black text-6xl">Admin Page</h1>
             </div>
             <div className="flex flex-row w-full justify-around mt-10">
-                <ProductTable />
                 <AddProduct />
+                <ProductTable />
             </div>
         </div>
     )

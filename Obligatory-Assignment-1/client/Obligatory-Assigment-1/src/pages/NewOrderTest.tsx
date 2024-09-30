@@ -74,12 +74,15 @@ const NewOrderTest = () => {
                 deliveryDate,
                 status,
                 totalAmount,
-                orderEntries: orderEntries // Use the orderEntries state
-            }
+            },
+            orderEntries: orderEntries.map(entry => ({
+                    productId: entry.productId,
+                    quantity: entry.quantity
+                }))
         };
 
         try {
-            const response = await axios.post('http://localhost:5261/api/fullOrder', orderData);
+            const response = await axios.post('http://localhost:5261/api/order', orderData);
             alert(`Order created with ID: ${response.data.id}`);
             // Clear the form
             setOrderDate('');

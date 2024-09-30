@@ -1,6 +1,7 @@
 ﻿using dataAccess;
 using dataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using service.Request.CustomerDto;
 
 namespace api.Controllers;
@@ -26,6 +27,24 @@ public class CustomerController(DMIContext context) : ControllerBase
         }
         return Ok(result);
     }
+    
+    [HttpGet("api/customer/{customerId}/order")]
+    public ActionResult<IEnumerable<Order>> GetOrdersByCustomerId(int customerId)
+    {
+        var orders = context.Orders
+            .Include(o => o.OrderEntries)
+            .ThenInclude(oe => oe.Product)
+            .Where(o => o.CustomerId == customerId) // Get all orders for the customer
+            .ToList();
+
+        if (!orders.Any())
+        {
+            return NotFound(); 
+        }
+
+        return Ok(orders); 
+    }
+    
     
     [HttpPost]
     [Route("api/customer")]

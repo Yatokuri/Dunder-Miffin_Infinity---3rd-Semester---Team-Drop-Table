@@ -1,9 +1,11 @@
 import { Api } from "../../../../Api.ts";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
+import DeleteProduct from "../DeleteProduct/DeleteProduct.tsx";
 import './ProductTable.css';
 
 interface Product {
+    id: string;
     name: string;
     stock: number;
     price: number;
@@ -31,6 +33,7 @@ function ProductTable() {
         <table className="text-black text-4xl text-left">
             <thead>
             <tr>
+                <th className="table-cell-padding"></th>
                 <th className="table-cell-padding">Name</th>
                 <th className="table-cell-padding">Stock</th>
                 <th className="table-cell-padding">Price</th>
@@ -39,6 +42,9 @@ function ProductTable() {
             <tbody>
             {products.map((product, index) => (
                 <tr key={index}>
+                    <td className="table-cell-padding">
+                        <DeleteProduct productId={product.id} />
+                    </td>
                     <td className="table-cell-padding">{product.name}</td>
                     <td className="table-cell-padding">{product.stock}</td>
                     <td className="table-cell-padding">{product.price}</td>

@@ -69,7 +69,7 @@ public class OrderController(DMIContext context) : ControllerBase
         // Create the order using the DTO
         var order = new Order
         {
-            OrderDate = orderRequestDto.Order.OrderDate, // Set the order date to current UTC time
+            OrderDate = orderRequestDto.Order.OrderDate.ToUniversalTime(), // Set the order date to current UTC time
             DeliveryDate = orderRequestDto.Order.DeliveryDate,
             Status = orderRequestDto.Order.Status,
             TotalAmount = orderRequestDto.Order.TotalAmount,

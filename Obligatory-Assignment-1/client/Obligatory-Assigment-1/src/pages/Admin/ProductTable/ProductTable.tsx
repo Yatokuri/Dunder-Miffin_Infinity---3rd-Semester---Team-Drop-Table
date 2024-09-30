@@ -27,20 +27,20 @@ function ProductTable() {
     }, [setProducts]);
 
     return (
-        <table className="text-black text-4xl w-full">
+        <table className="text-black text-4xl text-left">
             <thead>
             <tr>
-                <th className="text-left p-2">Name</th>
-                <th className="text-left p-2">Stock</th>
-                <th className="text-left p-2">Price</th>
+                <th>Name</th>
+                <th>Stock</th>
+                <th>Price</th>
             </tr>
             </thead>
             <tbody>
             {products.map((product, index) => (
-                <tr key={index}>
-                    <td className="text-left p-2">{product.name}</td>
-                    <td className="text-left p-2">{product.stock}</td>
-                    <td className="text-left p-2">{product.price}</td>
+                <tr key={index} >
+                    <td>{product.name}</td>
+                    <td>{product.stock}</td>
+                    <td>{product.price}</td>
                 </tr>
             ))}
             </tbody>

@@ -1,5 +1,4 @@
-import ProductManagement from "./ProductManagement/ProductManagement.tsx";
-import OpenModal from "../OpenModal.tsx";
+import AddProduct from "./AddProduct/AddProduct.tsx";
 import ProductTable from "./ProductTable/ProductTable.tsx";
 
 function Admin() {
@@ -8,9 +7,9 @@ function Admin() {
             <div>
                 <h1 className="text-black text-6xl">Admin Page</h1>
             </div>
-            <div>
+            <div className="flex flex-row w-full justify-around mt-10">
                 <ProductTable />
-                <OpenModal component={<ProductManagement />} buttonText={"Create new product"} />
+                <AddProduct />
             </div>
         </div>
     )

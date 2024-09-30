@@ -15,6 +15,18 @@ public class PaperController(DMIContext context) : ControllerBase
         var result = context.Papers.ToList();
         return Ok(result);
     }
+    
+    [HttpGet]
+    [Route("api/paper/{id}")]
+    public ActionResult GetPaper(int id)
+    {
+        var result = context.Papers.FirstOrDefault(p => p.Id == id);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
 
     [HttpPost]
     [Route("api/paper")]
@@ -43,6 +55,20 @@ public class PaperController(DMIContext context) : ControllerBase
         paperEntity.Name = paper.name;
         paperEntity.Stock = paper.stock;
         paperEntity.Price = paper.price;
+        context.SaveChanges();
+        return Ok(paperEntity);
+    }
+    
+    [HttpPatch]
+    [Route("api/paper/{id}")]
+    public ActionResult<Paper> UpdateDiscontinued(int id, bool discontinued)
+    {
+        var paperEntity = context.Papers.FirstOrDefault(p => p.Id == id);
+        if (paperEntity == null)
+        {
+            return NotFound();
+        }
+        paperEntity.Discontinued = discontinued;
         context.SaveChanges();
         return Ok(paperEntity);
     }

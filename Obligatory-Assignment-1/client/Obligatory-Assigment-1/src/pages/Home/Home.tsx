@@ -6,7 +6,7 @@ import CarouselPicture4 from "../../components/Carousel/Carousel_Assets/Carousel
 
 function Home() {
     return (
-        <div className="mt-16 px-4 md:px-8 lg:px-16">
+        <div className="mt-16 px-4 md:px-8 lg:px-16 text-black">
             <div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
                     Dunder Mifflin Infinity

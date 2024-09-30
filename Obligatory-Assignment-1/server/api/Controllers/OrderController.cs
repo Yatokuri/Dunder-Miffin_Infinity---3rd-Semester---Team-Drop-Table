@@ -41,7 +41,7 @@ public class OrderController(DMIContext context) : ControllerBase
     public ActionResult<Order> CreateOrder([FromBody] OrderRequestDto orderRequestDto)
     {
         // Validate the incoming request
-        if (orderRequestDto.OrderEntries == null || !orderRequestDto.OrderEntries.Any())
+        if (!orderRequestDto.OrderEntries.Any())
         {
             return BadRequest("Invalid order request.");
         }
@@ -69,7 +69,7 @@ public class OrderController(DMIContext context) : ControllerBase
         // Create the order using the DTO
         var order = new Order
         {
-            OrderDate = DateTime.UtcNow, // Set the order date to current UTC time
+            OrderDate = orderRequestDto.Order.OrderDate, // Set the order date to current UTC time
             DeliveryDate = orderRequestDto.Order.DeliveryDate,
             Status = orderRequestDto.Order.Status,
             TotalAmount = orderRequestDto.Order.TotalAmount,
@@ -105,6 +105,7 @@ public class OrderController(DMIContext context) : ControllerBase
         context.SaveChanges(); // Save changes to the database
 
         return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
+        
     }
     
     [HttpPut] //TODO update stock

@@ -59,6 +59,20 @@ public class PaperController(DMIContext context) : ControllerBase
         return Ok(paperEntity);
     }
     
+    [HttpPatch]
+    [Route("api/paper/{id}")]
+    public ActionResult<Paper> UpdateDiscontinued(int id, bool discontinued)
+    {
+        var paperEntity = context.Papers.FirstOrDefault(p => p.Id == id);
+        if (paperEntity == null)
+        {
+            return NotFound();
+        }
+        paperEntity.Discontinued = discontinued;
+        context.SaveChanges();
+        return Ok(paperEntity);
+    }
+    
     [HttpDelete]
     [Route("api/paper/{id}")]
     public ActionResult DeletePaper(int id)

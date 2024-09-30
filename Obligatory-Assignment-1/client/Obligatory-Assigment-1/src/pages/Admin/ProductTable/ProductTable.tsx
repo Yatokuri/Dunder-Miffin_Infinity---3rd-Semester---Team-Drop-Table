@@ -9,6 +9,7 @@ interface Product {
     name: string;
     stock: number;
     price: number;
+    discontinued: boolean; // Add the discontinued property
 }
 
 export const MyApi = new Api();
@@ -40,7 +41,7 @@ function ProductTable() {
             </tr>
             </thead>
             <tbody>
-            {products.map((product, index) => (
+            {products.filter(product => !product.discontinued).map((product, index) => (
                 <tr key={index}>
                     <td className="table-cell-padding">
                         <DeleteProduct productId={product.id} />

@@ -5,16 +5,18 @@ import './DeleteProduct.css';
 
 export const MyApi = new Api();
 
-async function deleteProductById(id: string) {
-    await MyApi.api.paperDeletePaper(id);
+async function discontinueProductById(id: string) {
+    await MyApi.api.paperUpdateDiscontinued(id, { discontinued: true });
 }
 
 function DeleteProduct({ productId }: { productId: string }) {
     const [products, setProducts] = useAtom(productsAtom);
 
     const handleDelete = async () => {
-        await deleteProductById(productId);
-        setProducts(products.filter(product => product.id !== productId));
+        await discontinueProductById(productId);
+        setProducts(products.map(product =>
+            product.id === productId ? { ...product, discontinued: true } : product
+        ));
     };
 
     return (

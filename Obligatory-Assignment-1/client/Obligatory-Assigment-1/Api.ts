@@ -452,6 +452,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Paper
+     * @name PaperUpdateDiscontinued
+     * @request PATCH:/api/paper/{id}
+     */
+    paperUpdateDiscontinued: (
+      id: number,
+      query?: {
+        discontinued?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Paper, any>({
+        path: `/api/paper/${id}`,
+        method: "PATCH",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Paper
      * @name PaperDeletePaper
      * @request DELETE:/api/paper/{id}
      */

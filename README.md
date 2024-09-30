@@ -1,10 +1,11 @@
-# Project Title
+# Dunder Mifflin Infinity
 
-Dunder Mifflin Infinity
+![image](https://github.com/user-attachments/assets/68243827-cd85-4f96-92c4-fc3929896906)
+
 
 ## Description
 
-School project in autumn 2024
+School project in Autumn 2024
 
 ## Authors
 

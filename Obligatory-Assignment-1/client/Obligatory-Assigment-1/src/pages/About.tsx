@@ -1,16 +1,15 @@
-﻿import AboutUs from "../components/AboutUs.tsx";
-import PageHeader from "../components/PageHeader.tsx";
+import AboutUs from "../components/AboutUs.tsx";
 
 
 function About() {
-    return (
-        <div>
-            <PageHeader/>
-            <h1 className="text-2xl font-bold">About us</h1>
+  return (
+      <div>
+          <h1 className="text-3xl font-bold">Dunder Mifflin Infinity</h1>
+          <h1 className="text-2xl font-bold">About us</h1>
 
-            <AboutUs/>
-        </div>
-    );
+          <AboutUs/>
+      </div>
+  );
 }
 
 export default About;

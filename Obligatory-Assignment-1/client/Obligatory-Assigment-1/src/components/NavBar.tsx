@@ -64,7 +64,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ toggleDropdown, activeDropdown }) =
             </div>
             <Link to="/ipsum" className="btn btn-ghost">Lorem</Link>
             <Link to="/about" className="btn btn-ghost">About Us</Link>
-            <Link to="/contact-us" className="btn btn-ghost">Contact</Link>
+            <Link to="/customer-service/contact-us" className="btn btn-ghost">Contact</Link>
         </>
     );
 };
@@ -89,6 +89,12 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({isOpen, toggle, userLo
                     <>
                         <li className="hover:bg-gray-200">
                             <Link to="/profile">My Profile</Link>
+                        </li>
+                        <li className="hover:bg-gray-200">
+                            <Link to="/myOrders">My Orders</Link>
+                        </li>
+                        <li className="hover:bg-gray-200">
+                            <Link to="/allOrders">All Orders</Link>
                         </li>
                         <li className="hover:bg-gray-200">
                             <button onClick={handleLogout} className="w-full text-left">

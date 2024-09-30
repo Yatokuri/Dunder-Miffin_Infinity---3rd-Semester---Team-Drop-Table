@@ -15,7 +15,7 @@ async function createPaper(name: string, stock: number, price: number) {
     return response.data;
 }
 
-function AddProduct() {
+function AddProduct({ closeModal }: { closeModal: () => void }) {
     const [name, setName] = useState('');
     const [stock, setStock] = useState(0);
     const [price, setPrice] = useState(0);
@@ -27,6 +27,7 @@ function AddProduct() {
         setName('');
         setStock(0);
         setPrice(0);
+        closeModal();
     };
 
     return (

@@ -15,6 +15,18 @@ public class PaperController(DMIContext context) : ControllerBase
         var result = context.Papers.ToList();
         return Ok(result);
     }
+    
+    [HttpGet]
+    [Route("api/paper/{id}")]
+    public ActionResult GetPaper(int id)
+    {
+        var result = context.Papers.FirstOrDefault(p => p.Id == id);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
 
     [HttpPost]
     [Route("api/paper")]

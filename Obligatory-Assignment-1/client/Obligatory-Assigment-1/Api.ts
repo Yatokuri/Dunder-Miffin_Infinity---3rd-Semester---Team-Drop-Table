@@ -412,6 +412,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Paper
+     * @name PaperGetPaper
+     * @request GET:/api/paper/{id}
+     */
+    paperGetPaper: (id: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${id}`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Paper
      * @name PaperUpdatePaper
      * @request PUT:/api/paper/{id}
      */

@@ -1,6 +1,7 @@
 import { Api } from "../../../../Api.ts";
 import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
+import './ProductTable.css';
 
 interface Product {
     name: string;
@@ -30,17 +31,17 @@ function ProductTable() {
         <table className="text-black text-4xl text-left">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Stock</th>
-                <th>Price</th>
+                <th className="table-cell-padding">Name</th>
+                <th className="table-cell-padding">Stock</th>
+                <th className="table-cell-padding">Price</th>
             </tr>
             </thead>
             <tbody>
             {products.map((product, index) => (
-                <tr key={index} >
-                    <td>{product.name}</td>
-                    <td>{product.stock}</td>
-                    <td>{product.price}</td>
+                <tr key={index}>
+                    <td className="table-cell-padding">{product.name}</td>
+                    <td className="table-cell-padding">{product.stock}</td>
+                    <td className="table-cell-padding">{product.price}</td>
                 </tr>
             ))}
             </tbody>

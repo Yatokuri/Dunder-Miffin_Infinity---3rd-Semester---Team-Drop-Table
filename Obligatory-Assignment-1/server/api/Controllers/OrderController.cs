@@ -125,17 +125,30 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok(orderEntity);
     }
     
-    // Cancel order //TODO update stock
     [HttpDelete]
     [Route("api/order/{id}")]
-    public ActionResult DeleteOrder(int id)
+    public ActionResult CancelOrder(int id)
     {
-        var orderEntity = context.Orders.FirstOrDefault(p => p.Id == id);
+        // Find the order in the database
+        var orderEntity = context.Orders.Include(o => o.OrderEntries).ThenInclude(oe => oe.Product)
+            .FirstOrDefault(p => p.Id == id);
         if (orderEntity == null)
         {
             return NotFound();
         }
-        context.Orders.Remove(orderEntity);
+        
+        orderEntity.Status = "Cancelled";
+
+        // Re-add the stock for each product in the order entries
+        foreach (var orderEntry in orderEntity.OrderEntries)
+        {
+            var product = context.Papers.FirstOrDefault(p => p.Id == orderEntry.ProductId);
+            if (product != null)
+            {
+                product.Stock += orderEntry.Quantity; 
+            }
+        }
+        
         context.SaveChanges();
         return Ok();
     }

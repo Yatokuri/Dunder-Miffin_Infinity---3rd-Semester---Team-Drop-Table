@@ -41,17 +41,14 @@ public class OrderController(DMIContext context) : ControllerBase
     [Route("api/order")]
     public ActionResult<Order> CreateOrder([FromBody] OrderRequestDto orderRequestDto)
     {
-        // Validate the incoming request
         if (!orderRequestDto.OrderEntries.Any())
         {
-            return BadRequest("Invalid order request.");
+            return BadRequest(new ErrorResponse { Errors = new List<string> { "Invalid order request." } });
         }
 
-        // Check if customer exists based on email
         var customerDto = orderRequestDto.Customer;
         var customer = context.Customers.FirstOrDefault(c => c.Email == customerDto.Email);
 
-        // If customer doesn't exist, create a new customer
         if (customer == null)
         {
             customer = new Customer
@@ -61,16 +58,14 @@ public class OrderController(DMIContext context) : ControllerBase
                 Phone = customerDto.Phone,
                 Email = customerDto.Email
             };
-            
-            // Add the new customer to the context
+
             context.Customers.Add(customer);
             context.SaveChanges(); 
         }
 
-        // Create the order using the DTO
         var order = new Order
         {
-            OrderDate = orderRequestDto.Order.OrderDate.ToUniversalTime(), // Set the order date to current UTC time
+            OrderDate = orderRequestDto.Order.OrderDate.ToUniversalTime(),
             DeliveryDate = orderRequestDto.Order.DeliveryDate,
             Status = orderRequestDto.Order.Status,
             TotalAmount = orderRequestDto.Order.TotalAmount,
@@ -82,26 +77,22 @@ public class OrderController(DMIContext context) : ControllerBase
             }).ToList()
         };
 
-        // Update stock levels for each product in the order
         var stockUpdateResult = UpdateStockLevels(orderRequestDto.OrderEntries);
-        if (stockUpdateResult is not null) 
+        if (stockUpdateResult.Errors.Count > 0) 
         {
-            return stockUpdateResult; // Return any error from stock update
+            return BadRequest(stockUpdateResult); // Return any error from stock update
         }
 
-        // Add the order to the context
         context.Orders.Add(order);
-        context.SaveChanges(); // Save changes to the database
+        context.SaveChanges();
 
         return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
-        
     }
-    
+
     [HttpPut]
     [Route("api/order/{id}")]
     public ActionResult<Order> UpdateOrder(int id, [FromBody] OrderRequestDto orderDto)
     {
-        // Find the order in the database including its order entries
         var orderEntity = context.Orders
             .Include(o => o.OrderEntries)
             .ThenInclude(oe => oe.Product) 
@@ -128,34 +119,28 @@ public class OrderController(DMIContext context) : ControllerBase
 
                 if (orderEntryEntity != null)
                 {
-                    // If the order entry exists, update the quantity
-                    orderEntryEntity.Quantity = orderEntryDto.Quantity; // Assuming you have Quantity to update
-                    // You can add more fields to update if needed
+                    orderEntryEntity.Quantity = orderEntryDto.Quantity; 
                 }
                 else
                 {
-                    // Optionally, handle the case where the order entry does not exist
-                    // For example, you could create a new order entry
                     var newOrderEntry = new OrderEntry
                     {
                         ProductId = orderEntryDto.ProductId,
                         Quantity = orderEntryDto.Quantity,
-                        // Set any additional properties here as necessary
                     };
                     orderEntity.OrderEntries.Add(newOrderEntry);
                 }
             }
 
-            // Check and update stock levels after order entries have been processed
             var stockUpdateResult = UpdateStockLevels(orderDto.OrderEntries);
-            if (stockUpdateResult is not null) 
+            if (stockUpdateResult.Errors.Count > 0) 
             {
-                return stockUpdateResult; // Return any error from stock update
+                return BadRequest(stockUpdateResult); // Return any error from stock update
             }
         }
 
-        context.SaveChanges(); // Save all changes to the database
-        return Ok(orderEntity); // Return the updated order entity
+        context.SaveChanges(); 
+        return Ok(orderEntity); 
     }
 
     
@@ -187,7 +172,7 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok();
     }
     
-    [HttpDelete] // Use DELETE for canceling the order
+    [HttpDelete] // Use DELETE for canceling the orders
     [Route("api/order/{id}")]
     public ActionResult DeleteOrder(int id)
     {
@@ -220,27 +205,38 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok();
     }
 
-    private ActionResult? UpdateStockLevels(List<CreateOrderEntryDto> orderEntries)
+    private ErrorResponse UpdateStockLevels(List<CreateOrderEntryDto> orderEntries)
     {
+        var errorResponse = new ErrorResponse();
+
         foreach (var entry in orderEntries)
         {
-            var  product = context.Papers.FirstOrDefault(p => p.Id == entry.ProductId);
+            var product = context.Papers.Find(entry.ProductId); // Assuming you have a Products DbSet
+
             if (product == null)
             {
-                return NotFound($"Product with ID {entry.ProductId} not found.");
+                errorResponse.Errors.Add($"Product with ID {entry.ProductId} not found.");
+                continue; // Skip to the next product
             }
 
             // Check stock levels
             if (product.Stock < entry.Quantity)
             {
-                return BadRequest($"Not enough stock for product {product.Name}. Available: {product.Stock}, Requested: {entry.Quantity}");
+                errorResponse.Errors.Add($"Insufficient stock for product ID {entry.ProductId}. Available: {product.Stock}, Requested: {entry.Quantity}.");
             }
-
-            // Deduct the stock
-            product.Stock -= entry.Quantity;
+            else
+            {
+                // Deduct the stock
+                product.Stock -= entry.Quantity;
+            }
         }
 
-        return null;
+        return errorResponse;
     }
+
     
+    private class ErrorResponse
+    {
+        public List<string> Errors { get; set; } = new List<string>();
+    }
 }

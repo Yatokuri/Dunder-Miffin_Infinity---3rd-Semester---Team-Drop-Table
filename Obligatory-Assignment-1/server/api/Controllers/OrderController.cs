@@ -17,7 +17,7 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok(result);
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("api/order/{id}")]
     public ActionResult<Order> GetOrderById(int id)
     {
         var order = context.Orders

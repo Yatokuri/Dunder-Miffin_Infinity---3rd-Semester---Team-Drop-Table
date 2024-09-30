@@ -28,7 +28,7 @@ public class CustomerController(DMIContext context) : ControllerBase
         return Ok(result);
     }
     
-    [HttpGet("api/customer/{customerId}/order")]
+    [HttpGet("api/customer/{id}/order")]
     public ActionResult<IEnumerable<Order>> GetOrdersByCustomerId(int customerId)
     {
         var orders = context.Orders

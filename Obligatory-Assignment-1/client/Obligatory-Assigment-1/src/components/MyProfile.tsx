@@ -1,16 +1,22 @@
 ﻿import {useState} from "react";
-import {ProfilePageAtom} from "../atoms/ProfilePageAtoms.ts";
+import {Api, Customer} from "../../Api.ts";
+import {useAtom} from "jotai";
+import {CustomerAtoms} from "../atoms/CustomerAtoms.ts";
+
+
+export const MyApi = new Api();
 
 
 function MyProfile() {
 
     const [toggleEditableProfile, setEditableProfile] = useState(false); // State for password visibility
-
+    const [customer, setCustomer] = useAtom<Customer>(CustomerAtoms);
+    
     const [state, setState] = useState({
-        name: ProfilePageAtom,
-        email: ProfilePageAtom,
-        address: ProfilePageAtom,
-        phoneNumber: ProfilePageAtom,
+        name: customer.name,
+        email: customer.email,
+        address: customer.address,
+        phoneNumber: customer.phone,
     });
 
     const handleChange = e => {
@@ -29,19 +35,21 @@ function MyProfile() {
     // Function to toggle Profile page being editable
     const changeEditableProfile = () => {
 
-        tempProfileName = state.name;
-        tempProfileAddress = state.address;
-        tempProfileEmail = state.email;
-        tempProfilePhoneNumber = state.phoneNumber;
+        tempProfileName = customer.name;
+        tempProfileAddress = customer.address;
+        tempProfileEmail = customer.email;
+        tempProfilePhoneNumber = customer.phone;
         
         if (!toggleEditableProfile) {
             setEditableProfile(true);
         }
     };
 
+    // TODO Readd Async & updatedCustomer: Customer at a later point and bind it to the API
     const saveProfileChanges = () => {
 
-        
+        //await MyApi.api.customerUpdateCustomer(updatedCustomer.id, updatedCustomer);
+        //setCustomer(updatedCustomer);
 
         setEditableProfile(false);
     }
@@ -171,6 +179,7 @@ function MyProfile() {
                     />
                 </div>
                 <div className="flex mt-5">
+                    // TODO Change this to be able to run with Async at a later date
                     <button type="button" onClick={saveProfileChanges}
                             className=" bg-base-200 flex items-center pr-2 mr-8">
                         Save Changes

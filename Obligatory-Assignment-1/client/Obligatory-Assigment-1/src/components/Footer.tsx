@@ -1,6 +1,6 @@
 function Footer() {
     return (
-        <footer className="footer footer-center mt-6 w-full">
+        <footer className="footer footer-center mt-6 w-full text-black">
             <div className="flex mt-6">
                 <p>© 2023 - 2024</p>
             </div>

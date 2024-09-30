@@ -17,33 +17,37 @@ import FAQ from "./pages/CustomService/FAQ.tsx";
 import MyOrders from "./pages/MyOrders.tsx";
 import AllOrders from "./pages/AllOrders.tsx";
 import Admin from "./pages/Admin/Admin.tsx";
+import Profile from "./pages/Profile.tsx";
 
 function App() {
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
             <BrowserRouter>
-                <Toaster />
-                <NavBar />
+                <Toaster/>
+                <NavBar/>
                 <div className="flex-grow m-2 pt-16">
                     <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/home" element={<Home />} />
-                        <Route path="/admin" element={<Admin />} />
-                        <Route path="/ipsum" element={<NewOrderTest />} />
-                        <Route path="/customer-service" element={<CustomService />} />
-                        <Route path="/customer-service/contact-us" element={<Contact />} />
-                        <Route path="/customer-service/faq" element={<FAQ />} />
-                        <Route path="/customer-service/sales-and-delivery-conditions" element={<SalesAndDeliveryConditions />} />
-                        <Route path="/customer-service/gdpr-data-protection-policy" element={<GDPRDataProtectionPolicy />} />
-                        <Route path="/customer-service/cookie-policy" element={<CookiePolicy />} />
-                        <Route path="/customer-service/whistleblowing-policy" element={<WhistleBlowingPolicy />} />
-                        <Route path="/*" element={<NotFound />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/myOrders" element={<MyOrders />} />
-                        <Route path="/allOrders" element={<AllOrders />} />
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/about" element={<About/>}/>
+                        <Route path="/admin" element={<Admin/>}/>
+                        <Route path="/allOrders" element={<AllOrders/>}/>
+                        <Route path="/home" element={<Home/>}/>
+                        <Route path="/customer-service" element={<CustomService/>}/>
+                        <Route path="/customer-service/contact-us" element={<Contact/>}/>
+                        <Route path="/customer-service/faq" element={<FAQ/>}/>
+                        <Route path="/customer-service/sales-and-delivery-conditions"
+                               element={<SalesAndDeliveryConditions/>}/>
+                        <Route path="/customer-service/gdpr-data-protection-policy"
+                               element={<GDPRDataProtectionPolicy/>}/>
+                        <Route path="/customer-service/cookie-policy" element={<CookiePolicy/>}/>
+                        <Route path="/customer-service/whistleblowing-policy" element={<WhistleBlowingPolicy/>}/>
+                        <Route path="/ipsum" element={<NewOrderTest/>}/>
+                        <Route path="/myOrders" element={<MyOrders/>}/>
+                        <Route path="/profile" element={<Profile/>}/>
+                        <Route path="/*" element={<NotFound/>}/>
                     </Routes>
                 </div>
-                <Footer />
+                <Footer/>
             </BrowserRouter>
         </div>
     );

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAtom } from 'jotai';
-import { loginFormAtom, authAtom } from '../atoms/LoginAtoms.ts';
+import {loginFormAtom, authAtom, setAuthData} from '../atoms/LoginAtoms.ts';
 import EyeOnIcon from '../assets/icons/EyeOnIcon.tsx';
 import EyeOffIcon from '../assets/icons/EyeOffIcon.tsx';
 import FacebookLogo from '../assets/icons/FacebookIcon.tsx';
@@ -25,7 +25,7 @@ interface LoginFormProps {
 }
 
 export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
-    const [authForm, setAuthForm] = useAtom<AuthFormType>(loginFormAtom);
+    const [authForm, setAuthForm] = useAtom(loginFormAtom);
     const [, setAuth] = useAtom(authAtom); // To update the authAtom state
     const [authFormErrors, setAuthFormErrors] = useState<AuthFormErrors>({});
     const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for password visibility
@@ -35,7 +35,17 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
     useEffect(() => {
         // Clear form fields when the component mounts
         setAuthForm({ email: '', password: '' });
-    }, [setAuthForm]);
+
+        const storedAuthData = localStorage.getItem('authData'); // Load auth data from local storage if available
+        if (storedAuthData) {
+            const { email, isLoggedIn, expirationTime } = JSON.parse(storedAuthData);
+            if (new Date().getTime() < expirationTime) {
+                setAuth({ email, isLoggedIn }); // If the token is not expired, update the atom state
+            } else {
+                localStorage.removeItem('authData'); // If expired, clear local storage
+            }
+        }
+    }, [setAuth, setAuthForm]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -78,13 +88,14 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
 
         if (validateForm(authForm, updatedTouchedFields)) {
             // Save user login state without the password in authAtom
-            setAuth({
+            const authData = {
                 email: authForm.email,
                 isLoggedIn: true,
-            });
+            };
 
-            // Clear the password from loginFormAtom
-            setAuthForm({ email: authForm.email, password: '' });
+            // Save to localStorage and update the atom
+            setAuthData(authData); // Save auth data with expiration
+            setAuth(authData);
 
             toast.success("You have logged in successfully!", { duration: 3000 });
 

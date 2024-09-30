@@ -537,6 +537,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Paper
+     * @name PaperGetPaper
+     * @request GET:/api/paper/{id}
+     */
+    paperGetPaper: (id: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${id}`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Paper
      * @name PaperUpdatePaper
      * @request PUT:/api/paper/{id}
      */
@@ -556,6 +570,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<Paper, any>({
         path: `/api/paper/${id}`,
         method: "PUT",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Paper
+     * @name PaperUpdateDiscontinued
+     * @request PATCH:/api/paper/{id}
+     */
+    paperUpdateDiscontinued: (
+      id: number,
+      query?: {
+        discontinued?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Paper, any>({
+        path: `/api/paper/${id}`,
+        method: "PATCH",
         query: query,
         format: "json",
         ...params,

@@ -48,14 +48,14 @@ public class CustomerController(DMIContext context) : ControllerBase
     
     [HttpPost]
     [Route("api/customer")]
-    public ActionResult<Customer> CreateCustomer([FromBody]CreateCustomerDto order)
+    public ActionResult<Customer> CreateCustomer([FromBody]CreateCustomerDto customer)
     {
         var customerEntity = new Customer()
         {
-            Name = order.Name,
-            Address = order.Address,
-            Phone = order.Phone,
-            Email = order.Email
+            Name = customer.Name,
+            Address = customer.Address,
+            Phone = customer.Phone,
+            Email = customer.Email
         };
         var result = context.Customers.Add(customerEntity);
         context.SaveChanges();
@@ -64,17 +64,17 @@ public class CustomerController(DMIContext context) : ControllerBase
     
     [HttpPut]
     [Route("api/customer/{id}")]
-    public ActionResult<Customer> UpdateCustomer(int id, [FromBody]EditCustomerDto order)
+    public ActionResult<Customer> UpdateCustomer(int id, [FromBody]EditCustomerDto customer)
     {
         var customerEntity = context.Customers.FirstOrDefault(x => x.Id == id);
         if (customerEntity == null)
         {
             return NotFound();
         }
-        customerEntity.Name = order.Name;
-        customerEntity.Address = order.Address;
-        customerEntity.Phone = order.Phone;
-        customerEntity.Email = order.Email;
+        customerEntity.Name = customer.Name;
+        customerEntity.Address = customer.Address;
+        customerEntity.Phone = customer.Phone;
+        customerEntity.Email = customer.Email;
         context.SaveChanges();
         return Ok(customerEntity);
     }

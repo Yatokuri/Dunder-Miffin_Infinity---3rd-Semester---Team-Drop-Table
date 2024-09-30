@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Api } from "../../../../Api.ts";
-import './ProductManagement.css';
+import { useAtom } from 'jotai';
+import { productsAtom } from '../ProductTable/ProductTable.tsx';
+import './AddProduct.css';
 
 export const MyApi = new Api();
 
@@ -10,25 +12,28 @@ async function createPaper(name: string, stock: number, price: number) {
         stock: stock,
         price: price
     });
-    console.log(response.data);
+    return response.data;
 }
 
-function ProductManagement() {
+function AddProduct({ closeModal }: { closeModal: () => void }) {
     const [name, setName] = useState('');
     const [stock, setStock] = useState(0);
     const [price, setPrice] = useState(0);
+    const [products, setProducts] = useAtom(productsAtom);
 
-    const handleCreatePaper = () => {
-        createPaper(name, stock, price);
+    const handleCreatePaper = async () => {
+        const newProduct = await createPaper(name, stock, price);
+        setProducts([...products, newProduct]);
         setName('');
         setStock(0);
         setPrice(0);
+        closeModal();
     };
 
     return (
         <div className="flex flex-col justify-center">
             <div>
-                <h1 className="text-black text-6xl">Product Management</h1>
+                <h1 className="text-black text-6xl">Add Product</h1>
             </div>
 
             <div className="text-black text-3xl mt-10 flex items-center">
@@ -72,4 +77,4 @@ function ProductManagement() {
     );
 }
 
-export default ProductManagement;
+export default AddProduct;

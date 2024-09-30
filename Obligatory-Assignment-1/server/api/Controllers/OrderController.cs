@@ -263,17 +263,21 @@ public class OrderController(DMIContext context) : ControllerBase
             return NotFound(); // Return 404 if the order doesn't exist
         }
 
-        // Re-add the stock for each product in the order entries
-        foreach (var orderEntry in orderEntity.OrderEntries)
+        if (orderEntity.Status != "Cancelled") // If order already Cancelled restock has being done
         {
-            var product = context.Papers.FirstOrDefault(p => p.Id == orderEntry.ProductId);
-            if (product != null)
+            // Re-add the stock for each product in the order entries
+            foreach (var orderEntry in orderEntity.OrderEntries)
             {
-                product.Stock += orderEntry.Quantity; // Restock the product
+                var product = context.Papers.FirstOrDefault(p => p.Id == orderEntry.ProductId);
+                if (product != null)
+                {
+                    product.Stock += orderEntry.Quantity; // Restock the product
+                }
             }
+
         }
 
-        // Remove the order and its entries from the database
+        // Remove the orders and its entries from the database
         context.OrderEntries.RemoveRange(orderEntity.OrderEntries);
         context.Orders.Remove(orderEntity);
         context.SaveChanges();

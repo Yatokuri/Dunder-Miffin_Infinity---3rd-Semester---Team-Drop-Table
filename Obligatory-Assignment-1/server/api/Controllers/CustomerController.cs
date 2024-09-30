@@ -15,6 +15,18 @@ public class CustomerController(DMIContext context) : ControllerBase
         return Ok(result);
     }
     
+    [HttpGet]
+    [Route("api/customer/{id}")]
+    public ActionResult GetCustomerById(int id)
+    {
+        var result = context.Customers.FirstOrDefault(x => x.Id == id);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+    
     [HttpPost]
     [Route("api/customer")]
     public ActionResult<Customer> CreateCustomer([FromBody]CreateCustomerDto order)

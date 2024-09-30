@@ -29,12 +29,12 @@ public class CustomerController(DMIContext context) : ControllerBase
     }
     
     [HttpGet("api/customer/{id}/order")]
-    public ActionResult<IEnumerable<Order>> GetOrdersByCustomerId(int customerId)
+    public ActionResult<IEnumerable<Order>> GetOrdersByCustomerId(int id)
     {
         var orders = context.Orders
             .Include(o => o.OrderEntries)
             .ThenInclude(oe => oe.Product)
-            .Where(o => o.CustomerId == customerId) // Get all orders for the customer
+            .Where(o => o.CustomerId == id) // Get all orders for the customer
             .ToList();
 
         if (!orders.Any())

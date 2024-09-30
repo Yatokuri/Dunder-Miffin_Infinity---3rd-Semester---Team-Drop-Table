@@ -4,6 +4,7 @@ using dataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using service.Request.OrderDto;
+using service.Request.OrderEntryDto;
 
 namespace api.Controllers;
 
@@ -82,22 +83,10 @@ public class OrderController(DMIContext context) : ControllerBase
         };
 
         // Update stock levels for each product in the order
-        foreach (var entry in orderRequestDto.OrderEntries)
+        var stockUpdateResult = UpdateStockLevels(orderRequestDto.OrderEntries);
+        if (stockUpdateResult is not null) 
         {
-            var product = context.Papers.FirstOrDefault(p => p.Id == entry.ProductId);
-            if (product == null)
-            {
-                return NotFound($"Product with ID {entry.ProductId} not found.");
-            }
-
-            // Check stock levels
-            if (product.Stock < entry.Quantity)
-            {
-                return BadRequest($"Not enough stock for product {product.Name}. Available: {product.Stock}, Requested: {entry.Quantity}");
-            }
-
-            // Deduct the stock
-            product.Stock -= entry.Quantity;
+            return stockUpdateResult; // Return any error from stock update
         }
 
         // Add the order to the context
@@ -108,25 +97,70 @@ public class OrderController(DMIContext context) : ControllerBase
         
     }
     
-    [HttpPut] //TODO update stock
+    [HttpPut]
     [Route("api/order/{id}")]
-    public ActionResult<Order> UpdateOrder(int id, [FromBody]EditOrderDto order)
+    public ActionResult<Order> UpdateOrder(int id, [FromBody] OrderRequestDto orderDto)
     {
-        var orderEntity = context.Orders.FirstOrDefault(p => p.Id == id);
+        // Find the order in the database including its order entries
+        var orderEntity = context.Orders
+            .Include(o => o.OrderEntries)
+            .ThenInclude(oe => oe.Product) 
+            .FirstOrDefault(p => p.Id == id);
+
         if (orderEntity == null)
         {
             return NotFound();
         }
-        orderEntity.OrderDate = order.OrderDate;
-        orderEntity.DeliveryDate = order.DeliveryDate;
-        orderEntity.Status = order.Status;
-        orderEntity.TotalAmount = order.TotalAmount;
-        context.SaveChanges();
-        return Ok(orderEntity);
+
+        // Update the order fields
+        orderEntity.OrderDate = orderDto.Order.OrderDate;
+        orderEntity.DeliveryDate = orderDto.Order.DeliveryDate;
+        orderEntity.Status = orderDto.Order.Status;
+        orderEntity.TotalAmount = orderDto.Order.TotalAmount;
+
+        // Update order entries if provided in the DTO
+        if (orderDto.OrderEntries.Count > 0)
+        {
+            foreach (var orderEntryDto in orderDto.OrderEntries)
+            {
+                var orderEntryEntity = orderEntity.OrderEntries
+                    .FirstOrDefault(oe => oe.ProductId == orderEntryDto.ProductId);
+
+                if (orderEntryEntity != null)
+                {
+                    // If the order entry exists, update the quantity
+                    orderEntryEntity.Quantity = orderEntryDto.Quantity; // Assuming you have Quantity to update
+                    // You can add more fields to update if needed
+                }
+                else
+                {
+                    // Optionally, handle the case where the order entry does not exist
+                    // For example, you could create a new order entry
+                    var newOrderEntry = new OrderEntry
+                    {
+                        ProductId = orderEntryDto.ProductId,
+                        Quantity = orderEntryDto.Quantity,
+                        // Set any additional properties here as necessary
+                    };
+                    orderEntity.OrderEntries.Add(newOrderEntry);
+                }
+            }
+
+            // Check and update stock levels after order entries have been processed
+            var stockUpdateResult = UpdateStockLevels(orderDto.OrderEntries);
+            if (stockUpdateResult is not null) 
+            {
+                return stockUpdateResult; // Return any error from stock update
+            }
+        }
+
+        context.SaveChanges(); // Save all changes to the database
+        return Ok(orderEntity); // Return the updated order entity
     }
+
     
-    [HttpDelete]
-    [Route("api/order/{id}")]
+    [HttpPut]
+    [Route("api/order/cancel/{id}")]
     public ActionResult CancelOrder(int id)
     {
         // Find the order in the database
@@ -152,4 +186,61 @@ public class OrderController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok();
     }
+    
+    [HttpDelete] // Use DELETE for canceling the order
+    [Route("api/order/{id}")]
+    public ActionResult DeleteOrder(int id)
+    {
+        // Find the order in the database including its order entries
+        var orderEntity = context.Orders
+            .Include(o => o.OrderEntries) // Include order entries to access them
+            .ThenInclude(oe => oe.Product) // Include Product if needed for stock adjustment
+            .FirstOrDefault(p => p.Id == id);
+
+        if (orderEntity == null)
+        {
+            return NotFound(); // Return 404 if the order doesn't exist
+        }
+
+        // Re-add the stock for each product in the order entries
+        foreach (var orderEntry in orderEntity.OrderEntries)
+        {
+            var product = context.Papers.FirstOrDefault(p => p.Id == orderEntry.ProductId);
+            if (product != null)
+            {
+                product.Stock += orderEntry.Quantity; // Restock the product
+            }
+        }
+
+        // Remove the order and its entries from the database
+        context.OrderEntries.RemoveRange(orderEntity.OrderEntries);
+        context.Orders.Remove(orderEntity);
+        context.SaveChanges();
+
+        return Ok();
+    }
+
+    private ActionResult? UpdateStockLevels(List<CreateOrderEntryDto> orderEntries)
+    {
+        foreach (var entry in orderEntries)
+        {
+            var  product = context.Papers.FirstOrDefault(p => p.Id == entry.ProductId);
+            if (product == null)
+            {
+                return NotFound($"Product with ID {entry.ProductId} not found.");
+            }
+
+            // Check stock levels
+            if (product.Stock < entry.Quantity)
+            {
+                return BadRequest($"Not enough stock for product {product.Name}. Available: {product.Stock}, Requested: {entry.Quantity}");
+            }
+
+            // Deduct the stock
+            product.Stock -= entry.Quantity;
+        }
+
+        return null;
+    }
+    
 }

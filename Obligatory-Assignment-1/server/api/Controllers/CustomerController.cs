@@ -3,6 +3,7 @@ using dataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using service.Request.CustomerDto;
+using service.Response;
 
 namespace api.Controllers;
 
@@ -29,7 +30,7 @@ public class CustomerController(DMIContext context) : ControllerBase
     }
     
     [HttpGet("api/customer/{id}/order")]
-    public ActionResult<IEnumerable<Order>> GetOrdersByCustomerId(int id)
+    public ActionResult<IEnumerable<OrderDto>> GetOrdersByCustomerId(int id)
     {
         var orders = context.Orders
             .Include(o => o.OrderEntries)
@@ -42,7 +43,24 @@ public class CustomerController(DMIContext context) : ControllerBase
             return NotFound(); 
         }
 
-        return Ok(orders); 
+        // Convert each Order entity to OrderDto
+        var orderDto = orders.Select(order => new OrderDto
+        {
+            Id = order.Id,
+            OrderDate = order.OrderDate,
+            DeliveryDate = order.DeliveryDate,
+            Status = order.Status,
+            TotalAmount = order.TotalAmount,
+            CustomerId = order.CustomerId,
+            OrderEntries = order.OrderEntries.Select(oe => new OrderEntryDto
+            {
+                Id = oe.Id,
+                Quantity = oe.Quantity,
+                ProductId = oe.ProductId,
+            }).ToList()
+        }).ToList();
+
+        return Ok(orderDto);
     }
     
     

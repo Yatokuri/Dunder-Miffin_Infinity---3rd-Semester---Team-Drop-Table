@@ -18,6 +18,8 @@ import MyOrders from "./pages/MyOrders.tsx";
 import AllOrders from "./pages/AllOrders.tsx";
 import Admin from "./pages/Admin/Admin.tsx";
 import Profile from "./pages/Profile.tsx";
+import Shop from "./pages/Shop/Shop.tsx";
+import Basket from "./pages/Basket.tsx";
 
 function App() {
     return (
@@ -31,19 +33,20 @@ function App() {
                         <Route path="/about" element={<About/>}/>
                         <Route path="/admin" element={<Admin/>}/>
                         <Route path="/allOrders" element={<AllOrders/>}/>
+                        <Route path="/basket" element={<Basket/>}/>
+                        <Route path="/basket/checkout" element={<Basket/>}/>
                         <Route path="/home" element={<Home/>}/>
                         <Route path="/customer-service" element={<CustomService/>}/>
                         <Route path="/customer-service/contact-us" element={<Contact/>}/>
                         <Route path="/customer-service/faq" element={<FAQ/>}/>
-                        <Route path="/customer-service/sales-and-delivery-conditions"
-                               element={<SalesAndDeliveryConditions/>}/>
-                        <Route path="/customer-service/gdpr-data-protection-policy"
-                               element={<GDPRDataProtectionPolicy/>}/>
+                        <Route path="/customer-service/sales-and-delivery-conditions" element={<SalesAndDeliveryConditions/>}/>
+                        <Route path="/customer-service/gdpr-data-protection-policy" element={<GDPRDataProtectionPolicy/>}/>
                         <Route path="/customer-service/cookie-policy" element={<CookiePolicy/>}/>
                         <Route path="/customer-service/whistleblowing-policy" element={<WhistleBlowingPolicy/>}/>
                         <Route path="/ipsum" element={<NewOrderTest/>}/>
                         <Route path="/myOrders" element={<MyOrders/>}/>
                         <Route path="/profile" element={<Profile/>}/>
+                        <Route path="/shop" element={<Shop/>}/>
                         <Route path="/*" element={<NotFound/>}/>
                     </Routes>
                 </div>

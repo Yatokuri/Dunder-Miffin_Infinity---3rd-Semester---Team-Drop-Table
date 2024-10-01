@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {isAxiosError} from 'axios';
 import React, { useEffect, useState } from "react";
 import { Api } from "../../Api.ts";
 import { useAtom } from "jotai/index";
@@ -161,9 +161,23 @@ const NewOrderTest = () => {
             setCustomerId('');
             setOrderEntries([]); // Clear the order entries
             setBasket([]); // Clear the basket after order is placed
-        } catch (error) {
-            console.error('There was an error creating the order!', error);
-            alert('Failed to create order. Please check console for details.');
+        } catch (error: unknown) {
+            if (isAxiosError(error) && error.response?.data?.errors) {
+                const productIds = error.response.data.errors
+                    .map((errorMsg: string) => {
+                        const match = errorMsg.match(/product ID (\d+)/);
+                        return match ? match[1] : null; // Return the product ID or null if not found
+                    })
+                    .filter((id: string | null): id is string => id !== null); // Ensure the id is of type string
+
+                // Create a user-friendly message if product IDs are found
+                if (productIds.length > 0) {
+                    alert(`We do not have enough stock for product ID(s): ${productIds.join(', ')}`);
+                }
+            } else {
+                console.error('Unexpected error:', error);
+                alert('Failed to create order. Please check console for details.');
+            }
         }
     };
 

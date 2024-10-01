@@ -10,9 +10,3 @@
 .btn-primary:hover {
     @apply bg-logo-color-hover border-logo-color-hover;
 }
-
- {
-
-    border-color: #ff0000;
-    border-width: 1px;
-}

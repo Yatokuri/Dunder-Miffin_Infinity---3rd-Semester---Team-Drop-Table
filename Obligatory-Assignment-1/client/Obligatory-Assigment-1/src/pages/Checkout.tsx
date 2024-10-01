@@ -29,8 +29,12 @@ const CheckoutPage = () => {
         password: '',
     });
 
+    const [orderConfirm, setOrderConfirm] = useState({
+        orderId: 0,
+        deliveryDate: '',
+    });
+
     const [currentStep, setCurrentStep] = useState(1);
-    const [orderPlaced, setOrderPlaced] = useState(false);
 
     // Validation states
     const [errors, setErrors] = useState({
@@ -124,16 +128,16 @@ const CheckoutPage = () => {
         setCurrentStep(currentStep - 1);
     };
 
-    const handlePlaceOrder = () => {
-        // Here, you would typically send order data to a backend for processing
-        setOrderPlaced(true);
-    };
-
     const handleLogout = () => {
         clearAuthData(); // Clear authentication data from localStorage
         clearCustomerData(); // -||-
         setAuthState({ email: '', isLoggedIn: false }); // Set user as logged out
         setLoginForm({ email: '', password: '' }); // Reset login form state
+    }
+
+    const handleOrderSuccess = (orderId: string, deliveryDate: string) => {
+        setOrderConfirm({ orderId: parseInt(orderId), deliveryDate }); // Store orderId and deliveryDate
+        setCurrentStep(5); // Move to step 5 on success
     };
 
     return (
@@ -250,13 +254,19 @@ const CheckoutPage = () => {
                                             className="mr-2"
                                         />
                                         <label htmlFor={option.id} className="flex-1">
-                                            <span className="font-semibold">{option.name}</span><br />
-                                            Price: ${option.price.toFixed(2)}<br />
-                                            Estimated Delivery: {option.deliveryTime}<br />
-                                            {option.price >= option.freeShippingRequirement
-                                                ? `Free shipping on orders over $${option.freeShippingRequirement}.`
-                                                : ''
-                                            }
+                                            <span className="font-semibold">{option.name}</span><br/>
+                                            Price:
+                                            ${totalAmountBasket >= option.freeShippingRequirement ? '0.00' : option.price.toFixed(2)}<br/>
+                                            Estimated Delivery: {option.deliveryTime}<br/>
+                                            {totalAmountBasket >= option.freeShippingRequirement ? (
+                                                <span className="text-green-600">
+                                                Free shipping on orders over ${option.freeShippingRequirement}.
+                                                </span>
+                                            ) : (
+                                                <span className="text-red-600">
+                                                Spend ${option.freeShippingRequirement - totalAmountBasket} more for free shipping.
+                                                </span>
+                                            )}
                                         </label>
                                     </div>
                                 ))}
@@ -275,8 +285,6 @@ const CheckoutPage = () => {
                     </div>
                 </div>
             )}
-
-
 
 
             {/* Step 3: Payment */}
@@ -370,45 +378,51 @@ const CheckoutPage = () => {
                     </p>
 
                     {/* Add Shipping Cost */}
-                    <p className="mt-2">Shipping Cost: ${selectedShippingOption.price.toFixed(2)}</p>
+                    <p className="mt-2">
+                        Shipping Cost: $
+                        {totalAmountBasket >= selectedShippingOption.freeShippingRequirement
+                            ? '0.00' // Free shipping
+                            : selectedShippingOption.price.toFixed(2)}
+                    </p>
 
                     {/* Total Price Calculation */}
                     <p className="mt-4 font-bold">
                         Total Price: $
-
-                        {(totalAmountBasket + selectedShippingOption.price).toFixed(2)}
+                        {(totalAmountBasket + (totalAmountBasket >= selectedShippingOption.freeShippingRequirement ? 0 : selectedShippingOption.price)).toFixed(2)}
                     </p>
 
                     <div className="flex justify-between mt-4">
                         <button className="btn" onClick={handlePrevStep}>
                             Previous
                         </button>
-                        <OrderPlacementComponent />
+                        <OrderPlacementComponent
+                            onOrderPlaced={handleOrderSuccess}
+                        />
                     </div>
                 </div>
             )}
 
-
             {/* Step 5: Complete */}
-            {orderPlaced && (
+            {currentStep === 5 && (
                 <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
                     <h2 className="text-2xl font-semibold mb-4">Thank You!</h2>
                     <p>Your order has been placed successfully.</p>
                     <p>A confirmation email has been sent to {customer.email}.</p>
+
+                    {/* Order Confirmation Details */}
+                    <div className="mt-4">
+                        <h3 className="text-lg font-semibold">Order Confirmation</h3>
+                        <p className="mt-2">Total Price: ${totalAmountBasket.toFixed(2)}</p>
+                        <p className="mt-2">Delivery Date: {new Date(orderConfirm.deliveryDate).toLocaleDateString()}</p>
+                        <p className="mt-2">Order ID: {orderConfirm.orderId}</p>
+                    </div>
+
                     <button className="btn btn-primary mt-4" onClick={() => window.location.reload()}>
                         Back to Home
                     </button>
                 </div>
             )}
 
-            {/* Order Confirmation */}
-            {orderPlaced && (
-                <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
-                    <h2 className="text-2xl font-semibold mb-4">Order Confirmation</h2>
-                    <p>Your order has been placed successfully!</p>
-                    <p>Total Price: ${totalAmountBasket.toFixed(2)}</p>
-                </div>
-            )}
         </div>
     );
 };

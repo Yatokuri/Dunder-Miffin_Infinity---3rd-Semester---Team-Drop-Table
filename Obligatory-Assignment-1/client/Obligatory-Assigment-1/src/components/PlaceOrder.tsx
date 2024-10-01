@@ -1,20 +1,20 @@
 // OrderPlacementComponent.tsx
 import React from 'react';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { useAtom } from 'jotai';
-import { BasketAtom, TotalAmountAtom } from '../atoms/BasketAtoms'; // Ensure the path is correct
-import { SelectedShippingOptionAtom } from '../atoms/ShippingAtom'; // Ensure the path is correct
-import { CustomerAtoms } from '../atoms/CustomerAtoms'; // Ensure the path is correct
+import { BasketAtom, TotalAmountAtom } from '../atoms/BasketAtoms';
+import { SelectedShippingOptionAtom } from '../atoms/ShippingAtom';
+import { CustomerAtoms } from '../atoms/CustomerAtoms';
+import { toast } from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
 
-const OrderPlacementComponent: React.FC = () => {
+const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliveryDate: string) => void; }> = ({ onOrderPlaced }) => {
     // Fetching the necessary state from atoms
-    const [basket, setBasket] = useAtom(BasketAtom); // Current items in the basket
-    const [totalAmount] = useAtom(TotalAmountAtom); // Total amount of the order
-    const [selectedShippingOption] = useAtom(SelectedShippingOptionAtom); // Selected shipping option
-    const [customerData] = useAtom(CustomerAtoms); // Customer data
-
-    const [orderPlaced, setOrderPlaced] = React.useState(false); // State to track if the order is placed
-
+    const [basket, setBasket] = useAtom(BasketAtom);
+    const [totalAmount] = useAtom(TotalAmountAtom);
+    const [selectedShippingOption] = useAtom(SelectedShippingOptionAtom);
+    const [customerData] = useAtom(CustomerAtoms);
+    const navigate = useNavigate();
 
     const sendOrder = async () => {
         // Prepare the current date
@@ -51,7 +51,7 @@ const OrderPlacementComponent: React.FC = () => {
             },
             order: {
                 orderDate: currentDate.toISOString(), // Current date in ISO format
-                deliveryDate: deliveryDate.toISOString(), // Delivery date based on selected shipping option
+                deliveryDate: deliveryDate.toISOString().split('T')[0], // Store the formatted delivery date
                 status: 'Pending', // Default order status
                 totalAmount, // Ensure totalAmount is defined
             },
@@ -62,26 +62,45 @@ const OrderPlacementComponent: React.FC = () => {
             })),
         };
 
-        try {
-            // Sending the order to the API
-            const response = await axios.post('http://localhost:5261/api/order', orderData);
-            alert(`Order created with ID: ${response.data.id}`);
-            // Clear the form or perform any additional actions after order is placed
-            setBasket([]); // Clear the basket after order is placed
-        } catch (error) {
-            console.error('There was an error creating the order!', error);
-            alert('Failed to create order. Please check console for details.');
-        }
-    };
+        // Sending the order to the API
+        const response = await axios.post('http://localhost:5261/api/order', orderData);
 
+        // Return both order ID and delivery date
+        return {
+            orderId: response.data.id,
+            deliveryDate: deliveryDate.toISOString().split('T')[0] // Return formatted delivery date
+        };
+    };
 
     const handlePlaceOrder = async () => {
         try {
-            const orderId = await sendOrder(); // Call sendOrder function
-            alert(`Order created with ID: ${orderId}`);
-            setOrderPlaced(true); // Update state if order is placed successfully
-        } catch (error) {
-            alert(error instanceof Error ? error.message : 'An error occurred while placing the order.');
+            const { orderId, deliveryDate } = await sendOrder(); // Destructure the returned object
+            toast.success(`Order created with ID: ${orderId}`, { duration: 3000 });
+            setBasket([]); // Clear the basket after placing the order
+            onOrderPlaced(orderId, deliveryDate); // Call the success handler to move to step 5
+        } catch (error: unknown) {
+            let errorMessage = 'An error occurred while placing the order.';
+
+            if (isAxiosError(error) && error.response?.data?.errors) {
+                const productIds = error.response.data.errors
+                    .map((errorMsg: string) => {
+                        const match = errorMsg.match(/product ID (\d+)/);
+                        return match ? match[1] : null; // Return the product ID or null if not found
+                    })
+                    .filter((id: string | null): id is string => id !== null); // Ensure the id is of type string
+
+                // Create a user-friendly message if product IDs are found
+                if (productIds.length > 0) {
+                    errorMessage = `We do not have enough stock for product ID(s): ${productIds.join(', ')}`;
+                    navigate('/shop'); // Navigate to the basket on error
+                }
+            } else {
+                console.error('Unexpected error:', error);
+                errorMessage = 'Failed to create order. Please check console for details.';
+            }
+
+            toast.error(errorMessage, { duration: 3000 });
+
         }
     };
 
@@ -93,7 +112,6 @@ const OrderPlacementComponent: React.FC = () => {
             >
                 Place Order
             </button>
-            {orderPlaced && <p>Order has been placed successfully!</p>}
         </>
     );
 };

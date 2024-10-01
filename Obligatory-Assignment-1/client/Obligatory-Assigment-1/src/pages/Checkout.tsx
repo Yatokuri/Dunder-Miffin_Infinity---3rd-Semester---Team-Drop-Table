@@ -32,6 +32,7 @@ const CheckoutPage = () => {
     const [orderConfirm, setOrderConfirm] = useState({
         orderId: 0,
         deliveryDate: '',
+        totalAmount: 0.0,
     });
 
     const [currentStep, setCurrentStep] = useState(1);
@@ -135,8 +136,8 @@ const CheckoutPage = () => {
         setLoginForm({ email: '', password: '' }); // Reset login form state
     }
 
-    const handleOrderSuccess = (orderId: string, deliveryDate: string) => {
-        setOrderConfirm({ orderId: parseInt(orderId), deliveryDate }); // Store orderId and deliveryDate
+    const handleOrderSuccess = (orderId: string, deliveryDate: string, totalAmount: number) => {
+        setOrderConfirm({ orderId: parseInt(orderId), deliveryDate, totalAmount  }); // Store orderId and deliveryDate
         setCurrentStep(5); // Move to step 5 on success
     };
 
@@ -412,7 +413,7 @@ const CheckoutPage = () => {
                     {/* Order Confirmation Details */}
                     <div className="mt-4">
                         <h3 className="text-lg font-semibold">Order Confirmation</h3>
-                        <p className="mt-2">Total Price: ${totalAmountBasket.toFixed(2)}</p>
+                        <p className="mt-2">Total Price: ${orderConfirm.totalAmount.toFixed(2)}</p>
                         <p className="mt-2">Delivery Date: {new Date(orderConfirm.deliveryDate).toLocaleDateString()}</p>
                         <p className="mt-2">Order ID: {orderConfirm.orderId}</p>
                     </div>

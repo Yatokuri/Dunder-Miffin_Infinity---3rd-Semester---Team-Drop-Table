@@ -8,7 +8,7 @@ import { CustomerAtoms } from '../atoms/CustomerAtoms';
 import { toast } from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
 
-const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliveryDate: string) => void; }> = ({ onOrderPlaced }) => {
+const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliveryDate: string, totalAmount: number) => void; }> = ({ onOrderPlaced }) => {
     // Fetching the necessary state from atoms
     const [basket, setBasket] = useAtom(BasketAtom);
     const [totalAmount] = useAtom(TotalAmountAtom);
@@ -68,7 +68,8 @@ const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliv
         // Return both order ID and delivery date
         return {
             orderId: response.data.id,
-            deliveryDate: deliveryDate.toISOString().split('T')[0] // Return formatted delivery date
+            deliveryDate: deliveryDate.toISOString().split('T')[0], // Return formatted delivery date
+            totalAmount: totalAmount
         };
     };
 
@@ -77,7 +78,7 @@ const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliv
             const { orderId, deliveryDate } = await sendOrder(); // Destructure the returned object
             toast.success(`Order created with ID: ${orderId}`, { duration: 3000 });
             setBasket([]); // Clear the basket after placing the order
-            onOrderPlaced(orderId, deliveryDate); // Call the success handler to move to step 5
+            onOrderPlaced(orderId, deliveryDate, totalAmount); // Call the success handler to move to step 5
         } catch (error: unknown) {
             let errorMessage = 'An error occurred while placing the order.';
 

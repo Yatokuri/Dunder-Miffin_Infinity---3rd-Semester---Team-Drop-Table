@@ -18,11 +18,14 @@ const initialAuthState: AuthState = {
     isLoggedIn: false,
 };
 
+// Set authentication data in localStorage and return updated state
 export const setAuthData = (data: AuthState) => {
     const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1 hour in milliseconds
     localStorage.setItem('authData', JSON.stringify({ ...data, expirationTime }));
+    return data; // Return the updated state to tell relevant site there is now logged out
 };
 
+// Function to get authentication data from localStorage
 const getAuthData = (): AuthState | null => {
     const storedAuthData = localStorage.getItem('authData');
     if (storedAuthData) {
@@ -36,8 +39,10 @@ const getAuthData = (): AuthState | null => {
     return null;
 };
 
+// Function to clear authentication data
 export const clearAuthData = () => {
     localStorage.removeItem('authData'); // Clear authentication data
+    return initialAuthState; // Return initial state
 };
 
 

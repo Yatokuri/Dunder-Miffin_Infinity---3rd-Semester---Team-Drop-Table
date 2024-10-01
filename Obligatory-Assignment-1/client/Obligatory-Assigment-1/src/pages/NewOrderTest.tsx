@@ -1,5 +1,8 @@
 import axios from 'axios';
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Api } from "../../Api.ts";
+import { useAtom } from "jotai/index";
+import { Product, productAtom } from '../atoms/ProductAtom.ts';
 
 // Define the interface for order entries
 interface OrderEntry {
@@ -7,6 +10,8 @@ interface OrderEntry {
     quantity: number;
     price: number;
 }
+
+export const MyApi = new Api();
 
 const NewOrderTest = () => {
     const [orderDate, setOrderDate] = useState('');
@@ -19,15 +24,34 @@ const NewOrderTest = () => {
     const [customerEmail, setCustomerEmail] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
 
+    const [products, setProducts] = useAtom<Product[]>(productAtom);
+    const [orderEntries, setOrderEntries] = useState<OrderEntry[]>([]); // Initially empty
 
-    const [orderEntries, setOrderEntries] = useState<OrderEntry[]>([{ productId: 1, quantity: 1, price: 100.00 }]); // Default entry
-    const [numberOfEntries, setNumberOfEntries] = useState(1); // New field for number of order entries
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await MyApi.api.paperGetAllPapers(); // Fetch data
+                const fetchedProducts: Product[] = response.data as unknown as Product[]; // Use type assertion
+                setProducts(fetchedProducts); // Set the products atom
+                handleFillOrder(fetchedProducts);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+        fetchData().then(null);
+    }, [setProducts]);
 
     // Autofill predefined test data
     const fillFields = () => {
         const currentDate = new Date();
-        setOrderDate(new Date().toISOString().slice(0, 16));
-        setDeliveryDate(new Date(currentDate.setDate(currentDate.getDate() + 2)).toISOString().slice(0, 10)); // Two days from now
+        // Format order date manually to local time without UTC conversion
+        const orderDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}T${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
+        const deliveryDate = new Date(currentDate); // Create a new Date object based on the current date
+        deliveryDate.setDate(deliveryDate.getDate() + 2); // Two days from now
+
+        // Set the order date and delivery date
+        setOrderDate(orderDate); // Using local time format
+        setDeliveryDate(deliveryDate.toISOString().slice(0, 10)); // Delivery date in 'YYY
         setStatus('Pending');
         setCustomerId('1');
         setCustomerName('John Doe');
@@ -35,30 +59,53 @@ const NewOrderTest = () => {
         setCustomerPhone('123-456-7890');
         setCustomerAddress('123 Main St, Springfield, IL 62701, USA');
 
-        // Reset number of entries and order entries remember to have this in you db for testing purpose and right id
-        setNumberOfEntries(1); // Reset number of entries to 1
-        setOrderEntries([{ productId: 1, quantity: 1, price: 100.00 }]); // Reset to default entry
-        calculateTotalAmount([{ productId: 1, quantity: 1, price: 100.00 }]); // Calculate initial total amount
+        handleFillOrder(products);
     };
 
-    // Function to update the number of entries
-    const handleNumberOfEntriesChange = (e: { target: { value: string; }; }) => {
-        const count = parseInt(e.target.value);
-        setNumberOfEntries(count);
-
-        // Update orderEntries array based on the number of entries
-        const newEntries = Array.from({ length: count }, () => ({ productId: 1, quantity: 1, price: 100.00 }));
-        setOrderEntries(newEntries);
-        calculateTotalAmount(newEntries);
+    const handleQuantityChange = (index: number, newQuantity: number) => {
+        const updatedOrderEntries = [...orderEntries];
+        updatedOrderEntries[index].quantity = newQuantity; // Update quantity
+        setOrderEntries(updatedOrderEntries);
+        calculateTotalAmount(updatedOrderEntries); // Recalculate total amount
     };
 
     // Function to calculate total amount
-    const calculateTotalAmount = (entries: OrderEntry[]) => {
-        const total = entries.reduce((sum: number, entry: OrderEntry) => sum + (entry.price * entry.quantity), 0);
+    const calculateTotalAmount = (entries = orderEntries) => {
+        const total = entries.reduce((sum: number, entry: OrderEntry) => {
+            return sum + (entry.price * entry.quantity);
+        }, 0);
         setTotalAmount(total);
     };
 
-    const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    const handleProductSelect = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
+        const selectedId = parseInt(e.target.value);
+        const product = products.find(p => p.id === selectedId);
+
+        if (product) {
+            const updatedOrderEntries = [...orderEntries];
+            updatedOrderEntries[index] = {
+                productId: product.id,
+                quantity: 1, // Default quantity
+                price: product.price
+            };
+            setOrderEntries(updatedOrderEntries);
+            calculateTotalAmount(updatedOrderEntries);
+        }
+    };
+
+    // Handle filling the order with the first product
+    const handleFillOrder = (availableProducts: Product[]) => {
+        if (availableProducts.length > 0) {
+            const firstProduct = availableProducts[0];
+            setOrderEntries([{ productId: firstProduct.id, quantity: 1, price: firstProduct.price }]);
+            calculateTotalAmount([{ productId: firstProduct.id, quantity: 1, price: firstProduct.price }]);
+        } else {
+            setOrderEntries([]);
+            setTotalAmount(0);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const orderData = {
@@ -74,12 +121,15 @@ const NewOrderTest = () => {
                 deliveryDate,
                 status,
                 totalAmount,
-                orderEntries: orderEntries // Use the orderEntries state
-            }
+            },
+            orderEntries: orderEntries.map(entry => ({
+                    productId: entry.productId,
+                    quantity: entry.quantity
+                }))
         };
 
         try {
-            const response = await axios.post('http://localhost:5261/api/fullOrder', orderData);
+            const response = await axios.post('http://localhost:5261/api/order', orderData);
             alert(`Order created with ID: ${response.data.id}`);
             // Clear the form
             setOrderDate('');
@@ -87,8 +137,7 @@ const NewOrderTest = () => {
             setStatus('');
             setTotalAmount(0);
             setCustomerId('');
-            setNumberOfEntries(1); // Reset number of entries to 1
-            setOrderEntries([{ productId: 1, quantity: 1, price: 100.00 }]); // Reset to default entry
+            setOrderEntries([]); // Clear the order entries
         } catch (error) {
             console.error('There was an error creating the order!', error);
             alert('Failed to create order. Please check console for details.');
@@ -112,21 +161,38 @@ const NewOrderTest = () => {
                     Fill Fields with Test Data
                 </button>
 
-                {/* Number of Order Entries */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="numberOfEntries">
-                        Number of Order Entries:
-                    </label>
-                    <input
-                        type="number"
-                        id="numberOfEntries"
-                        min="1"
-                        value={numberOfEntries}
-                        onChange={handleNumberOfEntriesChange}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        required
-                    />
-                </div>
+                {/* Order Entries List */}
+                {orderEntries.map((entry, index) => (
+                    <div key={index} className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`productSelect${index}`}>
+                            Select Product:
+                        </label>
+                        <select
+                            id={`productSelect${index}`}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            value={entry.productId}
+                            onChange={(e) => handleProductSelect(e, index)}
+                        >
+                            <option value="" disabled>
+                                {products.length === 0 ? "No products available" : "Select a product"}
+                            </option>
+                            {products.map((product) => (
+                                <option key={product.id} value={product.id}>
+                                    {product.name} - ${product.price.toFixed(2)} - X{product.stock}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* Quantity Input */}
+                        <input
+                            type="numberOfEntries"
+                            min="1"
+                            value={entry.quantity}
+                            onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 mt-2"
+                        />
+                    </div>
+                ))}
 
                 {/* Order Date */}
                 <div className="mb-4">

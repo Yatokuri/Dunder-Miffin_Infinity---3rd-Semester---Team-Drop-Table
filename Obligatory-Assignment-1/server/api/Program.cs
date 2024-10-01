@@ -33,6 +33,7 @@ var connectionString = $"Host=localhost;Database={database};Username={user};Pass
 builder.Services.AddControllers();
 
 
+
 // Register the DbContext with PostgreSQL using the constructed connection string
 builder.Services.AddDbContext<DMIContext>(options =>
 {

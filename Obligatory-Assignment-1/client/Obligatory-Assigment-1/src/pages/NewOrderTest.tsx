@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Api } from "../../Api.ts";
 import { useAtom } from "jotai/index";
 import { Product, productAtom } from '../atoms/ProductAtom.ts';
+import { BasketAtom, TotalAmountAtom } from '../atoms/BasketAtoms'; // Import the BasketAtom
 
 // Define the interface for order entries
 interface OrderEntry {
@@ -16,8 +17,7 @@ export const MyApi = new Api();
 const NewOrderTest = () => {
     const [orderDate, setOrderDate] = useState('');
     const [deliveryDate, setDeliveryDate] = useState('');
-    const [status, setStatus] = useState('');
-    const [totalAmount, setTotalAmount] = useState(0);
+    const [status, setStatus] = useState('Pending'); // Default status
     const [customerId, setCustomerId] = useState('');
     const [customerName, setCustomerName] = useState('');
     const [customerAddress, setCustomerAddress] = useState('');
@@ -26,6 +26,8 @@ const NewOrderTest = () => {
 
     const [products, setProducts] = useAtom<Product[]>(productAtom);
     const [orderEntries, setOrderEntries] = useState<OrderEntry[]>([]); // Initially empty
+    const [basket, setBasket] = useAtom(BasketAtom);
+    const [totalAmount] = useAtom(TotalAmountAtom);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -66,16 +68,12 @@ const NewOrderTest = () => {
         const updatedOrderEntries = [...orderEntries];
         updatedOrderEntries[index].quantity = newQuantity; // Update quantity
         setOrderEntries(updatedOrderEntries);
-        calculateTotalAmount(updatedOrderEntries); // Recalculate total amount
     };
 
-    // Function to calculate total amount
-    const calculateTotalAmount = (entries = orderEntries) => {
-        const total = entries.reduce((sum: number, entry: OrderEntry) => {
-            return sum + (entry.price * entry.quantity);
-        }, 0);
-        setTotalAmount(total);
+    const handleClearBasket = () => {
+        setBasket([]);
     };
+
 
     const handleProductSelect = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
         const selectedId = parseInt(e.target.value);
@@ -89,7 +87,6 @@ const NewOrderTest = () => {
                 price: product.price
             };
             setOrderEntries(updatedOrderEntries);
-            calculateTotalAmount(updatedOrderEntries);
         }
     };
 
@@ -98,12 +95,38 @@ const NewOrderTest = () => {
         if (availableProducts.length > 0) {
             const firstProduct = availableProducts[0];
             setOrderEntries([{ productId: firstProduct.id, quantity: 1, price: firstProduct.price }]);
-            calculateTotalAmount([{ productId: firstProduct.id, quantity: 1, price: firstProduct.price }]);
         } else {
             setOrderEntries([]);
-            setTotalAmount(0);
         }
     };
+
+    const handleAddToBasket = (entry: OrderEntry) => {
+        const existingEntryIndex = basket.findIndex(item => item.product_id === entry.productId);
+
+        if (existingEntryIndex !== -1) {
+            // If product already exists in basket, update the quantity
+            const updatedBasket = [...basket];
+            updatedBasket[existingEntryIndex].quantity += entry.quantity;
+            setBasket(updatedBasket);
+        } else {
+            // Ensure that the entry includes both the product ID, quantity, and price
+            const newEntry = {
+                product_id: entry.productId,
+                quantity: entry.quantity,
+                price: entry.price  // Add the price here
+            };
+
+            setBasket([...basket, newEntry]);
+        }
+
+        alert(`Added ${entry.quantity} of product ID ${entry.productId} to the basket.`);
+    };
+
+    const calculateOrderEntriesTotal = () => {
+        return orderEntries.reduce((total, entry) => total + entry.quantity * entry.price, 0);
+    };
+
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -122,10 +145,10 @@ const NewOrderTest = () => {
                 status,
                 totalAmount,
             },
-            orderEntries: orderEntries.map(entry => ({
-                    productId: entry.productId,
-                    quantity: entry.quantity
-                }))
+            orderEntries: basket.map(item => ({
+                productId: item.product_id,
+                quantity: item.quantity
+            }))
         };
 
         try {
@@ -135,9 +158,9 @@ const NewOrderTest = () => {
             setOrderDate('');
             setDeliveryDate('');
             setStatus('');
-            setTotalAmount(0);
             setCustomerId('');
             setOrderEntries([]); // Clear the order entries
+            setBasket([]); // Clear the basket after order is placed
         } catch (error) {
             console.error('There was an error creating the order!', error);
             alert('Failed to create order. Please check console for details.');
@@ -160,39 +183,6 @@ const NewOrderTest = () => {
                 >
                     Fill Fields with Test Data
                 </button>
-
-                {/* Order Entries List */}
-                {orderEntries.map((entry, index) => (
-                    <div key={index} className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`productSelect${index}`}>
-                            Select Product:
-                        </label>
-                        <select
-                            id={`productSelect${index}`}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            value={entry.productId}
-                            onChange={(e) => handleProductSelect(e, index)}
-                        >
-                            <option value="" disabled>
-                                {products.length === 0 ? "No products available" : "Select a product"}
-                            </option>
-                            {products.map((product) => (
-                                <option key={product.id} value={product.id}>
-                                    {product.name} - ${product.price.toFixed(2)} - X{product.stock}
-                                </option>
-                            ))}
-                        </select>
-
-                        {/* Quantity Input */}
-                        <input
-                            type="numberOfEntries"
-                            min="1"
-                            value={entry.quantity}
-                            onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 mt-2"
-                        />
-                    </div>
-                ))}
 
                 {/* Order Date */}
                 <div className="mb-4">
@@ -236,20 +226,6 @@ const NewOrderTest = () => {
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
                         required
-                    />
-                </div>
-
-                {/* Total Amount */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="totalAmount">
-                        Total Amount:
-                    </label>
-                    <input
-                        type="number"
-                        id="totalAmount"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value={totalAmount}
-                        readOnly // Make it read-only since it's calculated
                     />
                 </div>
 
@@ -328,10 +304,87 @@ const NewOrderTest = () => {
                     />
                 </div>
 
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Place Order
-                </button>
+                {/* Order Entry */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="orderEntries">Select
+                        Products:</label>
+                    {orderEntries.map((entry, index) => (
+                        <div key={index} className="flex items-center mb-2">
+                            <select
+                                value={entry.productId}
+                                onChange={(e) => handleProductSelect(e, index)}
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
+                            >
+                                {products.map(product => (
+                                    <option key={product.id} value={product.id}>{product.name}</option>
+                                ))}
+                            </select>
+                            <input
+                                type="number"
+                                value={entry.quantity}
+                                onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
+                                min="1"
+                                className="shadow appearance-none border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => handleAddToBasket(entry)} // Add to basket
+                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
+                            >
+                                Add to Basket
+                            </button>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Display total amount for selected products */}
+                <div className="flex items-center justify-between">
+                <span className="text-gray-700 text-sm font-bold">
+                Total Amount for Selected Products: ${calculateOrderEntriesTotal().toFixed(2)}
+                </span>
+                </div>
+                <div className="flex items-center justify-between">
+                    <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                    >
+                        Submit Order
+                    </button>
+
+                    {/* Clear Basket Button */}
+                    <button
+                        type="button"
+                        onClick={handleClearBasket}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+                    >
+                        Clear Basket
+                    </button>
+                </div>
+
             </form>
+
+            {/* Basket Display */}
+            <div className="bg-white shadow-md rounded px-8 py-6 mb-4 w-full max-w-md">
+                <h2 className="text-xl font-semibold mb-4">Basket</h2>
+                {basket.length === 0 ? (
+                    <p className="text-gray-700">Your basket is empty.</p>
+                ) : (
+                    <div>
+                        <ul className="list-disc pl-5">
+                            {basket.map((item, index) => (
+                                <li key={index} className="text-gray-700">
+                                    Product ID: {item.product_id}, Quantity: {item.quantity}
+                                </li>
+                            ))}
+                        </ul>
+                        {/* Display the total price using the totalAmount from the TotalAmountAtom */}
+                        <div className="mt-4 font-bold">
+                            Total Price: ${totalAmount.toFixed(2)}
+                        </div>
+                    </div>
+                )}
+            </div>
+
         </div>
     );
 };

@@ -18,6 +18,7 @@ import MyOrders from "./pages/MyOrders.tsx";
 import AllOrders from "./pages/AllOrders.tsx";
 import Admin from "./pages/Admin/Admin.tsx";
 import Profile from "./pages/Profile.tsx";
+import Checkout from "./pages/Checkout.tsx";
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
                         <Route path="/admin" element={<Admin/>}/>
                         <Route path="/allOrders" element={<AllOrders/>}/>
                         <Route path="/home" element={<Home/>}/>
+                        <Route path="/basket/checkout" element={<Checkout/>}/>
                         <Route path="/customer-service" element={<CustomService/>}/>
                         <Route path="/customer-service/contact-us" element={<Contact/>}/>
                         <Route path="/customer-service/faq" element={<FAQ/>}/>

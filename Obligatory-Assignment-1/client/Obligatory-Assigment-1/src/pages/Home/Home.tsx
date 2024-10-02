@@ -16,7 +16,7 @@ function Home() {
                 </h2>
             </div>
             <div className="text-center mt-8">
-                <button className="btn btn-md lg:btn-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-200">
+                <button className="btn btn-primary btn-md lg:btn-lg text-white transition duration-200">
                     Go to shop
                 </button>
             </div>

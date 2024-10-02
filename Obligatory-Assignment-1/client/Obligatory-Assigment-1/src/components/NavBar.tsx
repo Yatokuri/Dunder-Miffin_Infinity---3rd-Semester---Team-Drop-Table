@@ -7,6 +7,7 @@ import BasketIcon from '../assets/icons/BasketIcon';
 import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
 import { searchAtom } from "../atoms/atoms.ts";
 import { loginFormAtom, authAtom, clearAuthData  } from '../atoms/LoginAtoms.ts'; // Importing the atoms
+import { clearCustomerData  } from '../atoms/CustomerAtoms.ts'; // Importing the atoms
 import { LoginModal } from './LoginModal.tsx';
 import { toast} from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
@@ -134,6 +135,7 @@ const NavBar: React.FC = () => {
 
     const handleLogout = () => {
         clearAuthData(); // Clear authentication data from localStorage
+        clearCustomerData(); // -||-
         setAuthState({ email: '', isLoggedIn: false }); // Set user as logged out
         setLoginForm({ email: '', password: '' }); // Reset login form state
         toast.success("You have logged out successfully!", {duration: 3000,});

@@ -29,6 +29,19 @@ public class CustomerController(DMIContext context) : ControllerBase
         return Ok(result);
     }
     
+    [HttpGet]
+    [Route("api/customer/email/{email}")]
+    public ActionResult GetCustomerByEmail(string email)
+    {
+        var result = context.Customers.FirstOrDefault(x => x.Email == email);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+
+    
     [HttpGet("api/customer/{id}/order")]
     public ActionResult<IEnumerable<OrderDto>> GetOrdersByCustomerId(int id)
     {

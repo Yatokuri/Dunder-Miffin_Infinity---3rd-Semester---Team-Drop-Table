@@ -1,4 +1,4 @@
-﻿import {useState} from "react";
+﻿import { useState, useEffect } from "react";
 import {Api, Customer} from "../../Api.ts";
 import {useAtom} from "jotai";
 import {CustomerAtoms} from "../atoms/CustomerAtoms.ts";
@@ -18,6 +18,19 @@ function MyProfile() {
         address: customer.address,
         phoneNumber: customer.phone,
     });
+
+
+
+    // Initialize the state when customer atom changes
+    useEffect(() => {
+        setState({
+            name: customer.name,
+            email: customer.email,
+            address: customer.address,
+            phoneNumber: customer.phone,
+        });
+    }, [customer]);
+
 
     const handleChange = e => {
         setState(prevState => ({

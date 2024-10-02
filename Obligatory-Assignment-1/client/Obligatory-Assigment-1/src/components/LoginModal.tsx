@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAtom } from 'jotai';
-import {loginFormAtom, authAtom, setAuthData} from '../atoms/LoginAtoms.ts';
+import { loginFormAtom, authAtom, setAuthData } from '../atoms/LoginAtoms';
+import { clearCustomerData, CustomerAtoms, useCustomerData } from '../atoms/CustomerAtoms';
 import EyeOnIcon from '../assets/icons/EyeOnIcon.tsx';
 import EyeOffIcon from '../assets/icons/EyeOffIcon.tsx';
 import FacebookLogo from '../assets/icons/FacebookIcon.tsx';
 import GoogleLogo from '../assets/icons/GoogleIcon.tsx';
 import logo from '../assets/LogoDMI.png';
 import toast from "react-hot-toast";
+import useDataWithExpirationCheck from "./hooks/CheckDataWithExpirationCheck";
+import { Api } from "../../Api.ts";
 
 // Define the structure of the auth form state
 interface AuthFormType {
@@ -24,28 +27,47 @@ interface LoginFormProps {
     onCancel: () => void;
 }
 
+// Define the authentication and customer state interfaces
+interface AuthState {
+    email: string;
+    isLoggedIn: boolean;
+}
+
+interface CustomerState {
+    id: number;
+    address: string;
+    email: string;
+    name: string;
+    phoneNumber: string;
+}
+
+
+export const MyApi = new Api();
+
 export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
     const [authForm, setAuthForm] = useAtom(loginFormAtom);
+    const [, setCustomer] = useAtom(CustomerAtoms);
     const [, setAuth] = useAtom(authAtom); // To update the authAtom state
     const [authFormErrors, setAuthFormErrors] = useState<AuthFormErrors>({});
     const [isPasswordVisible, setIsPasswordVisible] = useState(false); // State for password visibility
     const [touchedFields, setTouchedFields] = useState({ email: false, password: false }); // Track touched fields
     const modalRef = useRef<HTMLDivElement>(null); // Ref for the modal
 
+    const { updateCustomerData } = useCustomerData(); // Access the custom hook
+
+    // Using the custom hook to get auth and customer data
+    const storedAuthData = useDataWithExpirationCheck<AuthState>('authData');
+    const storedCustomerData = useDataWithExpirationCheck<CustomerState>('customerData');
+
     useEffect(() => {
         // Clear form fields when the component mounts
         setAuthForm({ email: '', password: '' });
+        clearCustomerData(); // Reset to default values
 
-        const storedAuthData = localStorage.getItem('authData'); // Load auth data from local storage if available
-        if (storedAuthData) {
-            const { email, isLoggedIn, expirationTime } = JSON.parse(storedAuthData);
-            if (new Date().getTime() < expirationTime) {
-                setAuth({ email, isLoggedIn }); // If the token is not expired, update the atom state
-            } else {
-                localStorage.removeItem('authData'); // If expired, clear local storage
-            }
-        }
-    }, [setAuth, setAuthForm]);
+        // Load customer data from the custom hook if available
+        if (storedCustomerData) {setCustomer(storedCustomerData);} // If data is valid, update the atom state
+        if (storedAuthData) {setAuth(storedAuthData);} // -||-
+    }, [setAuth, setAuthForm, setCustomer, storedAuthData, storedCustomerData]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -77,7 +99,7 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
         return !errors.emailValidationError && !errors.passwordValidationError;
     };
 
-    const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
         if (e) e.preventDefault();
 
         // Prepare a local variable to hold the touched fields state
@@ -97,10 +119,38 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
             setAuthData(authData); // Save auth data with expiration
             setAuth(authData);
 
-            toast.success("You have logged in successfully!", { duration: 3000 });
+            // Fetch customer data based on the email using MyApi
+            try {
+                const response = await MyApi.api.customerGetCustomerByEmail(authForm.email);
 
-            if (onConfirm) {
-                onConfirm(); // Close the modal after successful login
+                if (response) {
+                  const customerData = response.data;
+
+
+                    console.log(customerData.toString())
+                    // Update the CustomerAtoms with the retrieved customer data
+
+
+                    updateCustomerData({
+                        id: customerData.id || '',
+                        address: customerData.address || '',
+                        email: customerData.email || '',
+                        name: customerData.name || '',
+                        phoneNumber: customerData.phoneNumber || '',
+                    });
+
+                } else {
+                    //At the moment we ignore should tell to create a new one?
+                }
+            } catch (error) {
+                console.error("Error fetching customer data:", error);
+            } finally {
+                toast.success("You have logged in successfully!", {duration: 3000});
+                onConfirm();
+
+                if (onConfirm) {
+                    onConfirm(); // Close the modal after successful login
+                }
             }
         }
     };

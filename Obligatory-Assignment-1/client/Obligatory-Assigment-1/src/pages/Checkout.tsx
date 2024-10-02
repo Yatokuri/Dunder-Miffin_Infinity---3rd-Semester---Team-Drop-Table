@@ -6,6 +6,7 @@ import { authAtom, clearAuthData, loginFormAtom } from "../atoms/LoginAtoms.ts";
 import { ShippingAtom, SelectedShippingOptionAtom } from '../atoms/ShippingAtom.ts'; // Import shipping atoms
 import { useState, useEffect } from 'react';
 import OrderPlacementComponent from "../components/PlaceOrder.tsx";
+import React from 'react';
 
 const CheckoutPage = () => {
     const [customer, setCustomer] = useAtom(CustomerAtoms);
@@ -146,13 +147,31 @@ const CheckoutPage = () => {
             <h1 className="text-3xl font-bold mb-6">Checkout</h1>
 
             {/* Step Indicator */}
-            <div className="flex mb-4">
-                {[1, 2, 3, 4, 5].map((step) => (
-                    <div key={step} className={`flex-1 text-center ${currentStep === step ? 'font-bold' : ''}`}>
-                        Step {step}
-                    </div>
+            <div className="flex mb-1 items-center">
+                {[
+                    { step: 1, label: 'Login' },
+                    { step: 2, label: 'Shipping' },
+                    { step: 3, label: 'Payment' },
+                    { step: 4, label: 'Confirmation' },
+                    { step: 5, label: 'Receipt' }
+                ].map(({ step, label }, index) => (
+                    <React.Fragment key={step}>
+                        <div className={`flex-1 text-center ${currentStep === step ? 'font-bold text-logo-color' : 'text-gray-700'}`}>
+                            <span className="block text-xs md:text-sm">{label}</span>
+                        </div>
+                        {/* Render the custom arrow if it's not the last step */}
+                        {index < 4 && (
+                            <span className="text-gray-500 text-[20px] md:text-[50px] -translate-y-0.5 md:-translate-y-1 mx-2">&gt;</span>
+                        )}
+                    </React.Fragment>
                 ))}
             </div>
+
+
+
+
+
+
 
             {/* Step 1: Log In */}
             {currentStep === 1 && (

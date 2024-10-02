@@ -3,7 +3,14 @@ import React, { useEffect, useState } from "react";
 import { Api } from "../../Api.ts";
 import { useAtom } from "jotai/index";
 import { Product, productAtom } from '../atoms/ProductAtom.ts';
-import { BasketAtom, TotalAmountAtom } from '../atoms/BasketAtoms'; // Import the BasketAtom
+import {
+    addToBasket,
+    BasketAtom,
+    clearBasket,
+    loadBasketFromStorage,
+    TotalAmountAtom,
+    updateQuantity
+} from '../atoms/BasketAtoms'; // Import the BasketAtom
 
 // Define the interface for order entries
 interface OrderEntry {
@@ -11,6 +18,13 @@ interface OrderEntry {
     quantity: number;
     price: number;
 }
+
+type BasketItem = {
+    product_id: number;
+    quantity: number;
+    price: number;
+};
+
 
 export const MyApi = new Api();
 
@@ -43,6 +57,12 @@ const NewOrderTest = () => {
         fetchData().then(null);
     }, [setProducts]);
 
+    useEffect(() => {
+        // Load basket from local storage
+        loadBasketFromStorage(setBasket);
+    }, [setBasket]);
+
+
     // Autofill predefined test data
     const fillFields = () => {
         const currentDate = new Date();
@@ -71,7 +91,7 @@ const NewOrderTest = () => {
     };
 
     const handleClearBasket = () => {
-        setBasket([]);
+        clearBasket(setBasket);
     };
 
 
@@ -100,26 +120,19 @@ const NewOrderTest = () => {
         }
     };
 
+    // Create the new basket entry
     const handleAddToBasket = (entry: OrderEntry) => {
-        const existingEntryIndex = basket.findIndex(item => item.product_id === entry.productId);
+        const newEntry: BasketItem = {
+            product_id: entry.productId,
+            quantity: entry.quantity,
+            price: entry.price, // Add the price here
+        };
+        addToBasket(basket, newEntry, setBasket);
+    };
 
-        if (existingEntryIndex !== -1) {
-            // If product already exists in basket, update the quantity
-            const updatedBasket = [...basket];
-            updatedBasket[existingEntryIndex].quantity += entry.quantity;
-            setBasket(updatedBasket);
-        } else {
-            // Ensure that the entry includes both the product ID, quantity, and price
-            const newEntry = {
-                product_id: entry.productId,
-                quantity: entry.quantity,
-                price: entry.price  // Add the price here
-            };
-
-            setBasket([...basket, newEntry]);
-        }
-
-        alert(`Added ${entry.quantity} of product ID ${entry.productId} to the basket.`);
+    // Update quantity using the atom's method
+    const handleUpdateQuantity = (entry: OrderEntry) => {
+        updateQuantity(basket, entry.productId, entry.quantity, entry.price, setBasket);
     };
 
     const calculateOrderEntriesTotal = () => {
@@ -160,7 +173,7 @@ const NewOrderTest = () => {
             setStatus('');
             setCustomerId('');
             setOrderEntries([]); // Clear the order entries
-            setBasket([]); // Clear the basket after order is placed
+            clearBasket(setBasket);
         } catch (error: unknown) {
             if (isAxiosError(error) && error.response?.data?.errors) {
                 const productIds = error.response.data.errors
@@ -323,30 +336,57 @@ const NewOrderTest = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="orderEntries">Select
                         Products:</label>
                     {orderEntries.map((entry, index) => (
-                        <div key={index} className="flex items-center mb-2">
-                            <select
-                                value={entry.productId}
-                                onChange={(e) => handleProductSelect(e, index)}
-                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-2"
-                            >
-                                {products.map(product => (
-                                    <option key={product.id} value={product.id}>{product.name}</option>
-                                ))}
-                            </select>
-                            <input
-                                type="number"
-                                value={entry.quantity}
-                                onChange={(e) => handleQuantityChange(index, parseInt(e.target.value))}
-                                min="1"
-                                className="shadow appearance-none border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => handleAddToBasket(entry)} // Add to basket
-                                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-2"
-                            >
-                                Add to Basket
-                            </button>
+                        <div key={index} className="flex flex-col mb-4 border rounded-lg p-4 shadow-md bg-white">
+                            <div className="flex items-center mb-2">
+                                <select
+                                    value={entry.productId}
+                                    onChange={(e) => handleProductSelect(e, index)}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-4"
+                                >
+                                    {products.map(product => (
+                                        <option key={product.id} value={product.id}>{product.name}</option>
+                                    ))}
+                                </select>
+                                <div className="flex items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleQuantityChange(index, Math.max(entry.quantity - 1, 1))}
+                                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded-l"
+                                    >
+                                        -
+                                    </button>
+                                    <input
+                                        type="number"
+                                        value={entry.quantity}
+                                        onChange={(e) => handleQuantityChange(index, Math.max(parseInt(e.target.value), 1))}
+                                        min="1"
+                                        className="shadow appearance-none border-t border-b rounded-none w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-center"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleQuantityChange(index, entry.quantity + 1)}
+                                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded-r"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="flex justify-between">
+                                <button
+                                    type="button"
+                                    onClick={() => handleUpdateQuantity(entry)} // Update Quantity
+                                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+                                >
+                                    Update Quantity
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleAddToBasket(entry)} // Add to basket
+                                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+                                >
+                                    Add to Basket
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>

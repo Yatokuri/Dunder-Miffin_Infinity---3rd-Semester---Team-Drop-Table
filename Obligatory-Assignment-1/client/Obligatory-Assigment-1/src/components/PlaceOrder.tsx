@@ -2,7 +2,7 @@
 import React from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAtom } from 'jotai';
-import { BasketAtom, TotalAmountAtom } from '../atoms/BasketAtoms';
+import {BasketAtom, clearBasket, TotalAmountAtom} from '../atoms/BasketAtoms';
 import { SelectedShippingOptionAtom } from '../atoms/ShippingAtom';
 import { CustomerAtoms } from '../atoms/CustomerAtoms';
 import { toast } from "react-hot-toast";
@@ -77,7 +77,7 @@ const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliv
         try {
             const { orderId, deliveryDate } = await sendOrder(); // Destructure the returned object
             toast.success(`Order created with ID: ${orderId}`, { duration: 3000 });
-            setBasket([]); // Clear the basket after placing the order
+            clearBasket(setBasket);
             onOrderPlaced(orderId, deliveryDate, totalAmount); // Call the success handler to move to step 5
         } catch (error: unknown) {
             let errorMessage = 'An error occurred while placing the order.';

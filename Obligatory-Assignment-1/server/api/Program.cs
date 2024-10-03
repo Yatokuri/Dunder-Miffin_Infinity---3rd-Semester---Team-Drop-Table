@@ -4,6 +4,15 @@ using Microsoft.EntityFrameworkCore;
 
 public class Program
 {
+    public static void Main()
+    {
+        
+var builder = WebApplication.CreateBuilder();
+
+// Load configuration from .env file
+var envFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "config.env");
+if (File.Exists(envFilePath))
+{
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -35,13 +44,20 @@ public class Program
 
         builder.Services.AddControllers();
 
+builder.Services.AddDbContext<DMIContext>(options =>
+{
+    options.UseNpgsql(Environment.GetEnvironmentVariable("DB") ?? connectionString);
+    options.EnableSensitiveDataLogging();
+});
 
-// Register the DbContext with PostgreSQL using the constructed connection string
-        builder.Services.AddDbContext<DMIContext>(options =>
-        {
-            options.UseNpgsql(Environment.GetEnvironmentVariable("TestDB") ?? connectionString);
-            options.EnableSensitiveDataLogging();
-        });
+builder.Services.AddDbContext<DMIContext>(opt => opt.UseInMemoryDatabase("DMI"));
+
+builder.Services.AddOpenApiDocument(configure =>
+{
+    configure.Title = "Dunder Mifflin Infinity"; // Set your API title
+    configure.Description = "Try and test"; // Set your API description
+    configure.Version = "v1"; //test of my branch
+});
 
         builder.Services.AddDbContext<DMIContext>(opt => opt.UseInMemoryDatabase("DMI"));
 
@@ -70,7 +86,7 @@ public class Program
             opts.AllowAnyHeader();
         });
 
+app.Run();
 
-        app.Run();
     }
 }

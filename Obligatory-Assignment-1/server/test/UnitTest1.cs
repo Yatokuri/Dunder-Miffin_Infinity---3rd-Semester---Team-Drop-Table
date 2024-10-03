@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using dataAccess;
 using Microsoft.AspNetCore.Mvc.Testing;
 using PgCtx;
@@ -8,15 +9,14 @@ namespace test;
 
 public class UnitTest1(ITestOutputHelper outputHelper) : WebApplicationFactory<Program>
 {
-    private PgCtxSetup<DMIContext> pgCtx = new();
-
+    public PgCtxSetup<DMIContext> PgCtxSetup = new();
     [Fact]
     public async Task Test1()
     {
-        Environment.SetEnvironmentVariable("TestDB", pgCtx._postgres.GetConnectionString());
+        Environment.SetEnvironmentVariable("DB", PgCtxSetup._postgres.GetConnectionString());
+        var result = await CreateClient().GetAsync("api/paper");
 
-        var request = await CreateClient().GetAsync("api/paper");
-        outputHelper.WriteLine(await request.Content.ReadAsStringAsync());
-        Assert.Equal(HttpStatusCode.OK, request.StatusCode);
+outputHelper.WriteLine(JsonSerializer.Serialize(await result.Content.ReadAsStringAsync()));
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 }

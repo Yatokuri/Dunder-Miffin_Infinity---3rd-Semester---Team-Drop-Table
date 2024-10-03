@@ -2,7 +2,13 @@ using System.Text.Json.Serialization;
 using dataAccess;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+
+public class Program
+{
+    public static void Main()
+    {
+        
+var builder = WebApplication.CreateBuilder();
 
 // Load configuration from .env file
 var envFilePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "config.env");
@@ -37,7 +43,7 @@ builder.Services.AddControllers();
 // Register the DbContext with PostgreSQL using the constructed connection string
 builder.Services.AddDbContext<DMIContext>(options =>
 {
-    options.UseNpgsql(connectionString);
+    options.UseNpgsql(Environment.GetEnvironmentVariable("DB") ?? connectionString);
     options.EnableSensitiveDataLogging();
 });
 
@@ -71,3 +77,6 @@ app.UseCors( opts => {
 
 
 app.Run();
+
+    }
+}

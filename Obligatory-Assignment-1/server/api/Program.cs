@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using dataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,10 +30,8 @@ public class Program
         var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
 
         var connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
-
-
+        
         builder.Services.AddControllers();
-
 
 // Register the DbContext with PostgreSQL using the constructed connection string
         builder.Services.AddDbContext<DMIContext>(options =>
@@ -47,14 +44,13 @@ public class Program
 
         builder.Services.AddOpenApiDocument(configure =>
         {
-            configure.Title = "Dunder Mifflin Infinity"; // Set your API title
-            configure.Description = "Try and test"; // Set your API description
-            configure.Version = "v1"; //test of my branch
+            configure.Title = "Dunder Mifflin Infinity";
+            configure.Description = "Try and test";
+            configure.Version = "v1";
         });
 
         builder.Services.AddCors();
-
-
+        
         var app = builder.Build();
         app.UseOpenApi();
         app.UseSwaggerUi();
@@ -69,8 +65,7 @@ public class Program
 
             opts.AllowAnyHeader();
         });
-
-
+        
         app.Run();
     }
 }

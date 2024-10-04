@@ -6,7 +6,7 @@ export interface CustomerState {
     address: string;
     email: string;
     name: string;
-    phoneNumber: string;
+    phone: string;
 }
 
 // Initial customer state
@@ -15,7 +15,7 @@ const initialCustomerState: CustomerState = {
     address: '',
     email: '',
     name: '',
-    phoneNumber: '',
+    phone: '',
 };
 
 // Save customer data to localStorage with expiration
@@ -28,9 +28,9 @@ export const setCustomerData = (data: CustomerState) => {
 const getCustomerData = (): CustomerState | null => {
     const storedCustomerData = localStorage.getItem('customerData');
     if (storedCustomerData) {
-        const { id, address, email, name, phoneNumber, expirationTime } = JSON.parse(storedCustomerData) as CustomerState & { expirationTime: number };
+        const { id, address, email, name, phone, expirationTime } = JSON.parse(storedCustomerData) as CustomerState & { expirationTime: number };
         if (new Date().getTime() < expirationTime) {
-            return { id, address, email, name, phoneNumber }; // Return the data without expirationTime
+            return { id, address, email, name, phone }; // Return the data without expirationTime
         } else {
             localStorage.removeItem('customerData'); // Remove expired data
         }

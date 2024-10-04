@@ -1,11 +1,11 @@
 // CheckoutPage.tsx
 import { useAtom } from 'jotai';
-import { BasketAtom, TotalAmountAtom } from '../atoms/BasketAtoms.ts'; // Corrected path
-import { clearCustomerData, CustomerAtoms } from '../atoms/CustomerAtoms.ts'; // Corrected path
-import { authAtom, clearAuthData, loginFormAtom } from "../atoms/LoginAtoms.ts"; // Import the auth atom
-import { ShippingAtom, SelectedShippingOptionAtom } from '../atoms/ShippingAtom.ts'; // Import shipping atoms
+import { BasketAtom, TotalAmountAtom } from '../../atoms/BasketAtoms.ts'; // Corrected path
+import { clearCustomerData, CustomerAtoms } from '../../atoms/CustomerAtoms.ts'; // Corrected path
+import { authAtom, clearAuthData, loginFormAtom } from "../../atoms/LoginAtoms.ts"; // Import the auth atom
+import { ShippingAtom, SelectedShippingOptionAtom } from '../../atoms/ShippingAtom.ts'; // Import shipping atoms
 import { useState, useEffect } from 'react';
-import OrderPlacementComponent from "../components/PlaceOrder.tsx";
+import OrderPlacementComponent from "../../components/PlaceOrder.tsx";
 import React from 'react';
 
 const CheckoutPage = () => {
@@ -379,7 +379,7 @@ const CheckoutPage = () => {
                         {selectedShippingOption.name} - ${selectedShippingOption.price.toFixed(2)}
                     </p>
 
-                    {/* Order Summary */}
+                    {/* OrderControl Summary */}
                     <h3 className="text-lg mt-4 mb-2">Order Summary</h3>
                     <ul className="space-y-2">
                         {basket.map((item) => (
@@ -429,7 +429,7 @@ const CheckoutPage = () => {
                     <p>Your order has been placed successfully.</p>
                     <p>A confirmation email has been sent to {customer.email}.</p>
 
-                    {/* Order Confirmation Details */}
+                    {/* OrderControl Confirmation Details */}
                     <div className="mt-4">
                         <h3 className="text-lg font-semibold">Order Confirmation</h3>
                         <p className="mt-2">Total Price: ${orderConfirm.totalAmount.toFixed(2)}</p>

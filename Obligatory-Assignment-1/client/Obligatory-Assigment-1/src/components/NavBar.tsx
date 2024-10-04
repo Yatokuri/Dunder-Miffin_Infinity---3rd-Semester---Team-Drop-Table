@@ -6,7 +6,7 @@ import AccountIcon from '../assets/icons/AccountIcon';
 import BasketIcon from '../assets/icons/BasketIcon';
 import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
 import { searchAtom } from "../atoms/atoms.ts";
-import { loginFormAtom, authAtom, clearAuthData  } from '../atoms/LoginAtoms.ts'; // Importing the atoms
+import {loginFormAtom, authAtom, clearAuthData, checkAdminStatus} from '../atoms/LoginAtoms.ts'; // Importing the atoms
 import { clearCustomerData  } from '../atoms/CustomerAtoms.ts'; // Importing the atoms
 import { LoginModal } from './LoginModal.tsx';
 import { toast} from 'react-hot-toast';
@@ -79,41 +79,58 @@ interface AccountDropdownProps {
     handleLogout: () => void; // Function to handle logout
 }
 
-const AccountDropdown: React.FC<AccountDropdownProps> = ({isOpen, toggle, userLoggedIn, handleLogin, handleLogout,}) => (
-    <div className="relative">
-        <button onClick={toggle} className="btn btn-ghost">
-            <AccountIcon className="w-6 h-6 text-icon-color" />
-        </button>
-        {isOpen && (
-            <ul className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}>
-                {userLoggedIn ? (
-                    <>
+const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userLoggedIn, handleLogin, handleLogout }) => {
+    const [authState] = useAtom(authAtom);
+    const isAdminUser = checkAdminStatus(authState); // Check if the logged-in user is an admin
+
+    return (
+        <div className="relative">
+            <button onClick={toggle} className="btn btn-ghost">
+                <AccountIcon className="w-6 h-6 text-icon-color" />
+            </button>
+            {isOpen && (
+                <ul className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}>
+                    {userLoggedIn ? (
+                        <>
+                            {isAdminUser ? (
+                                <>
+                                    {/* Admin-specific menu items */}
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/admin/allOrders">All Orders</Link>
+                                    </li>
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/admin">Admin Panel</Link>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    {/* Non-admin user-specific menu items */}
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/profile">My Profile</Link>
+                                    </li>
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/myOrders">My Orders</Link>
+                                    </li>
+                                </>
+                            )}
+                            <li className="hover:bg-gray-200">
+                                <button onClick={handleLogout} className="w-full text-left">
+                                    Logout
+                                </button>
+                            </li>
+                        </>
+                    ) : (
                         <li className="hover:bg-gray-200">
-                            <Link to="/profile">My Profile</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="/myOrders">My Orders</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="/allOrders">All Orders</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <button onClick={handleLogout} className="w-full text-left">
-                                Logout
+                            <button onClick={handleLogin} className="w-full text-left">
+                                Login
                             </button>
                         </li>
-                    </>
-                ) : (
-                    <li className="hover:bg-gray-200">
-                        <button onClick={handleLogin} className="w-full text-left">
-                            Login
-                        </button>
-                    </li>
-                )}
-            </ul>
-        )}
-    </div>
-);
+                    )}
+                </ul>
+            )}
+        </div>
+    );
+};
 
 // NavBar Component
 const NavBar: React.FC = () => {

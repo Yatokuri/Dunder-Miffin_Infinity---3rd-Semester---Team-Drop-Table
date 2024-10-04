@@ -6,6 +6,12 @@ interface AuthState {
     isLoggedIn: boolean;
 }
 
+// Admin accounts list
+const adminEmails: string[] = [
+    'David.Wallace@Dunder.com',
+    'admin@Dunder.com',
+];
+
 // Atom to manage login form state
 export const loginFormAtom = atom({
     email: '',
@@ -14,7 +20,7 @@ export const loginFormAtom = atom({
 
 // Initial auth state
 const initialAuthState: AuthState = {
-    email: '', //ITM 0 = Admin - or a customer
+    email: '',
     isLoggedIn: false,
 };
 
@@ -43,6 +49,20 @@ const getAuthData = (): AuthState | null => {
 export const clearAuthData = () => {
     localStorage.removeItem('authData'); // Clear authentication data
     return initialAuthState; // Return initial state
+};
+
+// Function to check if the user is an admin (either starts with "admin" or is in adminEmails list)
+export const isAdmin = (email: string): boolean => {
+    const emailStartsWithAdmin = email.toLowerCase().startsWith('admin'); //Not safe way
+    const emailIsInAdminList = adminEmails.includes(email);
+
+    return emailStartsWithAdmin || emailIsInAdminList;
+};
+
+
+// Example usage: Checking if logged-in user is an admin
+export const checkAdminStatus = (authState: AuthState): boolean => {
+    return authState.isLoggedIn && isAdmin(authState.email);
 };
 
 

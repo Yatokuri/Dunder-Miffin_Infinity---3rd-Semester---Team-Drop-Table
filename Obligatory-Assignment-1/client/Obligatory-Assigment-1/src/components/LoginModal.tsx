@@ -38,7 +38,7 @@ interface CustomerState {
     address: string;
     email: string;
     name: string;
-    phoneNumber: string;
+    phone: string;
 }
 
 
@@ -136,7 +136,7 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
                         address: customerData.address || '',
                         email: customerData.email || '',
                         name: customerData.name || '',
-                        phoneNumber: customerData.phoneNumber || '',
+                        phone: customerData.phone || '',
                     });
 
                 } else {

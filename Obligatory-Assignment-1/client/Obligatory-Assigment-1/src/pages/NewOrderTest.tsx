@@ -211,7 +211,7 @@ const NewOrderTest = () => {
                     Fill Fields with Test Data
                 </button>
 
-                {/* Order Date */}
+                {/* OrderControl Date */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="orderDate">
                         Order Date:
@@ -331,7 +331,7 @@ const NewOrderTest = () => {
                     />
                 </div>
 
-                {/* Order Entry */}
+                {/* OrderControl Entry */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="orderEntries">Select
                         Products:</label>

@@ -116,7 +116,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userL
                                         </Link>
                                     </li>
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/myOrders" onClick={() => { handleLogout(); handleClick(); }}>
+                                        <Link to="/myOrders" onClick={() => { handleClick(); }}>
                                             My Orders
                                         </Link>
                                     </li>

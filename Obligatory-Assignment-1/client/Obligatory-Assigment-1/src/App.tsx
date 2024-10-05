@@ -20,6 +20,7 @@ import Admin from "./pages/Admin/Admin.tsx";
 import Profile from "./pages/Profile/Profile.tsx";
 import Checkout from "./pages/Profile/Checkout.tsx";
 import ProtectedAdminRoute from "./components/ProtectedRoute.tsx"; // Import the ProtectedRoute component
+import OrderDetails from "./components/OrderDetails.tsx";
 
 function App() {
     return (
@@ -35,6 +36,7 @@ function App() {
                                 <Routes>
                                     <Route path="" element={<Admin />} />
                                     <Route path="allOrders" element={<AllOrders />} />
+                                    <Route path="allOrders/:id" element={<OrderDetails  isAdmin={true}/>} />
                                     <Route path="/*" element={<NotFound/>}/>
                                 </Routes>
                             </ProtectedAdminRoute>
@@ -55,6 +57,7 @@ function App() {
                         <Route path="/ipsum" element={<NewOrderTest/>}/>
                         <Route path="/myOrders" element={<MyOrders/>}/>
                         <Route path="/profile" element={<Profile/>}/>
+                        <Route path="myOrders/:id" element={<OrderDetails  isAdmin={false}/>} />
                         <Route path="/*" element={<NotFound/>}/>
                     </Routes>
                 </div>

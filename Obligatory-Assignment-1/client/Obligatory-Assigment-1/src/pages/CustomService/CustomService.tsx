@@ -56,8 +56,8 @@ function CustomService() {
                                     to see your package.
                                 </p>
                                 <div className="card-actions justify-center mt-4">
-                                    <Link to="profile/myOrders"
-                                          className="btn btn-neutral">  {/*TODO Could be wrong link */}
+                                    <Link to="/myOrders"
+                                          className="btn btn-neutral">
                                         Check orders
                                     </Link>
                                 </div>

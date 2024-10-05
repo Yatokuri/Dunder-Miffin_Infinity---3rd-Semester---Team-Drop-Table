@@ -21,7 +21,18 @@ export interface OrderDto {
   totalAmount?: number;
   /** @format int32 */
   customerId?: number | null;
+  customer?: CustomerDto;
   orderEntries?: OrderEntryDto[];
+}
+
+export interface CustomerDto {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  orders?: OrderDto[];
 }
 
 export interface OrderEntryDto {
@@ -31,6 +42,18 @@ export interface OrderEntryDto {
   quantity?: number;
   /** @format int32 */
   productId?: number | null;
+  paper?: PaperDto | null;
+}
+
+export interface PaperDto {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  discontinued?: boolean;
+  /** @format int32 */
+  stock?: number;
+  /** @format double */
+  price?: number;
 }
 
 export interface Customer {
@@ -458,6 +481,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<File, any>({
         path: `/api/order/${id}`,
         method: "DELETE",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Order
+     * @name OrderUpdateOrderStatus
+     * @request PUT:/api/order/{id}/status
+     */
+    orderUpdateOrderStatus: (id: number, data: string, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/order/${id}/status`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
         ...params,
       }),
 

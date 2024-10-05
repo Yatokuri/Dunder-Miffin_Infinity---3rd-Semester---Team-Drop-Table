@@ -1,5 +1,7 @@
 using dataAccess;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Service.Validators;
 
 public class Program
 {
@@ -30,6 +32,8 @@ public class Program
         var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
 
         var connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
+        
+        builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderStatusValidator>());
         
         builder.Services.AddControllers();
 

@@ -18,6 +18,7 @@ public class OrderController(DMIContext context) : ControllerBase
     {
         var orders = context.Orders
             .Include(o => o.Customer) // Include the related customer entity
+            .OrderBy(o => o.Id) // Sort orders by ID
             .Select(order => new
             {
                 order.Id,

@@ -77,9 +77,10 @@ interface AccountDropdownProps {
     userLoggedIn: boolean; // Check if the user is logged in
     handleLogin: () => void; // Function to handle login
     handleLogout: () => void; // Function to handle logout
+    handleClick: () => void; // Function to handle click
 }
 
-const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userLoggedIn, handleLogin, handleLogout }) => {
+const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userLoggedIn, handleLogin, handleLogout, handleClick }) => {
     const [authState] = useAtom(authAtom);
     const isAdminUser = checkAdminStatus(authState); // Check if the logged-in user is an admin
 
@@ -96,32 +97,46 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userL
                                 <>
                                     {/* Admin-specific menu items */}
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/admin/allOrders">All Orders</Link>
+                                        <Link to="/admin/allOrders" onClick={() => { handleClick(); }}>
+                                            All Orders
+                                        </Link>
                                     </li>
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/admin">Admin Panel</Link>
+                                        <Link to="/admin" onClick={() => { handleClick(); }}>
+                                            Admin Panel
+                                        </Link>
                                     </li>
                                 </>
                             ) : (
                                 <>
                                     {/* Non-admin user-specific menu items */}
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/profile">My Profile</Link>
+                                        <Link to="/profile" onClick={() => { handleClick(); }}>
+                                            My Profile
+                                        </Link>
                                     </li>
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/myOrders">My Orders</Link>
+                                        <Link to="/myOrders" onClick={() => { handleLogout(); handleClick(); }}>
+                                            My Orders
+                                        </Link>
                                     </li>
                                 </>
                             )}
                             <li className="hover:bg-gray-200">
-                                <button onClick={handleLogout} className="w-full text-left">
+                                <button
+                                    onClick={() => { handleLogout(); handleClick(); }}
+                                    className="w-full text-left"
+                                >
                                     Logout
                                 </button>
                             </li>
                         </>
                     ) : (
                         <li className="hover:bg-gray-200">
-                            <button onClick={handleLogin} className="w-full text-left">
+                            <button
+                                onClick={() => { handleLogin(); handleClick(); }}
+                                className="w-full text-left"
+                            >
                                 Login
                             </button>
                         </li>
@@ -165,6 +180,10 @@ const NavBar: React.FC = () => {
 
     const toggleDropdown = (name: string) => {
         setActiveDropdown((prev) => (prev === name ? null : name)); // Toggle dropdown
+    };
+
+    const closeProfileDropdownMenu = () => {
+        setActiveDropdown(null);
     };
 
     useEffect(() => {
@@ -243,6 +262,7 @@ const NavBar: React.FC = () => {
                             userLoggedIn={authState.isLoggedIn} // Check from authAtom
                             handleLogin={handleLogin} // Pass the login function
                             handleLogout={handleLogout} // Pass the logout function
+                            handleClick={closeProfileDropdownMenu} // Pas the close function
                         />
                     </div>
 

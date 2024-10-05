@@ -124,21 +124,8 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
                 const response = await MyApi.api.customerGetCustomerByEmail(authForm.email);
 
                 if (response) {
-                  const customerData = response.data;
-
-
-                    console.log(customerData.toString())
-                    // Update the CustomerAtoms with the retrieved customer data
-
-
-                    updateCustomerData({
-                        id: customerData.id || '',
-                        address: customerData.address || '',
-                        email: customerData.email || '',
-                        name: customerData.name || '',
-                        phone: customerData.phone || '',
-                    });
-
+                    // @ts-expect-error: Ignore an error if it doesn't exist
+                    updateCustomerData(response.data);
                 } else {
                     //At the moment we ignore should tell to create a new one?
                 }

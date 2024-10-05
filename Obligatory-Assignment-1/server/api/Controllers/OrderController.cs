@@ -1,10 +1,12 @@
 ﻿using dataAccess;
 using dataAccess.Models;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using service.Request.OrderDto;
 using service.Request.OrderEntryDto;
 using service.Response;
+using Service.Validators;
 
 namespace api.Controllers;
 
@@ -14,8 +16,21 @@ public class OrderController(DMIContext context) : ControllerBase
     [Route("api/order")]
     public ActionResult GetAllOrders()
     {
-        var result = context.Orders.ToList();
-        return Ok(result);
+        var orders = context.Orders
+            .Include(o => o.Customer) // Include the related customer entity
+            .Select(order => new
+            {
+                order.Id,
+                order.OrderDate,
+                order.DeliveryDate,
+                order.Status,
+                order.TotalAmount,
+                CustomerId = order.Customer != null ? order.Customer.Id : (int?)null, 
+                CustomerName = order.Customer != null ? order.Customer.Name : "Unknown" 
+            })
+            .ToList();
+
+        return Ok(orders);
     }
     
     [HttpGet("api/order/{id}")]
@@ -24,6 +39,7 @@ public class OrderController(DMIContext context) : ControllerBase
         var orderEntity = context.Orders
             .Include(o => o.OrderEntries) // Include order entries
             .ThenInclude(oe => oe.Product) // Include product details for each order entry
+            .Include(o => o.Customer) // Include customer details
             .FirstOrDefault(o => o.Id == id);
 
         if (orderEntity == null)
@@ -39,14 +55,38 @@ public class OrderController(DMIContext context) : ControllerBase
             DeliveryDate = orderEntity.DeliveryDate,
             Status = orderEntity.Status,
             TotalAmount = orderEntity.TotalAmount,
-            CustomerId = orderEntity.CustomerId,
-            OrderEntries = orderEntity.OrderEntries.Select(oe => new OrderEntryDto
-            {
-                Id = oe.Id,
-                Quantity = oe.Quantity,
-                ProductId = oe.ProductId,
-            }).ToList()
+            CustomerId = orderEntity.Customer?.Id // Using null-conditional operator
         };
+
+        // Handle Customer assignment with if statement
+        if (orderEntity.Customer != null) 
+        {
+            orderDto.Customer = new CustomerDto
+            {
+                Id = orderEntity.Customer.Id,
+                Name = orderEntity.Customer.Name,
+                Email = orderEntity.Customer.Email,
+                Phone = orderEntity.Customer.Phone,
+                Address = orderEntity.Customer.Address
+            };
+        }
+
+        orderDto.OrderEntries = orderEntity.OrderEntries.Select(oe => new OrderEntryDto
+        {
+            Id = oe.Id,
+            Quantity = oe.Quantity,
+            ProductId = oe.ProductId,
+            Paper = oe.Product != null 
+                ? new PaperDto // Populate full product details with null check
+                {
+                    Id = oe.Product.Id,
+                    Name = oe.Product.Name,
+                    Price = oe.Product.Price,
+                    Stock = oe.Product.Stock,
+                    Discontinued = oe.Product.Discontinued,
+                } 
+                : null // If Paper is null, set it to null
+        }).ToList();
 
         return Ok(orderDto); // Return the DTO with a 200 OK status
     }
@@ -217,6 +257,36 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok(orderResponseDto);
     }
 
+    [HttpPut("api/order/{id}/status")]
+    public IActionResult UpdateOrderStatus(int id, [FromBody] string newStatus)
+    {
+        // Validate the new status using FluentValidation
+        var validator = new OrderStatusValidator();
+        ValidationResult results = validator.Validate(newStatus);
+
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+
+        // Find the order in the database
+        var order = context.Orders.FirstOrDefault(o => o.Id == id);
+        if (order == null)
+        {
+            return NotFound($"Order with ID {id} not found.");
+        }
+        
+        // Check if the order is canceled
+        if (order.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest("Cannot change the status of a canceled order.");
+        }
+
+        // Update the order status
+        order.Status = newStatus;
+        context.SaveChanges(); // Save changes to the database
+        return Ok(order); // Return the updated order
+    }
 
 
     

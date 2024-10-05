@@ -46,7 +46,7 @@ const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliv
                 id: customerData.id,
                 name: customerData.name,
                 address: customerData.address,
-                phone: customerData.phoneNumber,
+                phone: customerData.phone,
                 email: customerData.email,
             },
             order: {

@@ -12,7 +12,10 @@ export const MyApi = new Api();
 const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }) => {
     const [quantity, setQuantity] = useState(initialQuantity);
 
-
+    // Update local quantity when the product quantity in the basket changes
+    useEffect(() => {
+        setQuantity(initialQuantity);
+    }, [initialQuantity]);
 
     const handleAddClick = () => {
         setQuantity((prev: number) => prev + 1);
@@ -34,7 +37,10 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }) => {
             </figure>
             <div className="card-body flex flex-col flex-grow">
                 <h2 className="card-title">{product.name}</h2>
-                <p>Price: {product.price}</p>
+                <div className="card-actions justify-between items-center mt-auto">
+                    <p className="flex-grow">Price: ${product.price}</p>
+                    <p className="font-semibold">In basket: {quantity}</p>
+                </div>
                 <div className="card-actions justify-between items-center mt-auto">
                     <button onClick={handleAddClick} className="btn bg-green-500 mr-2">
                         +

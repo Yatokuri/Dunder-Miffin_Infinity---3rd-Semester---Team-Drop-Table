@@ -1,4 +1,4 @@
-import { Api } from "../../../../Api.ts";
+import { Api } from "../../../../../Api.ts";
 import { atom, useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import DeleteProduct from "../DeleteProduct/DeleteProduct.tsx";

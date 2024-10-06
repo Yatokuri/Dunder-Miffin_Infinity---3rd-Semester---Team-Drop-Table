@@ -9,6 +9,63 @@
  * ---------------------------------------------------------------
  */
 
+export interface OrderDto {
+  /** @format int32 */
+  id?: number;
+  /** @format date-time */
+  orderDate?: string;
+  /** @format date */
+  deliveryDate?: string | null;
+  status?: string;
+  /** @format double */
+  totalAmount?: number;
+  /** @format int32 */
+  customerId?: number | null;
+  customer?: CustomerDto;
+  orderEntries?: OrderEntryDto[];
+}
+
+export interface CustomerDto {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  orders?: OrderDto[];
+}
+
+export interface OrderEntryDto {
+  /** @format int32 */
+  id?: number;
+  /** @format int32 */
+  quantity?: number;
+  /** @format int32 */
+  productId?: number | null;
+  paper?: PaperDto | null;
+}
+
+export interface PaperDto {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  discontinued?: boolean;
+  /** @format int32 */
+  stock?: number;
+  /** @format double */
+  price?: number;
+}
+
+export interface Customer {
+  /** @format int32 */
+  id?: number;
+  name?: string;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  orders?: Order[];
+}
+
 export interface Order {
   /** @format int32 */
   id?: number;
@@ -23,16 +80,6 @@ export interface Order {
   customerId?: number | null;
   customer?: Customer | null;
   orderEntries?: OrderEntry[];
-}
-
-export interface Customer {
-  /** @format int32 */
-  id?: number;
-  name?: string;
-  address?: string | null;
-  phone?: string | null;
-  email?: string | null;
-  orders?: Order[];
 }
 
 export interface OrderEntry {
@@ -103,16 +150,6 @@ export interface CreateOrderEntryDto {
   productId?: number;
   /** @format int32 */
   quantity?: number;
-}
-
-export interface EditOrderDto {
-  /** @format date-time */
-  orderDate?: string;
-  /** @format date */
-  deliveryDate?: string | null;
-  status?: string;
-  /** @format double */
-  totalAmount?: number;
 }
 
 export interface EditOrderEntryDto {
@@ -345,12 +382,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Customer
-     * @name CustomerGetOrdersByCustomerId
-     * @request GET:/api/customer/{customerId}/order
+     * @name CustomerGetCustomerByEmail
+     * @request GET:/api/customer/email/{email}
      */
-    customerGetOrdersByCustomerId: (customerId: number, params: RequestParams = {}) =>
-      this.request<Order[], any>({
-        path: `/api/customer/${customerId}/order`,
+    customerGetCustomerByEmail: (email: string, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/customer/email/${email}`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Customer
+     * @name CustomerGetOrdersByCustomerId
+     * @request GET:/api/customer/{id}/order
+     */
+    customerGetOrdersByCustomerId: (id: number, params: RequestParams = {}) =>
+      this.request<OrderDto[], any>({
+        path: `/api/customer/${id}/order`,
         method: "GET",
         format: "json",
         ...params,
@@ -378,7 +429,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/order
      */
     orderCreateOrder: (data: OrderRequestDto, params: RequestParams = {}) =>
-      this.request<Order, any>({
+      this.request<OrderDto, any>({
         path: `/api/order`,
         method: "POST",
         body: data,
@@ -391,11 +442,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Order
+     * @name OrderGetOrderById
+     * @request GET:/api/order/{id}
+     */
+    orderGetOrderById: (id: number, params: RequestParams = {}) =>
+      this.request<OrderDto, any>({
+        path: `/api/order/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Order
      * @name OrderUpdateOrder
      * @request PUT:/api/order/{id}
      */
-    orderUpdateOrder: (id: number, data: EditOrderDto, params: RequestParams = {}) =>
-      this.request<Order, any>({
+    orderUpdateOrder: (id: number, data: OrderRequestDto, params: RequestParams = {}) =>
+      this.request<OrderDto, any>({
         path: `/api/order/${id}`,
         method: "PUT",
         body: data,
@@ -415,6 +481,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<File, any>({
         path: `/api/order/${id}`,
         method: "DELETE",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Order
+     * @name OrderUpdateOrderStatus
+     * @request PUT:/api/order/{id}/status
+     */
+    orderUpdateOrderStatus: (id: number, data: string, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/order/${id}/status`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Order
+     * @name OrderCancelOrder
+     * @request PUT:/api/order/cancel/{id}
+     */
+    orderCancelOrder: (id: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/order/cancel/${id}`,
+        method: "PUT",
         ...params,
       }),
 
@@ -608,22 +704,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<File, any>({
         path: `/api/paper/${id}`,
         method: "DELETE",
-        ...params,
-      }),
-  };
-  id = {
-    /**
-     * No description
-     *
-     * @tags Order
-     * @name OrderGetOrderById
-     * @request GET:/{id}
-     */
-    orderGetOrderById: (id: number, params: RequestParams = {}) =>
-      this.request<Order, any>({
-        path: `/${id}`,
-        method: "GET",
-        format: "json",
         ...params,
       }),
   };

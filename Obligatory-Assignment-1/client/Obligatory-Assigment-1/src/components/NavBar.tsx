@@ -6,7 +6,8 @@ import AccountIcon from '../assets/icons/AccountIcon';
 import BasketIcon from '../assets/icons/BasketIcon';
 import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
 import { searchAtom } from "../atoms/atoms.ts";
-import { loginFormAtom, authAtom, clearAuthData  } from '../atoms/LoginAtoms.ts'; // Importing the atoms
+import {loginFormAtom, authAtom, clearAuthData, checkAdminStatus} from '../atoms/LoginAtoms.ts'; // Importing the atoms
+import { clearCustomerData  } from '../atoms/CustomerAtoms.ts'; // Importing the atoms
 import { LoginModal } from './LoginModal.tsx';
 import { toast} from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
@@ -50,43 +51,75 @@ interface AccountDropdownProps {
     userLoggedIn: boolean; // Check if the user is logged in
     handleLogin: () => void; // Function to handle login
     handleLogout: () => void; // Function to handle logout
+    handleClick: () => void; // Function to handle click
 }
 
-const AccountDropdown: React.FC<AccountDropdownProps> = ({isOpen, toggle, userLoggedIn, handleLogin, handleLogout,}) => (
-    <div className="relative">
-        <button onClick={toggle} className="btn btn-ghost">
-            <AccountIcon className="w-6 h-6 text-icon-color" />
-        </button>
-        {isOpen && (
-            <ul className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}>
-                {userLoggedIn ? (
-                    <>
+const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userLoggedIn, handleLogin, handleLogout, handleClick }) => {
+    const [authState] = useAtom(authAtom);
+    const isAdminUser = checkAdminStatus(authState); // Check if the logged-in user is an admin
+
+    return (
+        <div className="relative">
+            <button onClick={toggle} className="btn btn-ghost">
+                <AccountIcon className="w-6 h-6 text-icon-color" />
+            </button>
+            {isOpen && (
+                <ul className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}>
+                    {userLoggedIn ? (
+                        <>
+                            {isAdminUser ? (
+                                <>
+                                    {/* Admin-specific menu items */}
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/admin/allOrders" onClick={() => { handleClick(); }}>
+                                            All Orders
+                                        </Link>
+                                    </li>
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/admin" onClick={() => { handleClick(); }}>
+                                            Admin Panel
+                                        </Link>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    {/* Non-admin user-specific menu items */}
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/profile" onClick={() => { handleClick(); }}>
+                                            My Profile
+                                        </Link>
+                                    </li>
+                                    <li className="hover:bg-gray-200">
+                                        <Link to="/myOrders" onClick={() => { handleClick(); }}>
+                                            My Orders
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+                            <li className="hover:bg-gray-200">
+                                <button
+                                    onClick={() => { handleLogout(); handleClick(); }}
+                                    className="w-full text-left"
+                                >
+                                    Logout
+                                </button>
+                            </li>
+                        </>
+                    ) : (
                         <li className="hover:bg-gray-200">
-                            <Link to="/profile">My Profile</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="/myOrders">My Orders</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="/allOrders">All Orders</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <button onClick={handleLogout} className="w-full text-left">
-                                Logout
+                            <button
+                                onClick={() => { handleLogin(); handleClick(); }}
+                                className="w-full text-left"
+                            >
+                                Login
                             </button>
                         </li>
-                    </>
-                ) : (
-                    <li className="hover:bg-gray-200">
-                        <button onClick={handleLogin} className="w-full text-left">
-                            Login
-                        </button>
-                    </li>
-                )}
-            </ul>
-        )}
-    </div>
-);
+                    )}
+                </ul>
+            )}
+        </div>
+    );
+};
 
 // NavBar Component
 const NavBar: React.FC = () => {
@@ -108,6 +141,7 @@ const NavBar: React.FC = () => {
 
     const handleLogout = () => {
         clearAuthData(); // Clear authentication data from localStorage
+        clearCustomerData(); // -||-
         setAuthState({ email: '', isLoggedIn: false }); // Set user as logged out
         setLoginForm({ email: '', password: '' }); // Reset login form state
         toast.success("You have logged out successfully!", {duration: 3000,});
@@ -120,6 +154,10 @@ const NavBar: React.FC = () => {
 
     const toggleDropdown = (name: string) => {
         setActiveDropdown((prev) => (prev === name ? null : name)); // Toggle dropdown
+    };
+
+    const closeProfileDropdownMenu = () => {
+        setActiveDropdown(null);
     };
 
     useEffect(() => {
@@ -198,6 +236,7 @@ const NavBar: React.FC = () => {
                             userLoggedIn={authState.isLoggedIn} // Check from authAtom
                             handleLogin={handleLogin} // Pass the login function
                             handleLogout={handleLogout} // Pass the logout function
+                            handleClick={closeProfileDropdownMenu} // Pas the close function
                         />
                     </div>
 

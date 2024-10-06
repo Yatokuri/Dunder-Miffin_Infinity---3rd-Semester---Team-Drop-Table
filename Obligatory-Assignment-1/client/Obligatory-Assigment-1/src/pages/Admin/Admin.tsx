@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import AddProduct from "./AddProduct/AddProduct.tsx";
-import ProductTable from "./ProductTable/ProductTable.tsx";
+import AddProduct from "./Product/AddProduct/AddProduct.tsx";
+import ProductTable from "./Product/ProductTable/ProductTable.tsx";
 import Modal from "./Modal/Modal.tsx";
 
 function Admin() {

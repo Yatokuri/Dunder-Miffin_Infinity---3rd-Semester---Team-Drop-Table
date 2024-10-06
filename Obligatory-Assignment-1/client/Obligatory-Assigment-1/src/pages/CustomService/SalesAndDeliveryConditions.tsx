@@ -44,7 +44,7 @@ function SalesAndDeliveryConditions() {
                     For any inquiries related to sales and delivery conditions, please:
                 </p>
                 <p className="mt-4">
-                    Visit our <Link to="/customer-service/contact-us" className="text-blue-500 hover:underline">Contact Us</Link> page for more information.
+                    Visit our <Link to={"/customer-service/contact-us"} className="text-blue-500 hover:underline">Contact Us</Link> page for more information.
                 </p>
             </section>
 

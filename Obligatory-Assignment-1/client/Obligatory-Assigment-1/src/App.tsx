@@ -22,7 +22,7 @@ import Checkout from "./pages/Profile/Checkout.tsx";
 import ProtectedAdminRoute from "./components/ProtectedRoute.tsx"; // Import the ProtectedRoute component
 import OrderDetails from "./components/OrderDetails.tsx";
 import Shop from "./pages/Shop/Shop.tsx";
-import Basket from "./pages/Basket.tsx";
+import Basket from "./pages/Shop/Basket.tsx";
 
 function App() {
     return (

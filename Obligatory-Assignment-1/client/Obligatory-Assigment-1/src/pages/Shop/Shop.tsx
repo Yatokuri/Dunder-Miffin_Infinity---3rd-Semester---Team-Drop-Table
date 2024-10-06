@@ -1,7 +1,7 @@
 import {useAtom} from "jotai";
 import {useEffect} from "react";
-import {productsAtom} from "../Basket.tsx";
-import {addToBasket, BasketAtom, updateQuantity} from "../../atoms/BasketAtoms.ts";
+import {productsAtom} from "./Basket.tsx";
+import {addToBasket, saveBasketToStorage, BasketAtom, updateQuantity} from "../../atoms/BasketAtoms.ts";
 import {Api} from "../../../Api.ts";
 import {toast} from "react-hot-toast";
 
@@ -15,30 +15,33 @@ function Shop() {
     const [products, setProducts] = useAtom(productsAtom);
     const [basket, setBasket] = useAtom(BasketAtom);
 
-    const getProductQuantity = (productId) => {
+    const getProductQuantity = (productId: number) => {
         const productInBasket = basket.find((item) => item.product_id === productId);
         return productInBasket ? productInBasket.quantity : 0;
     };
 
-    const handleAdd = (product) => {
+    const handleAdd = (product: { id: number; price: number; }) => {
         const existingQuantity = getProductQuantity(product.id);
         if (existingQuantity > 0) {
             // Update quantity for an existing product
             updateQuantity(basket, product.id, existingQuantity + 1, product.price, setBasket);
             toast.success("Product added to basket");
+            saveBasketToStorage(basket)
         } else {
             // Add a new product to the basket
             addToBasket(basket, { product_id: product.id, quantity: 1, price: product.price }, setBasket);
             toast.success("Product added to basket");
+            saveBasketToStorage(basket)
         }
     };
 
-    const handleRemove = (product) => {
+    const handleRemove = (product: { id: number; price: number; }) => {
         const existingQuantity = getProductQuantity(product.id);
         if (existingQuantity > 1) {
             // Decrease quantity if more than 1
             updateQuantity(basket, product.id, existingQuantity - 1, product.price, setBasket);
             toast.error("Product removed from basket");
+            saveBasketToStorage(basket)
         } else {
             // Remove product from the basket if quantity reaches 0
             const updatedBasket = basket.filter(item => item.product_id !== product.id);

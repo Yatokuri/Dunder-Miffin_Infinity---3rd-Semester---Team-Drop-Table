@@ -73,7 +73,7 @@ function WhistleBlowingPolicy() {
                     For any inquiries related to whistleblowing or to report a concern, please:
                 </p>
                 <p className="mt-4">
-                    Visit our <Link to="/customer-service/contact-us" className="text-blue-500 hover:underline">Contact
+                    Visit our <Link to={"/customer-service/contact-us"} className="text-blue-500 hover:underline">Contact
                     Us</Link> page for more information.
                 </p>
             </section>

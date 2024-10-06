@@ -23,6 +23,7 @@ function AddProduct({ closeModal }: { closeModal: () => void }) {
 
     const handleCreatePaper = async () => {
         const newProduct = await createPaper(name, stock, price);
+        // @ts-ignore
         setProducts([...products, newProduct]);
         setName('');
         setStock(0);

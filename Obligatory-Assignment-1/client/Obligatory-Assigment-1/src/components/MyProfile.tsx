@@ -1,16 +1,13 @@
 ﻿import { useState, useEffect } from "react";
-import {Api, Customer} from "../../Api.ts";
+import {Customer} from "../../Api.ts";
 import {useAtom} from "jotai";
 import {CustomerAtoms} from "../atoms/CustomerAtoms.ts";
-
-
-export const MyApi = new Api();
 
 
 function MyProfile() {
 
     const [toggleEditableProfile, setEditableProfile] = useState(false); // State for password visibility
-    const [customer, setCustomer] = useAtom<Customer>(CustomerAtoms);
+    const [customer] = useAtom<Customer>(CustomerAtoms);
     
     const [state, setState] = useState({
         name: customer.name,
@@ -32,17 +29,17 @@ function MyProfile() {
     }, [customer]);
 
 
-    const handleChange = e => {
+    const handleChange = (e: { target: { name: any; value: any; }; }) => {
         setState(prevState => ({
             ...prevState,[e.target.name]: e.target.value
         }))
     }
 
 
-    let tempProfileName = "";
-    let tempProfileAddress = "";
-    let tempProfileEmail = "";
-    let tempProfilePhoneNumber = "";
+    let tempProfileName: string | undefined = "";
+    let tempProfileAddress: string | null | undefined = "";
+    let tempProfileEmail: string | null | undefined = "";
+    let tempProfilePhoneNumber: string | null | undefined = "";
 
 
     // Function to toggle Profile page being editable
@@ -58,7 +55,7 @@ function MyProfile() {
         }
     };
 
-    // TODO Readd Async & updatedCustomer: Customer at a later point and bind it to the API
+    // TODO Re add Async & updatedCustomer: Customer at a later point and bind it to the API
     const saveProfileChanges = () => {
 
         //await MyApi.api.customerUpdateCustomer(updatedCustomer.id, updatedCustomer);
@@ -137,6 +134,7 @@ function MyProfile() {
         );
     }
     if (toggleEditableProfile) {
+        // @ts-ignore
         return (
             <>
                 <div className="flex mt-5">

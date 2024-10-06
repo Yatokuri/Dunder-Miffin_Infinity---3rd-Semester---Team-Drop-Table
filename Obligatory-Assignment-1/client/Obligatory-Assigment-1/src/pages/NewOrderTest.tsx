@@ -73,7 +73,7 @@ const NewOrderTest = () => {
 
         // Set the order date and delivery date
         setOrderDate(orderDate); // Using local time format
-        setDeliveryDate(deliveryDate.toISOString().slice(0, 10)); // Delivery date in 'YYY
+        setDeliveryDate(deliveryDate.toISOString().slice(0, 10)); // Delivery date in YYYY
         setStatus('Pending');
         setCustomerId('1');
         setCustomerName('John Doe');

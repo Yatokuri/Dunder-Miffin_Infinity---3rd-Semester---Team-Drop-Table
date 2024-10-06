@@ -19,8 +19,8 @@ interface NavLinksProps {
 }
 
 // Navigation Links Component
-const NavLinks: React.FC<NavLinksProps> = ({ toggleDropdown, activeDropdown }) => {
-    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
+const NavLinks: React.FC<NavLinksProps> = () => {
+    const [setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
     // Update isMobile on window resize
     useEffect(() => {
@@ -36,36 +36,10 @@ const NavLinks: React.FC<NavLinksProps> = ({ toggleDropdown, activeDropdown }) =
 
     return (
         <>
-            <div className="dropdown relative">
-                <button onClick={() => toggleDropdown('products')} className="btn btn-ghost">
-                    Products
-                </button>
-                {activeDropdown === 'products' && (
-                    <ul
-                        className={`absolute ${
-                            isMobile
-                                ? 'left-full top-0 ml-2 w-max' // Mobile: dropdown to the right of button
-                                : 'left-0 top-full mt-3' // Desktop: dropdown below button
-                        } p-2 shadow bg-base-100 rounded-box w-auto z-10`}
-                    >
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/1">Page 1</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/2">Page 2</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/3">Page 3</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/4">Page 4</Link>
-                        </li>
-                    </ul>
-                )}
-            </div>
-            <Link to="/ipsum" className="btn btn-ghost">Lorem</Link>
-            <Link to="/about" className="btn btn-ghost">About Us</Link>
-            <Link to="/customer-service/contact-us" className="btn btn-ghost">Contact</Link>
+            <Link to={"/shop"} className="btn btn-ghost">Products</Link>
+            <Link to={"/ipsum"} className="btn btn-ghost">Lorem</Link>
+            <Link to={"/about"} className="btn btn-ghost">About Us</Link>
+            <Link to={"/customer-service/contact-us"} className="btn btn-ghost">Contact</Link>
         </>
     );
 };
@@ -97,12 +71,12 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userL
                                 <>
                                     {/* Admin-specific menu items */}
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/admin/allOrders" onClick={() => { handleClick(); }}>
+                                        <Link to={"/admin/allOrders"} onClick={() => { handleClick(); }}>
                                             All Orders
                                         </Link>
                                     </li>
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/admin" onClick={() => { handleClick(); }}>
+                                        <Link to={"/admin"} onClick={() => { handleClick(); }}>
                                             Admin Panel
                                         </Link>
                                     </li>
@@ -111,12 +85,12 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userL
                                 <>
                                     {/* Non-admin user-specific menu items */}
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/profile" onClick={() => { handleClick(); }}>
+                                        <Link to={"/profile"} onClick={() => { handleClick(); }}>
                                             My Profile
                                         </Link>
                                     </li>
                                     <li className="hover:bg-gray-200">
-                                        <Link to="/myOrders" onClick={() => { handleClick(); }}>
+                                        <Link to={"/myOrders"} onClick={() => { handleClick(); }}>
                                             My Orders
                                         </Link>
                                     </li>
@@ -267,7 +241,7 @@ const NavBar: React.FC = () => {
                     </div>
 
                     {/* Basket Menu */}
-                    <Link to="/basket" className="btn btn-ghost">
+                    <Link to={"/basket"} className="btn btn-ghost">
                         <BasketIcon className="w-6 h-6 text-icon-color"/>
                     </Link>
                 </div>

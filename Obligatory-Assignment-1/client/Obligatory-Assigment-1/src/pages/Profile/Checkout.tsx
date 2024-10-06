@@ -90,7 +90,7 @@ const CheckoutPage = () => {
             } else {
                 newErrors.address = '';
             }
-            if (!customer.phoneNumber) {
+            if (!customer.phone) {
                 newErrors.phoneNumber = 'Phone number is required';
             } else {
                 newErrors.phoneNumber = '';
@@ -249,8 +249,8 @@ const CheckoutPage = () => {
                                     <input
                                         type="text"
                                         name="phoneNumber"
-                                        value={customer.phoneNumber}
-                                        onChange={(e) => setCustomer({ ...customer, phoneNumber: e.target.value })}
+                                        value={customer.phone}
+                                        onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
                                         placeholder="(555) 123-4567"
                                         className={`input input-bordered w-full ${errors.phoneNumber ? 'border-red-500' : ''}`}
                                     />
@@ -371,7 +371,7 @@ const CheckoutPage = () => {
                     <p>Name: {customer.name}</p>
                     <p>Email: {customer.email}</p>
                     <p>Address: {customer.address}</p>
-                    <p>Phone: {customer.phoneNumber}</p>
+                    <p>Phone: {customer.phone}</p>
 
                     {/* Delivery Method */}
                     <h3 className="text-lg mt-4 mb-2">Delivery Method</h3>

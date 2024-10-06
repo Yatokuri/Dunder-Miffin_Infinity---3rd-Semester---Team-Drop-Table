@@ -33,7 +33,7 @@ function CustomService() {
                                     Do you still lack answers to your questions? Then send us an email or call us.
                                 </p>
                                 <div className="card-actions justify-center mt-4">
-                                    <Link to="contact-us" className="btn btn-neutral">
+                                    <Link to={"/customer-service/contact-us"} className="btn btn-neutral">
                                         Contact customer service
                                     </Link>
                                 </div>
@@ -56,7 +56,7 @@ function CustomService() {
                                     to see your package.
                                 </p>
                                 <div className="card-actions justify-center mt-4">
-                                    <Link to="/myOrders"
+                                    <Link to={"/myOrders"}
                                           className="btn btn-neutral">
                                         Check orders
                                     </Link>
@@ -80,7 +80,7 @@ function CustomService() {
                                     asked questions and see if you can find the answer there.
                                 </p>
                                 <div className="card-actions justify-center mt-4">
-                                    <Link to="faq" className="btn btn-neutral">
+                                    <Link to={"/customer-service/faq"} className="btn btn-neutral">
                                         Frequently asked questions
                                     </Link>
                                 </div>

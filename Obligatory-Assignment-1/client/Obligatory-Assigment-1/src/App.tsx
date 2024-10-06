@@ -21,6 +21,8 @@ import Profile from "./pages/Profile/Profile.tsx";
 import Checkout from "./pages/Profile/Checkout.tsx";
 import ProtectedAdminRoute from "./components/ProtectedRoute.tsx"; // Import the ProtectedRoute component
 import OrderDetails from "./components/OrderDetails.tsx";
+import Shop from "./pages/Shop/Shop.tsx";
+import Basket from "./pages/Shop/Basket.tsx";
 
 function App() {
     return (
@@ -44,6 +46,7 @@ function App() {
                         <Route path="/" element={<Home/>}/>
                         <Route path="/about" element={<About/>}/>
                         <Route path="/home" element={<Home/>}/>
+                        <Route path="/basket" element={<Basket/>}/>
                         <Route path="/basket/checkout" element={<Checkout/>}/>
                         <Route path="/customer-service" element={<CustomService/>}/>
                         <Route path="/customer-service/contact-us" element={<Contact/>}/>
@@ -56,8 +59,9 @@ function App() {
                         <Route path="/customer-service/whistleblowing-policy" element={<WhistleBlowingPolicy/>}/>
                         <Route path="/ipsum" element={<NewOrderTest/>}/>
                         <Route path="/myOrders" element={<MyOrders/>}/>
-                        <Route path="/profile" element={<Profile/>}/>
                         <Route path="myOrders/:id" element={<OrderDetails  isAdmin={false}/>} />
+                        <Route path="/profile" element={<Profile/>}/>
+                        <Route path="/shop" element={<Shop/>}/>
                         <Route path="/*" element={<NotFound/>}/>
                     </Routes>
                 </div>

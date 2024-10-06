@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { SetStateAction, useState} from "react";
 import PageHeader from "../../components/PageHeader.tsx";
 
 function FAQ() {
@@ -31,7 +31,8 @@ function FAQ() {
         }
     ];
 
-    const toggleAnswer = (index) => {
+    const toggleAnswer = (index: number | SetStateAction<null>) => {
+        // @ts-ignore
         setActiveIndex(activeIndex === index ? null : index);
     };
 

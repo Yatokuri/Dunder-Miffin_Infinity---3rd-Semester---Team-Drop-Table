@@ -1,4 +1,4 @@
-import PageHeader from "../../components/PageHeader.tsx";
+import PageHeader from "../../components/PageHelpers/PageHeader.tsx";
 
 import CookiesImage from '/src/assets/customer-service/cta-ccc-cookies.avif';
 import TermImage from '/src/assets/customer-service/cta-ccc-terms-conditions.avif';

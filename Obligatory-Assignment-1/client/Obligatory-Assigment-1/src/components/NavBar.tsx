@@ -8,7 +8,7 @@ import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
 import { searchAtom } from "../atoms/atoms.ts";
 import {loginFormAtom, authAtom, clearAuthData, checkAdminStatus} from '../atoms/LoginAtoms.ts'; // Importing the atoms
 import { clearCustomerData  } from '../atoms/CustomerAtoms.ts'; // Importing the atoms
-import { LoginModal } from './LoginModal.tsx';
+import { LoginModal } from './Modals/LoginModal.tsx';
 import { toast} from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -20,20 +20,6 @@ interface NavLinksProps {
 
 // Navigation Links Component
 const NavLinks: React.FC<NavLinksProps> = () => {
-    const [setIsMobile] = useState<boolean>(window.innerWidth < 768);
-
-    // Update isMobile on window resize
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
     return (
         <>
             <Link to={"/shop"} className="btn btn-ghost">Shop</Link>

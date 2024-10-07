@@ -1,10 +1,14 @@
 import { useAtom } from 'jotai';
-import { orderStatusAtom } from '../atoms/OrderStatusAtoms';
-import { Api } from "../../Api.ts";
+import {orderStatusAtom} from "../../atoms/OrderStatusAtoms.ts";
+import {Api} from "../../../Api.ts";
 import React, { useState } from "react";
 import { toast } from 'react-hot-toast';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from "../Modals/ConfirmationModal.tsx";
 import { cancelOrder } from './CancelOrder.ts'; // Import your cancelOrder function
+
+
+
+
 
 interface StatusChangeProps {
     orderId: number;

@@ -1,4 +1,4 @@
-import { Api } from "../../Api.ts";
+import {Api} from "../../../Api.ts";
 import toast from 'react-hot-toast';
 
 const MyApi = new Api();

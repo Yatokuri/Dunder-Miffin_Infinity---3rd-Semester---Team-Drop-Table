@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Api } from "../../Api.ts";
+import {Api} from "../../../Api.ts";
 import { useAtom } from "jotai";
-import { CustomerAtoms } from '../atoms/CustomerAtoms';
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { orderStatusAtom } from "../atoms/OrderStatusAtoms.ts";
-import {searchAtom} from "../atoms/atoms.ts";
-import { orderAtom } from "../atoms/OrderEntryAtoms.ts";
-
+import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts";
+import { useNavigate } from "react-router-dom";
+import {orderStatusAtom} from "../../atoms/OrderStatusAtoms.ts";
+import {searchAtom} from "../../atoms/atoms.ts";
+import {orderAtom} from "../../atoms/OrderEntryAtoms.ts";
 
 
 export const MyApi = new Api();

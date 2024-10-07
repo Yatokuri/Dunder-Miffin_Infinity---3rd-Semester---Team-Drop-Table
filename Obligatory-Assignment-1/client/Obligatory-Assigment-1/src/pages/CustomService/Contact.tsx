@@ -1,4 +1,4 @@
-﻿import ContactUs from "../../components/ContactUs.tsx";
+import ContactUs from "../../components/Pages/ContactUs.tsx";
 import {Link} from "react-router-dom";
 
 

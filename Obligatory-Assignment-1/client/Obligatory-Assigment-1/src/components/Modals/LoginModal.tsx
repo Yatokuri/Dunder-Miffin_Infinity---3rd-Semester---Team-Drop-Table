@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAtom } from 'jotai';
-import { loginFormAtom, authAtom, setAuthData } from '../atoms/LoginAtoms';
-import { clearCustomerData, CustomerAtoms, useCustomerData } from '../atoms/CustomerAtoms';
-import EyeOnIcon from '../assets/icons/EyeOnIcon.tsx';
-import EyeOffIcon from '../assets/icons/EyeOffIcon.tsx';
-import FacebookLogo from '../assets/icons/FacebookIcon.tsx';
-import GoogleLogo from '../assets/icons/GoogleIcon.tsx';
-import logo from '../assets/LogoDMI.png';
+import { loginFormAtom, authAtom, setAuthData } from '../../atoms/LoginAtoms';
+import { clearCustomerData, CustomerAtoms, useCustomerData } from '../../atoms/CustomerAtoms';
+import EyeOnIcon from "../../assets/icons/EyeOnIcon.tsx";
+import EyeOffIcon from '../../assets/icons/EyeOffIcon.tsx';
+import FacebookLogo from '../../assets/icons/FacebookIcon.tsx';
+import GoogleLogo from '../../assets/icons/GoogleIcon.tsx';
+import logo from '../../assets/LogoDMI.png';
 import toast from "react-hot-toast";
-import useDataWithExpirationCheck from "./hooks/CheckDataWithExpirationCheck";
-import { Api } from "../../Api.ts";
+import useDataWithExpirationCheck from "../hooks/CheckDataWithExpirationCheck";
+import {Api} from "../../../Api.ts";
+
+
 
 // Define the structure of the auth form state
 interface AuthFormType {

@@ -2,11 +2,12 @@
 import React from 'react';
 import axios, { isAxiosError } from 'axios';
 import { useAtom } from 'jotai';
-import {BasketAtom, clearBasket, TotalAmountAtom} from '../atoms/BasketAtoms';
-import { SelectedShippingOptionAtom } from '../atoms/ShippingAtom';
-import { CustomerAtoms } from '../atoms/CustomerAtoms';
+import {BasketAtom, clearBasket, TotalAmountAtom} from '../../atoms/BasketAtoms';
+import { SelectedShippingOptionAtom } from '../../atoms/ShippingAtom';
+import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts";
 import { toast } from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
+
 
 const OrderPlacementComponent: React.FC<{ onOrderPlaced: (orderId: string, deliveryDate: string, totalAmount: number) => void; }> = ({ onOrderPlaced }) => {
     // Fetching the necessary state from atoms

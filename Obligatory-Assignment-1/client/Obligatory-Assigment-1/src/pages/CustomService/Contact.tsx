@@ -1,14 +1,20 @@
-﻿import PageHeader from "../../components/PageHeader.tsx";
-import ContactUs from "../../components/ContactUs.tsx";
+﻿import ContactUs from "../../components/ContactUs.tsx";
+import {Link} from "react-router-dom";
 
 
 function Contact() {
     return (
         <div>
-            <PageHeader/>
-            <h1 className="text-2xl font-bold">Contact us</h1>
 
             <ContactUs/>
+
+
+            <div className="flex justify-center">
+                    <Link  to={"/customer-service"}
+                           className="btn btn-primary">
+                        Back to Customer Service
+                    </Link>
+            </div>
         </div>
     );
 }

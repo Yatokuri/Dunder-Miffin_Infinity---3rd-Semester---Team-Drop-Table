@@ -36,8 +36,7 @@ const NavLinks: React.FC<NavLinksProps> = () => {
 
     return (
         <>
-            <Link to={"/shop"} className="btn btn-ghost">Products</Link>
-            <Link to={"/ipsum"} className="btn btn-ghost">Lorem</Link>
+            <Link to={"/shop"} className="btn btn-ghost">Shop</Link>
             <Link to={"/about"} className="btn btn-ghost">About Us</Link>
             <Link to={"/customer-service/contact-us"} className="btn btn-ghost">Contact</Link>
         </>
@@ -177,7 +176,7 @@ const NavBar: React.FC = () => {
 
 
     return (
-        <nav className="navbar bg-base-100 shadow-lg fixed top-0 w-full z-50">
+        <nav className="navbar h-20 bg-base-100 shadow-lg fixed top-0 w-full z-50">
             <div className="container mx-auto flex justify-between items-center px-4">
                 <div className="mr-4"> {/* Margin for spacing */}
                     <Link to="/" className="flex items-center">

@@ -12,7 +12,7 @@ function CustomService() {
     return (
         <div>
             <PageHeader/>
-            <h1 className="text-2xl font-bold">Customer Service</h1>
+            <h1 className="flex justify-center font-bold">Customer Service</h1>
 
             <div className="bg-gray-100">
                 <div className="container mx-auto mt-12 px-4">

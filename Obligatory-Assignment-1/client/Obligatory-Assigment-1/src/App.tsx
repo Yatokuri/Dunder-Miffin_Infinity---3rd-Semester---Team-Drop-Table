@@ -6,7 +6,7 @@ import NewOrderTest from "./pages/NewOrderTest.tsx";
 import NavBar from "./components/NavBar.tsx";
 import { Toaster } from "react-hot-toast";
 import Footer from "./components/Footer.tsx";
-import About from "./pages/About.tsx";
+import About from "./pages/About/About.tsx";
 import Contact from "./pages/CustomService/Contact.tsx";
 import CustomService from './pages/CustomService/CustomService.tsx';
 import SalesAndDeliveryConditions from "./pages/CustomService/SalesAndDeliveryConditions.tsx";
@@ -30,7 +30,7 @@ function App() {
             <BrowserRouter>
                 <Toaster/>
                 <NavBar/>
-                <div className="flex-grow m-2 pt-16">
+                <div className="flex-grow m-2 pt-20">
                     <Routes>
                         {/* Protecting admin routes with a wildcard route */}
                         <Route path="/admin/*" element={

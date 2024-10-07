@@ -7,22 +7,14 @@ import {searchAtom} from "../../atoms/atoms.ts";
 import {orderAtom} from "../../atoms/OrderEntryAtoms.ts";
 import StatusChange from "./OrderStatusChange.tsx";
 
-
-
-
-
+export const MyApi = new Api();
 
 // Inline TableCell component
 const TableCell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
-        <td className="border border-gray-300 px-4 py-2">
-            {children}
-        </td>
+        <td className="border border-gray-300 px-2 py-1 text-xs sm:text-sm">{children}</td>
     );
 };
-
-export const MyApi = new Api();
-
 
 function AddOrder() {
     const navigate = useNavigate();
@@ -67,9 +59,9 @@ function AddOrder() {
     };
 
     return (
-        <div>
+        <div className="m-4 sm:m-0">
             {/* Filter dropdown for order status */}
-            <div className="mb-4">
+            <div className="mb-4 m-4">
                 <label htmlFor="filterStatus" className="mr-2">Filter by Status:</label>
                 <select
                     id="filterStatus"
@@ -88,9 +80,10 @@ function AddOrder() {
 
             {/* Only render the table if not loading */}
             <div className="overflow-x-auto">
-                <table className="table-auto border-collapse w-full min-w-[800px]">
+                {/* Standard Table for larger screens */}
+                <table className="table-auto border-collapse w-full min-w-[800px] hidden sm:table">
                     <thead>
-                    <tr>
+                    <tr className="bg-gray-200">
                         <TableCell>Id</TableCell>
                         <TableCell>Customer Name</TableCell>
                         <TableCell>Status</TableCell>
@@ -144,6 +137,44 @@ function AddOrder() {
                     )}
                     </tbody>
                 </table>
+
+                {/* Mobile view representation of orders */}
+                <div className="sm:hidden grid grid-cols-1 gap-4 overflow-hidden">
+                    {filteredOrders.map((order) => (
+                        <div key={order.id} className="p-4 border border-gray-300 rounded-lg">
+                            <div className="mb-2">
+                                <strong>Id:</strong> {order.id}
+                            </div>
+                            <div className="mb-2 overflow-hidden text-ellipsis">
+                                <strong>Name:</strong> {order.customerName}
+                            </div>
+                            <div className="grid grid-cols-2 items-center mb-2">
+                                <strong>Status:</strong>
+                                <StatusChange
+                                    orderId={order.id}
+                                    currentStatus={order.status}
+                                    onStatusChange={(newStatus) => {
+                                        setOrders(orders.map((o) =>
+                                            o.id === order.id ? {...o, status: newStatus} : o
+                                        ));
+                                    }}
+                                />
+                            </div>
+                            <div className="mb-2 overflow-hidden text-ellipsis">
+                                <strong>Total Order:</strong> {order.totalAmount}$
+                            </div>
+                            <div className="mb-2 overflow-hidden text-ellipsis">
+                                <strong>Order Date:</strong> {new Date(order.orderDate).toLocaleString()}
+                            </div>
+                            <div className="mb-2 overflow-hidden text-ellipsis">
+                                <strong>Delivery Date:</strong> {new Date(order.deliveryDate).toDateString()}
+                            </div>
+                            <button onClick={() => handleCheckOrder(order.id)} className="btn btn-primary px-4 py-2">
+                                Check Order
+                            </button>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

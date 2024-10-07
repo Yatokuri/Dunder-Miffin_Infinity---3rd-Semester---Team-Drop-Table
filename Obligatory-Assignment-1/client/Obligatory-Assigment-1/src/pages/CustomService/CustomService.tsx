@@ -15,7 +15,7 @@ function CustomService() {
             <h1 className="flex justify-center font-bold">Customer Service</h1>
 
             <div className="bg-gray-100">
-                <div className="container mx-auto mt-12 px-4">
+                <div className="container mx-auto mt-12 px-4 pb-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                         {/* First Card */}

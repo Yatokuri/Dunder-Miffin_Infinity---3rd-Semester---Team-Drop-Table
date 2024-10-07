@@ -5,6 +5,7 @@ import {BasketAtom, updateQuantity, loadBasketFromStorage} from "../../atoms/Bas
 import {Api} from "../../../Api.ts";
 import {toast} from "react-hot-toast";
 import InputFieldPaperQuantity from "../../components/Orders/InputFieldPaperQuantity.tsx";
+import {searchAtom} from "../../atoms/atoms.ts";
 
 export const MyApi = new Api();
 
@@ -75,6 +76,9 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
 function Shop() {
     const [products, setProducts] = useAtom(productAtom);
     const [basket, setBasket] = useAtom(BasketAtom);
+    const [searchQuery] = useAtom(searchAtom); // Use the navbar search
+    const [filterPrice, setFilterPrice] = useState<string>("All");
+
 
     // Load basket from localStorage when the component mounts
     useEffect(() => {
@@ -123,13 +127,24 @@ function Shop() {
         };
         fetchData().then();
     }, [setProducts]);
+
+    // Handle filtering Products by price and search query
+    const filteredProducts = products.filter(product => {
+        const matchesStatus = filterPrice === "All" || product.price === filterPrice;
+        const matchesSearch =
+            product.name.toString().toLowerCase().includes(searchQuery.toLowerCase()); // Search by Product Name
+        return matchesStatus && matchesSearch; // Combine filters
+    });
+    
     
     return (
         <div className="text-black">
-            <h1 className="flex text-3xl font-bold bg-center justify-center mt-5">Limitless Paper in a Paperless World</h1>
+            <h1 className="flex text-3xl font-bold bg-center justify-center mt-5">Limitless Paper in a Paperless
+                World</h1>
             <div className="card-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
-                {products.filter(product => !product.discontinued).map((product) => (
-                    <ShopCard key={product.id} product={product} initialQuantity={getProductQuantity(product.id)} onAdd={handleAdd} onRemove={handleRemove}
+                {filteredProducts.filter(product => !product.discontinued).map((product) => (
+                    <ShopCard key={product.id} product={product} initialQuantity={getProductQuantity(product.id)}
+                              onAdd={handleAdd} onRemove={handleRemove}
                     />
                 ))}
             </div>

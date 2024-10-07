@@ -120,8 +120,7 @@ function Shop() {
 
     return (
         <div className="text-black">
-            <h1 className="text-3xl font-bold bg-center">Sales: Paper</h1>
-            <h1 className="text-2xl font-bold bg-center">For all your administrative needs</h1>
+            <h1 className="flex text-3xl font-bold bg-center justify-center mt-5">Limitless Paper in a Paperless World</h1>
             <div className="card-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
                 {products.filter(product => !product.discontinued).map((product) => (
                     <ShopCard key={product.id} product={product} initialQuantity={getProductQuantity(product.id)} onAdd={handleAdd} onRemove={handleRemove}

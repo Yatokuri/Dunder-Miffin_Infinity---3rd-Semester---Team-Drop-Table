@@ -6,7 +6,7 @@ import NewOrderTest from "./pages/NewOrderTest.tsx";
 import NavBar from "./components/NavBar.tsx";
 import { Toaster } from "react-hot-toast";
 import Footer from "./components/Footer.tsx";
-import About from "./pages/About.tsx";
+import About from "./pages/About/About.tsx";
 import Contact from "./pages/CustomService/Contact.tsx";
 import CustomService from './pages/CustomService/CustomService.tsx';
 import SalesAndDeliveryConditions from "./pages/CustomService/SalesAndDeliveryConditions.tsx";

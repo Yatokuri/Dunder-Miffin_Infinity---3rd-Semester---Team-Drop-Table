@@ -3,7 +3,7 @@ import {orderStatusAtom} from "../../atoms/OrderStatusAtoms.ts";
 import {Api} from "../../../Api.ts";
 import React, { useState } from "react";
 import { toast } from 'react-hot-toast';
-import ConfirmationModal from "../ConfirmationModal.tsx";
+import ConfirmationModal from "../Modals/ConfirmationModal.tsx";
 import { cancelOrder } from './CancelOrder.ts'; // Import your cancelOrder function
 
 

@@ -8,7 +8,7 @@ import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
 import { searchAtom } from "../atoms/atoms.ts";
 import {loginFormAtom, authAtom, clearAuthData, checkAdminStatus} from '../atoms/LoginAtoms.ts'; // Importing the atoms
 import { clearCustomerData  } from '../atoms/CustomerAtoms.ts'; // Importing the atoms
-import { LoginModal } from './LoginModal.tsx';
+import { LoginModal } from './Modals/LoginModal.tsx';
 import { toast} from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 

@@ -5,7 +5,7 @@ import {MyApi} from "./Shop.tsx";
 import {BasketAtom, TotalAmountAtom, clearBasket, updateQuantity, loadBasketFromStorage} from "../../atoms/BasketAtoms.ts";
 import {toast} from "react-hot-toast";
 import TrashIcon from '../../assets/icons/TrashbinIcon.tsx';
-import ConfirmationModal from '../../components/ConfirmationModal.tsx';
+import ConfirmationModal from '../../components/Modals/ConfirmationModal.tsx';
 
 type ProductNames = {
     [key: number]: string; // Maps product IDs to product names

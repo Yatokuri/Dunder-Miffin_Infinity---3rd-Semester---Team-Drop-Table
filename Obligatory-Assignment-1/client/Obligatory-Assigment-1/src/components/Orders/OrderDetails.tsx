@@ -5,7 +5,7 @@ import { useAtom } from "jotai/index";
 import toast from 'react-hot-toast';
 import NoPermission from "../../pages/Errors/NoPermission.tsx";
 import {cancelOrder} from "./CancelOrder.ts";
-import ConfirmationModal from "../ConfirmationModal.tsx";
+import ConfirmationModal from "../Modals/ConfirmationModal.tsx";
 import StatusChange from "./OrderStatusChange.tsx";
 import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts"; // Import the StatusChange component
 

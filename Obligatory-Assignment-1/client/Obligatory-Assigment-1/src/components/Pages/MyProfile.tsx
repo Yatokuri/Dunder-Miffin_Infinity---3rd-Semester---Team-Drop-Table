@@ -1,7 +1,8 @@
 ﻿import { useState, useEffect } from "react";
-import {Customer} from "../../Api.ts";
+import {Customer} from "../../../Api.ts";
 import {useAtom} from "jotai";
-import {CustomerAtoms} from "../atoms/CustomerAtoms.ts";
+import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts";
+
 
 
 function MyProfile() {

@@ -5,7 +5,7 @@ import { clearCustomerData, CustomerAtoms } from '../../atoms/CustomerAtoms.ts';
 import { authAtom, clearAuthData, loginFormAtom } from "../../atoms/LoginAtoms.ts"; // Import the auth atom
 import { ShippingAtom, SelectedShippingOptionAtom } from '../../atoms/ShippingAtom.ts'; // Import shipping atoms
 import { useState, useEffect } from 'react';
-import OrderPlacementComponent from "../../components/PlaceOrder.tsx";
+import OrderPlacementComponent from "../../components/Orders/PlaceOrder.tsx";
 import React from 'react';
 
 const CheckoutPage = () => {

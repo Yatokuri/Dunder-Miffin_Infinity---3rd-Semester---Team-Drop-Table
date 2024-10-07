@@ -56,6 +56,9 @@ export const saveBasketToStorage = (basket: BasketItem[]) => {
         setInLocalStorage(BASKET_STORAGE_KEY, basket);
         const expiryTime = getCurrentTimestamp() + 3600000; // 1 hour from now
         setInLocalStorage(BASKET_EXPIRY_KEY, expiryTime);
+    } else {
+        localStorage.removeItem(BASKET_STORAGE_KEY);
+        localStorage.removeItem(BASKET_EXPIRY_KEY);
     }
 };
 
@@ -101,7 +104,7 @@ export const updateQuantity = (
     const existingProductIndex = basket.findIndex(item => item.product_id === productId);
 
     // Create a shallow copy of the basket to avoid mutation
-    const updatedBasket = [...basket];
+    let updatedBasket = [...basket];
 
     if (existingProductIndex !== -1) {
         // If the product exists, update the quantity
@@ -114,6 +117,7 @@ export const updateQuantity = (
 
     // Update the basket state
     setBasket(updatedBasket);
+    updatedBasket = updatedBasket.filter(item => item.quantity > 0); //Make sure the memory don't save product with quantity 0
 
     // Persist the updated basket to local storage
     saveBasketToStorage(updatedBasket); // Save the updated basket to local storage

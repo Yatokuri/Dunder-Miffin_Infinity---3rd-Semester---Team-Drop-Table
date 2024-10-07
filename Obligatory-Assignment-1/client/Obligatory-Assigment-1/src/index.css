@@ -10,3 +10,7 @@
 .btn-primary:hover {
     @apply bg-logo-color-hover border-logo-color-hover;
 }
+
+h1 {
+    @apply text-black;
+}

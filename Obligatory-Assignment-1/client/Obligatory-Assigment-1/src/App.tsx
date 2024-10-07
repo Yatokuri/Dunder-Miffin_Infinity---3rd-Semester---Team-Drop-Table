@@ -30,7 +30,7 @@ function App() {
             <BrowserRouter>
                 <Toaster/>
                 <NavBar/>
-                <div className="flex-grow m-2 pt-16">
+                <div className="flex-grow m-2 pt-20">
                     <Routes>
                         {/* Protecting admin routes with a wildcard route */}
                         <Route path="/admin/*" element={

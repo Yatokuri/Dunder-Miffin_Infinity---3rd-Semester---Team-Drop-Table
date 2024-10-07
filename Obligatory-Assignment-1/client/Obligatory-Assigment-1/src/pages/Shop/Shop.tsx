@@ -1,15 +1,23 @@
 import {useAtom} from "jotai";
-import {useEffect} from "react";
-import {productAtom } from "../../atoms/ProductAtom.ts";
-import {BasketAtom, updateQuantity, loadBasketFromStorage } from "../../atoms/BasketAtoms";
+import React, {useEffect, useState} from "react";
+import {productAtom, Product} from "../../atoms/ProductAtom.ts";
+import {BasketAtom, updateQuantity, loadBasketFromStorage} from "../../atoms/BasketAtoms.ts";
 import {Api} from "../../../Api.ts";
 import {toast} from "react-hot-toast";
-import React, { useState } from "react";
+import InputFieldPaperQuantity from "../../components/Orders/InputFieldPaperQuantity.tsx";
 
 export const MyApi = new Api();
 
-// @ts-ignore
-const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }) => {
+// Define the props for the ShopCard component
+interface ShopCardProps {
+    product: Product;
+    initialQuantity: number;
+    onAdd: (productId: number, newQuantity: number, price: number) => void;
+    onRemove: (productId: number, newQuantity: number, price: number) => void;
+}
+
+// Memoized ShopCard component
+const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: ShopCardProps) => {
     const [quantity, setQuantity] = useState(initialQuantity);
 
     // Update local quantity when the product quantity in the basket changes
@@ -46,15 +54,13 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }) => {
                         +
                     </button>
 
-                    {/*
-                    <input
-                        type="number"
-                        min="1"
-                        className="w-12 text-center border rounded mx-2"
-                        value={quantity}
-                        onChange={handleQuantityChange}
+                    <InputFieldPaperQuantity
+                        item={{
+                            quantity,
+                            product_id: product.id,
+                            price: product.price
+                        }}
                     />
-                    */}
 
                     <button onClick={handleRemoveClick} className="btn bg-red-500 ml-2" disabled={quantity === 0}>
                         -
@@ -87,14 +93,13 @@ function Shop() {
             toast.success("Product quantity updated", { duration: 1000 });
         } else {
             // Add a new product to the basket
-            updateQuantity(basket, productId, newQuantity,  price, setBasket);
+            updateQuantity(basket, productId, newQuantity, price, setBasket);
             toast.success("Product added to basket", { duration: 1000 });
         }
     };
 
     const handleRemove = (productId: number, newQuantity: number, price: number) => {
         const existingQuantity = getProductQuantity(productId);
-        console.log(existingQuantity + " hest ")
         if (existingQuantity > 1) {
             // Decrease quantity if more than 1
             updateQuantity(basket, productId, newQuantity, price, setBasket);
@@ -115,7 +120,7 @@ function Shop() {
                 console.error("Error fetching products:", error);
             }
         };
-        fetchData();
+        fetchData().then();
     }, [setProducts]);
     
     return (

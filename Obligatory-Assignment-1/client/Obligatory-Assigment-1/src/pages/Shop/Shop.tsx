@@ -6,6 +6,7 @@ import {Api} from "../../../Api.ts";
 import {toast} from "react-hot-toast";
 import InputFieldPaperQuantity from "../../components/Orders/InputFieldPaperQuantity.tsx";
 import {searchAtom} from "../../atoms/atoms.ts";
+import {productFilterAtom} from "../../atoms/ProductFilterAtoms.ts";
 
 export const MyApi = new Api();
 
@@ -77,7 +78,8 @@ function Shop() {
     const [products, setProducts] = useAtom(productAtom);
     const [basket, setBasket] = useAtom(BasketAtom);
     const [searchQuery] = useAtom(searchAtom); // Use the navbar search
-    const [filterPrice, setFilterPrice] = useState<string>("All");
+    const [sortPrice, setSortPrice] = useState<string>("Normal");
+    const [filters] = useAtom(productFilterAtom);
 
 
     // Load basket from localStorage when the component mounts
@@ -108,7 +110,7 @@ function Shop() {
         if (existingQuantity > 1) {
             // Decrease quantity if more than 1
             updateQuantity(basket, productId, newQuantity, price, name, setBasket);
-            toast.success("Product quantity decreased", { duration: 1000 });
+            toast.error("Product quantity decreased", { duration: 1000 });
         } else {
             updateQuantity(basket, productId, 0, price, name, setBasket);
             toast.error("Product removed from basket");
@@ -130,10 +132,18 @@ function Shop() {
 
     // Handle filtering Products by price and search query
     const filteredProducts = products.filter(product => {
-        const matchesStatus = filterPrice === "All" || product.price === filterPrice;
-        const matchesSearch =
-            product.name.toString().toLowerCase().includes(searchQuery.toLowerCase()); // Search by Product Name
-        return matchesStatus && matchesSearch; // Combine filters
+        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()); // Search by Product Name
+        
+        if (sortPrice === "Ascending" || sortPrice === "Descending" || sortPrice === "Normal") {
+            return matchesSearch;
+        }
+        
+        return matchesSearch && product.price.toString() === sortPrice; // Combine filters
+    })
+        .sort((a, b) => {
+        if (sortPrice === "Ascending") return a.price - b.price;
+        if (sortPrice === "Descending") return b.price - a.price;
+        return 0; // Normal (no sorting)
     });
     
     
@@ -141,6 +151,22 @@ function Shop() {
         <div className="text-black">
             <h1 className="flex text-3xl font-bold bg-center justify-center mt-5">Limitless Paper in a Paperless
                 World</h1>
+            <div className="mb-4">
+                <label htmlFor="sortPrice" className="mr-2 bg-center flex ml-5">Sort by Price:</label>
+                <select 
+                    id="sortPrice" 
+                    value={sortPrice} 
+                    onChange={(e) => setSortPrice(e.target.value)}
+                    className="border rounded p-1 flex-grow ml-5"
+                >
+                    {filters.map((filter) => (
+                        <option key={filter} value={filter}>
+                            {filter}
+                        </option>
+                    ))}
+                </select>
+                
+            </div>
             <div className="card-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
                 {filteredProducts.filter(product => !product.discontinued).map((product) => (
                     <ShopCard key={product.id} product={product} initialQuantity={getProductQuantity(product.id)}

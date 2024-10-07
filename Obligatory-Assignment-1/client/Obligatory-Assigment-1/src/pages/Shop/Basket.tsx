@@ -1,16 +1,12 @@
 import {useAtom} from "jotai";
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {MyApi} from "./Shop.tsx";
 import {BasketAtom, TotalAmountAtom, clearBasket, loadBasketFromStorage} from "../../atoms/BasketAtoms.ts";
 import {toast} from "react-hot-toast";
 import TrashIcon from '../../assets/icons/TrashbinIcon.tsx';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal.tsx';
 import InputFieldPaperQuantity from '../../components/Orders/InputFieldPaperQuantity.tsx';
 
-type ProductNames = {
-    [key: number]: string; // Maps product IDs to product names
-};
 
 // Utility function to format price
 const formatPrice = (price: number) => {
@@ -28,32 +24,33 @@ const truncateString = (str: string, maxLength: number) => {
 function Basket() {
     const [basket, setBasket] = useAtom(BasketAtom);
     const [totalAmount] = useAtom(TotalAmountAtom);
-    const [productNames, setProductNames] = useState<ProductNames>({});
     const [isModalOpen, setModalOpen] = useState(false);
+    const [maxNameLength, setMaxNameLength] = useState(18);
 
     // Load basket from local storage once when the component mounts
     useEffect(() => {
         loadBasketFromStorage(setBasket);
     }, [setBasket]);
 
-    // Fetch product names when the page starts - Might take a quick second since names are not saved in the basket atom
+    // Track screen size and adjust max length dynamically
     useEffect(() => {
-        const fetchProductNames = async () => {
-            const names = {};
-            for (const item of basket) {
-                try {
-                    const response = await MyApi.api.paperGetPaper(item.product_id);
-                    // @ts-expect-error: Ignore an error if it doesn't exist
-                    names[item.product_id] = response.data.name;
-                } catch (error) {
-                    console.error(`Error fetching product ${item.product_id}:`, error);
-                }
+        const updateMaxNameLength = () => {
+            const screenWidth = window.innerWidth;
+            if (screenWidth >= 640) {
+                setMaxNameLength(18);
+            } else { // Mobile screens
+                setMaxNameLength(28);
             }
-            setProductNames(names);
         };
 
-        fetchProductNames().then();
-    }, [basket]);
+        updateMaxNameLength();
+
+        // Listen for window resize and update max name length
+        window.addEventListener("resize", updateMaxNameLength);
+
+        return () => window.removeEventListener("resize", updateMaxNameLength);
+    }, []);
+
 
     // Handle clearing the basket with a confirmation dialog
     const handleClearBasket = () => {
@@ -74,19 +71,40 @@ function Basket() {
                 <div>
                     <ul className="space-y-2">
                         {basket.map((item) => (
-                            <li key={item.product_id} className="flex justify-between items-center py-2 border-b">
-                                <div className="w-2/5">
-                                    <span
-                                        className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis"
-                                        title={productNames[item.product_id] || 'Loading...'}
-                                    >
-                                    {truncateString(productNames[item.product_id] || 'Loading...', 18)}
-                                </span>
+                            <li key={item.product_id} className="border-b py-2">
+                                {/* Product Name and Input Field in one line on large screens */}
+                                <div className="flex justify-between items-center">
+                                    <div className="flex-shrink-0 w-1/2 max-w-[160px]">
+                                        <span
+                                            className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis"
+                                            title={item.name}
+                                        >
+                                            {truncateString(item.name || 'Unknown', maxNameLength)}
+                                        </span>
+                                    </div>
+                                    {/* Input field taking consistent space */}
+                                    <div className="sm:flex-grow w-1/4 justify-items-end">
+                                        <InputFieldPaperQuantity item={item} />
+                                    </div>
+                                    {/* Price and Total on one line on large screens */}
+                                    <div className="w-1/4 text-center flex-col hidden sm:flex">
+                                        <span>Price:</span>
+                                        <span>{formatPrice(item.price)}</span>
+                                    </div>
+                                    <div className="w-1/4 text-center flex-col hidden sm:flex">
+                                        <span>Total:</span>
+                                        <span>{formatPrice(item.quantity * item.price)}</span>
+                                    </div>
                                 </div>
-                                <div className="flex w-3/5 justify-between items-center">
-                                    <InputFieldPaperQuantity item={item}/>
-                                    <span className="w-1/4 text-center">Price: {formatPrice(item.price)}</span>
-                                    <span className="w-1/4 text-center">Total: {formatPrice(item.quantity * item.price)}</span>
+
+                                {/* Price and Total on a new line for mobile */}
+                                <div className="flex justify-between items-center sm:hidden mt-2">
+                                    <span className="w-1/2 text-left">
+                                        Price: {formatPrice(item.price)}
+                                    </span>
+                                    <span className="w-1/2 text-right">
+                                        Total: {formatPrice(item.quantity * item.price)}
+                                    </span>
                                 </div>
                             </li>
                         ))}

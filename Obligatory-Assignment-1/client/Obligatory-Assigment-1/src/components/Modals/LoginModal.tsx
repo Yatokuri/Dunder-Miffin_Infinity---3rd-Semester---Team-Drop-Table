@@ -226,7 +226,7 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
                         </div>
                     </div>
                     <div className="modal-action">
-                        <button type="submit" className="btn btn-primary hover:bg-logo-color-hover hover:border-logo-color-hover border-logo-color bg-logo-color w-full">Sign in</button>
+                        <button type="submit" className="btn btn-primary  hover:bg-logo-color-hover hover:border-logo-color-hover border-logo-color bg-logo-color w-full">Sign in</button>
                     </div>
                 </form>
                 <div className="text-center mt-4">or continue with</div>

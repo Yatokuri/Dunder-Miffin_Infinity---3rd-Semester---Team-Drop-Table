@@ -5,6 +5,7 @@ type BasketItem = {
     product_id: number;
     quantity: number;
     price: number;
+    name: string;
 };
 
 // Local storage keys
@@ -77,7 +78,7 @@ export const addToBasket = (
         // If the product exists, update the quantity
         updatedBasket = basket.map((item) =>
             item.product_id === product.product_id
-                ? { ...item, quantity: item.quantity + product.quantity } // Increment the quantity
+                ? { ...item, quantity: item.quantity + product.quantity, name: product.name } // Increment the quantity and update the name
                 : item
         );
     } else {
@@ -98,6 +99,7 @@ export const updateQuantity = (
     productId: number,     // ID of the product being updated
     newQuantity: number,    // New quantity for the product
     productPrice: number,   // Price of the product
+    productName: string,   // Name of the product
     setBasket: (updatedBasket: BasketItem[]) => void // Function to update the basket state
 ) => {
     // Find the index of the product in the basket
@@ -111,7 +113,7 @@ export const updateQuantity = (
         updatedBasket[existingProductIndex].quantity = newQuantity; // Update the quantity
     } else {
         // If the product does not exist, add it to the basket
-        const newItem: BasketItem = { product_id: productId, quantity: newQuantity, price: productPrice }; // Create a new BasketItem
+        const newItem: BasketItem = { product_id: productId, quantity: newQuantity, price: productPrice, name: productName}; // Create a new BasketItem
         updatedBasket.push(newItem); // Add new item to the basket
     }
 

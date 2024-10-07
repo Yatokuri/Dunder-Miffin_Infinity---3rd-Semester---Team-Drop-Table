@@ -8,6 +8,7 @@ type InputFieldPaperQuantityProps = {
         quantity: number;
         product_id: number;
         price: number;
+        name: string;
     };
 };
 
@@ -33,12 +34,12 @@ function InputFieldPaperQuantity({ item}: InputFieldPaperQuantityProps) {
 
         // Update the basket based on the new quantity
         if (quantity === 0) {
-            updateQuantity(basket, productId, 0, item.price, setBasket);
+            updateQuantity(basket, productId, 0, item.price, item.name, setBasket);
             // Remove product if quantity is 0
             setBasket(basket.filter(item => item.product_id !== productId));
             toast.success("Product removed from basket");
         } else {
-            updateQuantity(basket, productId, quantity, item.price, setBasket);
+            updateQuantity(basket, productId, quantity, item.price, item.name, setBasket);
         }
     };
 

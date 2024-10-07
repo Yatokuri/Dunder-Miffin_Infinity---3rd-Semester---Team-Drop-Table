@@ -17,7 +17,7 @@ function Home() {
                 </h2>
             </div>
             <div className="text-center mt-8">
-                <Link to={"/Shop"} className="btn btn-primary btn-md lg:btn-lg text-white transition duration-200">
+                <Link to={"/shop"} className="btn btn-primary btn-md lg:btn-lg text-white transition duration-200">
                     Go to shop
                 </Link>
             </div>

@@ -36,7 +36,7 @@ const NavLinks: React.FC<NavLinksProps> = () => {
 
     return (
         <>
-            <Link to={"/shop"} className="btn btn-ghost">Products</Link>
+            <Link to={"/shop"} className="btn btn-ghost">Shop</Link>
             <Link to={"/about"} className="btn btn-ghost">About Us</Link>
             <Link to={"/customer-service/contact-us"} className="btn btn-ghost">Contact</Link>
         </>

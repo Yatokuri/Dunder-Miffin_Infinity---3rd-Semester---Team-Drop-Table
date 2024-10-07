@@ -117,7 +117,7 @@ function Shop() {
         };
         fetchData();
     }, [setProducts]);
-
+    
     return (
         <div className="text-black">
             <h1 className="flex text-3xl font-bold bg-center justify-center mt-5">Limitless Paper in a Paperless World</h1>

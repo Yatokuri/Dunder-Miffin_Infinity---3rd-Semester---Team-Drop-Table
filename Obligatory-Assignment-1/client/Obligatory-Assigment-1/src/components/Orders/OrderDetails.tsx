@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Api } from "../../Api.ts";
+import {Api} from "../../../Api.ts";
 import { useAtom } from "jotai/index";
 import toast from 'react-hot-toast';
-import NoPermission from '../pages/Errors/NoPermission.tsx';
-import { cancelOrder } from "./CancelOrder.ts";
-import ConfirmationModal from './ConfirmationModal';
-import StatusChange from "../components/OrderStatusChange.tsx"; // Import the StatusChange component
-import { CustomerAtoms } from '../atoms/CustomerAtoms';
+import NoPermission from "../../pages/Errors/NoPermission.tsx";
+import {cancelOrder} from "./CancelOrder.ts";
+import ConfirmationModal from "../ConfirmationModal.tsx";
+import StatusChange from "./OrderStatusChange.tsx";
+import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts"; // Import the StatusChange component
+
+
 
 const MyApi = new Api();
 

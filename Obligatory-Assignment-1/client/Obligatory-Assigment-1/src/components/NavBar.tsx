@@ -20,20 +20,6 @@ interface NavLinksProps {
 
 // Navigation Links Component
 const NavLinks: React.FC<NavLinksProps> = () => {
-    const [setIsMobile] = useState<boolean>(window.innerWidth < 768);
-
-    // Update isMobile on window resize
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
     return (
         <>
             <Link to={"/shop"} className="btn btn-ghost">Shop</Link>

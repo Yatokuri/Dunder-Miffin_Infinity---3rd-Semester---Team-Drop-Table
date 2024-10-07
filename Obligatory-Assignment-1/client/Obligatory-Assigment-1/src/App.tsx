@@ -5,7 +5,7 @@ import NotFound from "./pages/Errors/NotFound.tsx";
 import NewOrderTest from "./pages/NewOrderTest.tsx";
 import NavBar from "./components/NavBar.tsx";
 import { Toaster } from "react-hot-toast";
-import Footer from "./components/Footer.tsx";
+import Footer from "./components/PageHelpers/Footer.tsx";
 import About from "./pages/About/About.tsx";
 import Contact from "./pages/CustomService/Contact.tsx";
 import CustomService from './pages/CustomService/CustomService.tsx';
@@ -20,7 +20,7 @@ import Admin from "./pages/Admin/Admin.tsx";
 import Profile from "./pages/Profile/Profile.tsx";
 import Checkout from "./pages/Profile/Checkout.tsx";
 import ProtectedAdminRoute from "./components/ProtectedRoute.tsx"; // Import the ProtectedRoute component
-import OrderDetails from "./components/OrderDetails.tsx";
+import OrderDetails from "./components/Orders/OrderDetails.tsx";
 import Shop from "./pages/Shop/Shop.tsx";
 import Basket from "./pages/Shop/Basket.tsx";
 

@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Api } from "../../Api.ts";
+import {Api} from "../../../Api.ts";
 import { useAtom } from "jotai";
-import { orderStatusAtom } from "../atoms/OrderStatusAtoms.ts";
+import {orderStatusAtom} from "../../atoms/OrderStatusAtoms.ts";
 import { useNavigate } from 'react-router-dom';
-import StatusChange from '../components/OrderStatusChange.tsx';
-import { searchAtom } from '../atoms/atoms.ts';
-import { orderAtom } from "../atoms/OrderEntryAtoms.ts";
+import {searchAtom} from "../../atoms/atoms.ts";
+import {orderAtom} from "../../atoms/OrderEntryAtoms.ts";
+import StatusChange from "./OrderStatusChange.tsx";
+
+
+
+
 
 
 // Inline TableCell component

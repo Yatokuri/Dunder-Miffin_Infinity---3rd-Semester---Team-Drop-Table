@@ -1,4 +1,4 @@
-import FetchOrders from "../../../components/FetchAllOrders.tsx";
+import FetchOrders from "../../../components/Orders/FetchAllOrders.tsx";
 import {useAtom} from "jotai/index";
 import {authAtom, checkAdminStatus} from "../../../atoms/LoginAtoms.ts";
 import NoPermission from "../../Errors/NoPermission.tsx";

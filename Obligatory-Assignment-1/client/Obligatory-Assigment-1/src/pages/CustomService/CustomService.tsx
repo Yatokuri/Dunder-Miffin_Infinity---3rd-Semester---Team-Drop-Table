@@ -12,7 +12,7 @@ function CustomService() {
     return (
         <div>
             <PageHeader/>
-            <h1 className="text-2xl font-bold">Customer Service</h1>
+            <h1 className="flex justify-center font-bold">Customer Service</h1>
 
             <div className="bg-gray-100">
                 <div className="container mx-auto mt-12 px-4">
@@ -33,7 +33,7 @@ function CustomService() {
                                     Do you still lack answers to your questions? Then send us an email or call us.
                                 </p>
                                 <div className="card-actions justify-center mt-4">
-                                    <Link to="contact-us" className="btn btn-neutral">
+                                    <Link to={"/customer-service/contact-us"} className="btn btn-neutral">
                                         Contact customer service
                                     </Link>
                                 </div>
@@ -56,8 +56,8 @@ function CustomService() {
                                     to see your package.
                                 </p>
                                 <div className="card-actions justify-center mt-4">
-                                    <Link to="profile/myOrders"
-                                          className="btn btn-neutral">  {/*TODO Could be wrong link */}
+                                    <Link to={"/myOrders"}
+                                          className="btn btn-neutral">
                                         Check orders
                                     </Link>
                                 </div>
@@ -80,7 +80,7 @@ function CustomService() {
                                     asked questions and see if you can find the answer there.
                                 </p>
                                 <div className="card-actions justify-center mt-4">
-                                    <Link to="faq" className="btn btn-neutral">
+                                    <Link to={"/customer-service/faq"} className="btn btn-neutral">
                                         Frequently asked questions
                                     </Link>
                                 </div>

@@ -1,7 +1,9 @@
 ﻿using dataAccess;
 using dataAccess.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using service.Request.CustomerDto;
+using service.Response;
 
 namespace api.Controllers;
 
@@ -14,6 +16,66 @@ public class CustomerController(DMIContext context) : ControllerBase
         var result = context.Customers.ToList();
         return Ok(result);
     }
+    
+    [HttpGet]
+    [Route("api/customer/{id}")]
+    public ActionResult GetCustomerById(int id)
+    {
+        var result = context.Customers.FirstOrDefault(x => x.Id == id);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+    
+    [HttpGet]
+    [Route("api/customer/email/{email}")]
+    public ActionResult GetCustomerByEmail(string email)
+    {
+        var result = context.Customers.FirstOrDefault(x => x.Email == email);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+
+    
+    [HttpGet("api/customer/{id}/order")]
+    public ActionResult<IEnumerable<OrderDto>> GetOrdersByCustomerId(int id)
+    {
+        var orders = context.Orders
+            .Include(o => o.OrderEntries)
+            .ThenInclude(oe => oe.Product)
+            .Where(o => o.CustomerId == id) // Get all orders for the customer
+            .ToList();
+
+        if (!orders.Any())
+        {
+            return NotFound(); 
+        }
+
+        // Convert each Order entity to OrderDto
+        var orderDto = orders.Select(order => new OrderDto
+        {
+            Id = order.Id,
+            OrderDate = order.OrderDate,
+            DeliveryDate = order.DeliveryDate,
+            Status = order.Status,
+            TotalAmount = order.TotalAmount,
+            CustomerId = order.CustomerId,
+            OrderEntries = order.OrderEntries.Select(oe => new OrderEntryDto
+            {
+                Id = oe.Id,
+                Quantity = oe.Quantity,
+                ProductId = oe.ProductId,
+            }).ToList()
+        }).ToList();
+
+        return Ok(orderDto);
+    }
+    
     
     [HttpPost]
     [Route("api/customer")]

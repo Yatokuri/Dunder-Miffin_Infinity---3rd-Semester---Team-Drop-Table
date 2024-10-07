@@ -6,7 +6,8 @@ import AccountIcon from '../assets/icons/AccountIcon';
 import BasketIcon from '../assets/icons/BasketIcon';
 import BurgerMenuIcon from '../assets/icons/BurgerMenuIcon';
 import { searchAtom } from "../atoms/atoms.ts";
-import { loginFormAtom, authAtom, clearAuthData  } from '../atoms/LoginAtoms.ts'; // Importing the atoms
+import {loginFormAtom, authAtom, clearAuthData, checkAdminStatus} from '../atoms/LoginAtoms.ts'; // Importing the atoms
+import { clearCustomerData  } from '../atoms/CustomerAtoms.ts'; // Importing the atoms
 import { LoginModal } from './LoginModal.tsx';
 import { toast} from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
@@ -18,8 +19,8 @@ interface NavLinksProps {
 }
 
 // Navigation Links Component
-const NavLinks: React.FC<NavLinksProps> = ({ toggleDropdown, activeDropdown }) => {
-    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
+const NavLinks: React.FC<NavLinksProps> = () => {
+    const [setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
     // Update isMobile on window resize
     useEffect(() => {
@@ -35,36 +36,9 @@ const NavLinks: React.FC<NavLinksProps> = ({ toggleDropdown, activeDropdown }) =
 
     return (
         <>
-            <div className="dropdown relative">
-                <button onClick={() => toggleDropdown('products')} className="btn btn-ghost">
-                    Products
-                </button>
-                {activeDropdown === 'products' && (
-                    <ul
-                        className={`absolute ${
-                            isMobile
-                                ? 'left-full top-0 ml-2 w-max' // Mobile: dropdown to the right of button
-                                : 'left-0 top-full mt-3' // Desktop: dropdown below button
-                        } p-2 shadow bg-base-100 rounded-box w-auto z-10`}
-                    >
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/1">Page 1</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/2">Page 2</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/3">Page 3</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="catagory/4">Page 4</Link>
-                        </li>
-                    </ul>
-                )}
-            </div>
-            <Link to="/ipsum" className="btn btn-ghost">Lorem</Link>
-            <Link to="/about" className="btn btn-ghost">About Us</Link>
-            <Link to="/customer-service/contact-us" className="btn btn-ghost">Contact</Link>
+            <Link to={"/shop"} className="btn btn-ghost">Shop</Link>
+            <Link to={"/about"} className="btn btn-ghost">About Us</Link>
+            <Link to={"/customer-service/contact-us"} className="btn btn-ghost">Contact</Link>
         </>
     );
 };
@@ -76,43 +50,75 @@ interface AccountDropdownProps {
     userLoggedIn: boolean; // Check if the user is logged in
     handleLogin: () => void; // Function to handle login
     handleLogout: () => void; // Function to handle logout
+    handleClick: () => void; // Function to handle click
 }
 
-const AccountDropdown: React.FC<AccountDropdownProps> = ({isOpen, toggle, userLoggedIn, handleLogin, handleLogout,}) => (
-    <div className="relative">
-        <button onClick={toggle} className="btn btn-ghost">
-            <AccountIcon className="w-6 h-6 text-icon-color" />
-        </button>
-        {isOpen && (
-            <ul className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}>
-                {userLoggedIn ? (
-                    <>
+const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userLoggedIn, handleLogin, handleLogout, handleClick }) => {
+    const [authState] = useAtom(authAtom);
+    const isAdminUser = checkAdminStatus(authState); // Check if the logged-in user is an admin
+
+    return (
+        <div className="relative">
+            <button onClick={toggle} className="btn btn-ghost">
+                <AccountIcon className="w-6 h-6 text-icon-color" />
+            </button>
+            {isOpen && (
+                <ul className={`absolute left-0 top-full mt-3 p-2 shadow bg-base-100 rounded-box w-max z-10`}>
+                    {userLoggedIn ? (
+                        <>
+                            {isAdminUser ? (
+                                <>
+                                    {/* Admin-specific menu items */}
+                                    <li className="hover:bg-gray-200">
+                                        <Link to={"/admin/allOrders"} onClick={() => { handleClick(); }}>
+                                            All Orders
+                                        </Link>
+                                    </li>
+                                    <li className="hover:bg-gray-200">
+                                        <Link to={"/admin"} onClick={() => { handleClick(); }}>
+                                            Admin Panel
+                                        </Link>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    {/* Non-admin user-specific menu items */}
+                                    <li className="hover:bg-gray-200">
+                                        <Link to={"/profile"} onClick={() => { handleClick(); }}>
+                                            My Profile
+                                        </Link>
+                                    </li>
+                                    <li className="hover:bg-gray-200">
+                                        <Link to={"/myOrders"} onClick={() => { handleClick(); }}>
+                                            My Orders
+                                        </Link>
+                                    </li>
+                                </>
+                            )}
+                            <li className="hover:bg-gray-200">
+                                <button
+                                    onClick={() => { handleLogout(); handleClick(); }}
+                                    className="w-full text-left"
+                                >
+                                    Logout
+                                </button>
+                            </li>
+                        </>
+                    ) : (
                         <li className="hover:bg-gray-200">
-                            <Link to="/profile">My Profile</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="/myOrders">My Orders</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <Link to="/allOrders">All Orders</Link>
-                        </li>
-                        <li className="hover:bg-gray-200">
-                            <button onClick={handleLogout} className="w-full text-left">
-                                Logout
+                            <button
+                                onClick={() => { handleLogin(); handleClick(); }}
+                                className="w-full text-left"
+                            >
+                                Login
                             </button>
                         </li>
-                    </>
-                ) : (
-                    <li className="hover:bg-gray-200">
-                        <button onClick={handleLogin} className="w-full text-left">
-                            Login
-                        </button>
-                    </li>
-                )}
-            </ul>
-        )}
-    </div>
-);
+                    )}
+                </ul>
+            )}
+        </div>
+    );
+};
 
 // NavBar Component
 const NavBar: React.FC = () => {
@@ -134,6 +140,7 @@ const NavBar: React.FC = () => {
 
     const handleLogout = () => {
         clearAuthData(); // Clear authentication data from localStorage
+        clearCustomerData(); // -||-
         setAuthState({ email: '', isLoggedIn: false }); // Set user as logged out
         setLoginForm({ email: '', password: '' }); // Reset login form state
         toast.success("You have logged out successfully!", {duration: 3000,});
@@ -146,6 +153,10 @@ const NavBar: React.FC = () => {
 
     const toggleDropdown = (name: string) => {
         setActiveDropdown((prev) => (prev === name ? null : name)); // Toggle dropdown
+    };
+
+    const closeProfileDropdownMenu = () => {
+        setActiveDropdown(null);
     };
 
     useEffect(() => {
@@ -165,7 +176,7 @@ const NavBar: React.FC = () => {
 
 
     return (
-        <nav className="navbar bg-base-100 shadow-lg fixed top-0 w-full z-50">
+        <nav className="navbar h-20 bg-base-100 shadow-lg fixed top-0 w-full z-50">
             <div className="container mx-auto flex justify-between items-center px-4">
                 <div className="mr-4"> {/* Margin for spacing */}
                     <Link to="/" className="flex items-center">
@@ -224,11 +235,12 @@ const NavBar: React.FC = () => {
                             userLoggedIn={authState.isLoggedIn} // Check from authAtom
                             handleLogin={handleLogin} // Pass the login function
                             handleLogout={handleLogout} // Pass the logout function
+                            handleClick={closeProfileDropdownMenu} // Pas the close function
                         />
                     </div>
 
                     {/* Basket Menu */}
-                    <Link to="/basket" className="btn btn-ghost">
+                    <Link to={"/basket"} className="btn btn-ghost">
                         <BasketIcon className="w-6 h-6 text-icon-color"/>
                     </Link>
                 </div>

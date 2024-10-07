@@ -1,4 +1,4 @@
-import { Api } from "../../../../Api.ts";
+import { Api } from "../../../../../Api.ts";
 import { atom, useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import DeleteProduct from "../DeleteProduct/DeleteProduct.tsx";
@@ -24,6 +24,7 @@ function ProductTable() {
         const fetchData = async () => {
             try {
                 const response = await MyApi.api.paperGetAllPapers(); // Fetch data
+                // @ts-ignore
                 setProducts(response.data);
             } catch (error) {
                 console.error("Error fetching products:", error);

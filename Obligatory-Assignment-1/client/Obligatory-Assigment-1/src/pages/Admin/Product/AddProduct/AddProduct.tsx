@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Api } from "../../../../Api.ts";
+import { Api } from "../../../../../Api.ts";
 import { useAtom } from 'jotai';
 import { productsAtom } from '../ProductTable/ProductTable.tsx';
 import './AddProduct.css';
@@ -23,6 +23,7 @@ function AddProduct({ closeModal }: { closeModal: () => void }) {
 
     const handleCreatePaper = async () => {
         const newProduct = await createPaper(name, stock, price);
+        // @ts-ignore
         setProducts([...products, newProduct]);
         setName('');
         setStock(0);

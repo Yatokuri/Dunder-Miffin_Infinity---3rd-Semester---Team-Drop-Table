@@ -1,4 +1,4 @@
-import { Api } from "../../../../Api.ts";
+import { Api } from "../../../../../Api.ts";
 import { useAtom } from "jotai";
 import { productsAtom } from "../ProductTable/ProductTable.tsx";
 import './DeleteProduct.css';

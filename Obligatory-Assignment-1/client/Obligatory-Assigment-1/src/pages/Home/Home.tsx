@@ -3,6 +3,7 @@ import CarouselPicture1 from "../../components/Carousel/Carousel_Assets/Carousel
 import CarouselPicture2 from "../../components/Carousel/Carousel_Assets/CarouselPicture2.png";
 import CarouselPicture3 from "../../components/Carousel/Carousel_Assets/CarouselPicture3.png";
 import CarouselPicture4 from "../../components/Carousel/Carousel_Assets/CarouselPicture4.png";
+import {Link} from "react-router-dom";
 
 function Home() {
     return (
@@ -16,9 +17,9 @@ function Home() {
                 </h2>
             </div>
             <div className="text-center mt-8">
-                <button className="btn btn-md lg:btn-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-200">
+                <Link to={"/shop"} className="btn btn-primary btn-md lg:btn-lg text-white transition duration-200">
                     Go to shop
-                </button>
+                </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
                 <Carousel text={"Any color of the rainbow"} imageSrc={CarouselPicture1} />

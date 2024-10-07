@@ -1,5 +1,16 @@
-import axios from 'axios';
-import { useState } from "react";
+import axios, {isAxiosError} from 'axios';
+import React, { useEffect, useState } from "react";
+import { Api } from "../../Api.ts";
+import { useAtom } from "jotai/index";
+import { Product, productAtom } from '../atoms/ProductAtom.ts';
+import {
+    addToBasket,
+    BasketAtom,
+    clearBasket,
+    loadBasketFromStorage,
+    TotalAmountAtom,
+    updateQuantity
+} from '../atoms/BasketAtoms'; // Import the BasketAtom
 
 // Define the interface for order entries
 interface OrderEntry {
@@ -8,26 +19,61 @@ interface OrderEntry {
     price: number;
 }
 
+type BasketItem = {
+    product_id: number;
+    quantity: number;
+    price: number;
+};
+
+
+export const MyApi = new Api();
+
 const NewOrderTest = () => {
     const [orderDate, setOrderDate] = useState('');
     const [deliveryDate, setDeliveryDate] = useState('');
-    const [status, setStatus] = useState('');
-    const [totalAmount, setTotalAmount] = useState(0);
+    const [status, setStatus] = useState('Pending'); // Default status
     const [customerId, setCustomerId] = useState('');
     const [customerName, setCustomerName] = useState('');
     const [customerAddress, setCustomerAddress] = useState('');
     const [customerEmail, setCustomerEmail] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
 
+    const [products, setProducts] = useAtom<Product[]>(productAtom);
+    const [orderEntries, setOrderEntries] = useState<OrderEntry[]>([]); // Initially empty
+    const [basket, setBasket] = useAtom(BasketAtom);
+    const [totalAmount] = useAtom(TotalAmountAtom);
 
-    const [orderEntries, setOrderEntries] = useState<OrderEntry[]>([{ productId: 1, quantity: 1, price: 100.00 }]); // Default entry
-    const [numberOfEntries, setNumberOfEntries] = useState(1); // New field for number of order entries
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await MyApi.api.paperGetAllPapers(); // Fetch data
+                const fetchedProducts: Product[] = response.data as unknown as Product[]; // Use type assertion
+                setProducts(fetchedProducts); // Set the products atom
+                handleFillOrder(fetchedProducts);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+        fetchData().then(null);
+    }, [setProducts]);
+
+    useEffect(() => {
+        // Load basket from local storage
+        loadBasketFromStorage(setBasket);
+    }, [setBasket]);
+
 
     // Autofill predefined test data
     const fillFields = () => {
         const currentDate = new Date();
-        setOrderDate(new Date().toISOString().slice(0, 16));
-        setDeliveryDate(new Date(currentDate.setDate(currentDate.getDate() + 2)).toISOString().slice(0, 10)); // Two days from now
+        // Format order date manually to local time without UTC conversion
+        const orderDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}T${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}`;
+        const deliveryDate = new Date(currentDate); // Create a new Date object based on the current date
+        deliveryDate.setDate(deliveryDate.getDate() + 2); // Two days from now
+
+        // Set the order date and delivery date
+        setOrderDate(orderDate); // Using local time format
+        setDeliveryDate(deliveryDate.toISOString().slice(0, 10)); // Delivery date in YYYY
         setStatus('Pending');
         setCustomerId('1');
         setCustomerName('John Doe');
@@ -35,30 +81,67 @@ const NewOrderTest = () => {
         setCustomerPhone('123-456-7890');
         setCustomerAddress('123 Main St, Springfield, IL 62701, USA');
 
-        // Reset number of entries and order entries remember to have this in you db for testing purpose and right id
-        setNumberOfEntries(1); // Reset number of entries to 1
-        setOrderEntries([{ productId: 1, quantity: 1, price: 100.00 }]); // Reset to default entry
-        calculateTotalAmount([{ productId: 1, quantity: 1, price: 100.00 }]); // Calculate initial total amount
+        handleFillOrder(products);
     };
 
-    // Function to update the number of entries
-    const handleNumberOfEntriesChange = (e: { target: { value: string; }; }) => {
-        const count = parseInt(e.target.value);
-        setNumberOfEntries(count);
-
-        // Update orderEntries array based on the number of entries
-        const newEntries = Array.from({ length: count }, () => ({ productId: 1, quantity: 1, price: 100.00 }));
-        setOrderEntries(newEntries);
-        calculateTotalAmount(newEntries);
+    const handleQuantityChange = (index: number, newQuantity: number) => {
+        const updatedOrderEntries = [...orderEntries];
+        updatedOrderEntries[index].quantity = newQuantity; // Update quantity
+        setOrderEntries(updatedOrderEntries);
     };
 
-    // Function to calculate total amount
-    const calculateTotalAmount = (entries: OrderEntry[]) => {
-        const total = entries.reduce((sum: number, entry: OrderEntry) => sum + (entry.price * entry.quantity), 0);
-        setTotalAmount(total);
+    const handleClearBasket = () => {
+        clearBasket(setBasket);
     };
 
-    const handleSubmit = async (e: { preventDefault: () => void; }) => {
+
+    const handleProductSelect = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
+        const selectedId = parseInt(e.target.value);
+        const product = products.find(p => p.id === selectedId);
+
+        if (product) {
+            const updatedOrderEntries = [...orderEntries];
+            updatedOrderEntries[index] = {
+                productId: product.id,
+                quantity: 1, // Default quantity
+                price: product.price
+            };
+            setOrderEntries(updatedOrderEntries);
+        }
+    };
+
+    // Handle filling the order with the first product
+    const handleFillOrder = (availableProducts: Product[]) => {
+        if (availableProducts.length > 0) {
+            const firstProduct = availableProducts[0];
+            setOrderEntries([{ productId: firstProduct.id, quantity: 1, price: firstProduct.price }]);
+        } else {
+            setOrderEntries([]);
+        }
+    };
+
+    // Create the new basket entry
+    const handleAddToBasket = (entry: OrderEntry) => {
+        const newEntry: BasketItem = {
+            product_id: entry.productId,
+            quantity: entry.quantity,
+            price: entry.price, // Add the price here
+        };
+        addToBasket(basket, newEntry, setBasket);
+    };
+
+    // Update quantity using the atom's method
+    const handleUpdateQuantity = (entry: OrderEntry) => {
+        updateQuantity(basket, entry.productId, entry.quantity, entry.price, setBasket);
+    };
+
+    const calculateOrderEntriesTotal = () => {
+        return orderEntries.reduce((total, entry) => total + entry.quantity * entry.price, 0);
+    };
+
+
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const orderData = {
@@ -74,24 +157,40 @@ const NewOrderTest = () => {
                 deliveryDate,
                 status,
                 totalAmount,
-                orderEntries: orderEntries // Use the orderEntries state
-            }
+            },
+            orderEntries: basket.map(item => ({
+                productId: item.product_id,
+                quantity: item.quantity
+            }))
         };
 
         try {
-            const response = await axios.post('http://localhost:5261/api/fullOrder', orderData);
+            const response = await axios.post('http://localhost:5261/api/order', orderData);
             alert(`Order created with ID: ${response.data.id}`);
             // Clear the form
             setOrderDate('');
             setDeliveryDate('');
             setStatus('');
-            setTotalAmount(0);
             setCustomerId('');
-            setNumberOfEntries(1); // Reset number of entries to 1
-            setOrderEntries([{ productId: 1, quantity: 1, price: 100.00 }]); // Reset to default entry
-        } catch (error) {
-            console.error('There was an error creating the order!', error);
-            alert('Failed to create order. Please check console for details.');
+            setOrderEntries([]); // Clear the order entries
+            clearBasket(setBasket);
+        } catch (error: unknown) {
+            if (isAxiosError(error) && error.response?.data?.errors) {
+                const productIds = error.response.data.errors
+                    .map((errorMsg: string) => {
+                        const match = errorMsg.match(/product ID (\d+)/);
+                        return match ? match[1] : null; // Return the product ID or null if not found
+                    })
+                    .filter((id: string | null): id is string => id !== null); // Ensure the id is of type string
+
+                // Create a user-friendly message if product IDs are found
+                if (productIds.length > 0) {
+                    alert(`We do not have enough stock for product ID(s): ${productIds.join(', ')}`);
+                }
+            } else {
+                console.error('Unexpected error:', error);
+                alert('Failed to create order. Please check console for details.');
+            }
         }
     };
 
@@ -112,23 +211,7 @@ const NewOrderTest = () => {
                     Fill Fields with Test Data
                 </button>
 
-                {/* Number of Order Entries */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="numberOfEntries">
-                        Number of Order Entries:
-                    </label>
-                    <input
-                        type="number"
-                        id="numberOfEntries"
-                        min="1"
-                        value={numberOfEntries}
-                        onChange={handleNumberOfEntriesChange}
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        required
-                    />
-                </div>
-
-                {/* Order Date */}
+                {/* OrderControl Date */}
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="orderDate">
                         Order Date:
@@ -170,20 +253,6 @@ const NewOrderTest = () => {
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
                         required
-                    />
-                </div>
-
-                {/* Total Amount */}
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="totalAmount">
-                        Total Amount:
-                    </label>
-                    <input
-                        type="number"
-                        id="totalAmount"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value={totalAmount}
-                        readOnly // Make it read-only since it's calculated
                     />
                 </div>
 
@@ -262,10 +331,114 @@ const NewOrderTest = () => {
                     />
                 </div>
 
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Place Order
-                </button>
+                {/* OrderControl Entry */}
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="orderEntries">Select
+                        Products:</label>
+                    {orderEntries.map((entry, index) => (
+                        <div key={index} className="flex flex-col mb-4 border rounded-lg p-4 shadow-md bg-white">
+                            <div className="flex items-center mb-2">
+                                <select
+                                    value={entry.productId}
+                                    onChange={(e) => handleProductSelect(e, index)}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-4"
+                                >
+                                    {products.map(product => (
+                                        <option key={product.id} value={product.id}>{product.name}</option>
+                                    ))}
+                                </select>
+                                <div className="flex items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleQuantityChange(index, Math.max(entry.quantity - 1, 1))}
+                                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded-l"
+                                    >
+                                        -
+                                    </button>
+                                    <input
+                                        type="number"
+                                        value={entry.quantity}
+                                        onChange={(e) => handleQuantityChange(index, Math.max(parseInt(e.target.value), 1))}
+                                        min="1"
+                                        className="shadow appearance-none border-t border-b rounded-none w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-center"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleQuantityChange(index, entry.quantity + 1)}
+                                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded-r"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="flex justify-between">
+                                <button
+                                    type="button"
+                                    onClick={() => handleUpdateQuantity(entry)} // Update Quantity
+                                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+                                >
+                                    Update Quantity
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleAddToBasket(entry)} // Add to basket
+                                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200 ease-in-out"
+                                >
+                                    Add to Basket
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Display total amount for selected products */}
+                <div className="flex items-center justify-between">
+                <span className="text-gray-700 text-sm font-bold">
+                Total Amount for Selected Products: ${calculateOrderEntriesTotal().toFixed(2)}
+                </span>
+                </div>
+                <div className="flex items-center justify-between">
+                    <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                    >
+                        Submit Order
+                    </button>
+
+                    {/* Clear Basket Button */}
+                    <button
+                        type="button"
+                        onClick={handleClearBasket}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"
+                    >
+                        Clear Basket
+                    </button>
+                </div>
+
             </form>
+
+            {/* Basket Display */}
+            <div className="bg-white shadow-md rounded px-8 py-6 mb-4 w-full max-w-md">
+                <h2 className="text-xl font-semibold mb-4">Basket</h2>
+                {basket.length === 0 ? (
+                    <p className="text-gray-700">Your basket is empty.</p>
+                ) : (
+                    <div>
+                        <ul className="list-disc pl-5">
+                            {basket.map((item, index) => (
+                                <li key={index} className="text-gray-700">
+                                    Product ID: {item.product_id}, Quantity: {item.quantity}
+                                </li>
+                            ))}
+                        </ul>
+                        {/* Display the total price using the totalAmount from the TotalAmountAtom */}
+                        <div className="mt-4 font-bold">
+                            Total Price: ${totalAmount.toFixed(2)}
+                        </div>
+                    </div>
+                )}
+            </div>
+
         </div>
     );
 };

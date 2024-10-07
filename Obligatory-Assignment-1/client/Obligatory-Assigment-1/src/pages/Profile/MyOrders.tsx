@@ -14,7 +14,7 @@ function MyOrders() {
 
     return (
       <div>
-          <h1 className="text-3xl font-bold">My Orders</h1>
+          <h1 className="text-3xl m-2 font-bold">My Orders</h1>
           <FetchOrders />
       </div>
   );

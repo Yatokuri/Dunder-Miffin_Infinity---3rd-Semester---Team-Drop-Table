@@ -7,9 +7,9 @@ import NoPermission from "../../pages/Errors/NoPermission.tsx";
 import {cancelOrder} from "./CancelOrder.ts";
 import ConfirmationModal from "../Modals/ConfirmationModal.tsx";
 import StatusChange from "./OrderStatusChange.tsx";
-import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts"; // Import the StatusChange component
-
-
+import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts";
+import axios from "axios";
+import {authAtom} from "../../atoms/LoginAtoms.ts";
 
 const MyApi = new Api();
 
@@ -51,10 +51,13 @@ function OrderDetails({ isAdmin }: OrderDetailsProps) {
     const [loading, setLoading] = useState(true); // Loading state
     const [customer] = useAtom(CustomerAtoms); // Get customer atom
     const [isModalOpen, setModalOpen] = useState(false); // Modal state for cancellation
+    const [error, setError] = useState<string | null>(null);
+    const [authState] = useAtom(authAtom); // Subscribe to auth state
 
     // Fetch order details when the component mounts or dependencies change
     const fetchOrderDetails = useCallback(async (orderId: number) => {
         setLoading(true); // Set loading to true before fetching
+        setError(null); // Clear any previous errors
         try {
             const response = await MyApi.api.orderGetOrderById(orderId);
             const fetchedOrder = response.data;
@@ -66,8 +69,14 @@ function OrderDetails({ isAdmin }: OrderDetailsProps) {
                 setOrder(fetchedOrder); // Set order data
             }
         } catch (error) {
-            console.error("Error fetching order details:", error);
-            setOrder(null); // Set order to null on error as a fallback
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 404) {
+                    setError("No orders found for this id.");
+                } else {
+                    setError("Failed to load order details. Please try again later.");
+                }
+                setOrder(null); // Set order to null on error as a fallback
+            }
         } finally {
             setLoading(false); // Set loading to false when done
         }
@@ -83,7 +92,7 @@ function OrderDetails({ isAdmin }: OrderDetailsProps) {
     }, [id, refreshOrderDetails]); // Include refreshOrderDetails in the dependency array
 
     // Redirect for non-customers or non-admins
-    if (!customer && !isAdmin) {
+    if (!customer && !isAdmin || !authState.isLoggedIn) {
         return <NoPermission />; // No access for non-customers or non-admins
     }
 
@@ -118,6 +127,8 @@ function OrderDetails({ isAdmin }: OrderDetailsProps) {
             <h1 className="text-3xl font-bold mb-4">Order Summary</h1>
             {loading ? (
                 <p className="text-gray-700">Loading order details...</p>
+            ) : error ? (
+                <p className="text-red-500">{error}</p> // Display error message
             ) : order ? (
                 <div className="mt-4 bg-white shadow-md rounded-lg p-6">
                     <div className="mb-2">

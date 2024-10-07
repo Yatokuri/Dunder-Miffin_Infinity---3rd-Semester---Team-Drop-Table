@@ -34,19 +34,19 @@ function AddOrder() {
         // Fetch orders for the specific customer
         MyApi.api.customerGetOrdersByCustomerId(customer.id)
             .then((ordersResponse) => {
+                    // @ts-expect-error: Ignore an error if it doesn't exist
+                    setOrders(ordersResponse.data);
+                    setError(null); // Clear any previous errors
+            })
+            .catch((error) => {
                 // Check if response is empty and handle it
-                if (ordersResponse.status === 404) {
+                if (error.status === 404) {
                     setOrders([]); // No orders found
                     setError("No orders found for this customer.");
                 } else {
-                    // @ts-expect-error: Ignore a error there dont exit
-                    setOrders(ordersResponse.data);
-                    setError(null); // Clear any previous errors
+                    console.error("Error fetching orders:");
+                    setError("Failed to load orders. Please try again later."); // Set error message
                 }
-            })
-            .catch((error) => {
-                console.error("Error fetching orders:", error);
-                setError("Failed to load orders. Please try again later."); // Set error message
                 setOrders([]); // Clear orders on error
             })
             .finally(() => {

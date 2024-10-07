@@ -1,209 +1,167 @@
-﻿import { useState, useEffect } from "react";
-import {Customer} from "../../../Api.ts";
-import {useAtom} from "jotai";
-import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts";
+﻿import React, { useState, useEffect } from "react";
+import { useAtom } from "jotai";
+import { CustomerAtoms, useCustomerData } from "../../atoms/CustomerAtoms.ts";
+import { Api } from "../../../Api.ts";
+import { toast } from "react-hot-toast";
 
+export const MyApi = new Api();
 
+// Define the structure of the profile form state
+interface ProfileFormErrors {
+    name?: string;
+    email?: string;
+    address?: string;
+    phone?: string;
+}
+
+// Initial customer state
+const initialCustomerState = {
+    id: 0,
+    address: '',
+    email: '',
+    name: '',
+    phone: '',
+};
 
 function MyProfile() {
-
-    const [toggleEditableProfile, setEditableProfile] = useState(false); // State for password visibility
-    const [customer] = useAtom<Customer>(CustomerAtoms);
-    
-    const [state, setState] = useState({
-        name: customer.name,
-        email: customer.email,
-        address: customer.address,
-        phoneNumber: customer.phone,
+    const [toggleEditableProfile, setEditableProfile] = useState(false);
+    const [customer, setCustomer] = useAtom(CustomerAtoms);
+    const [touchedFields, setTouchedFields] = useState({
+        name: false,
+        email: false,
+        address: false,
+        phone: false,
     });
-
-
+    const [state, setState] = useState(initialCustomerState);
+    const [errors, setErrors] = useState<ProfileFormErrors>({});
+    const { updateCustomerData } = useCustomerData(); // Access the custom hook
 
     // Initialize the state when customer atom changes
     useEffect(() => {
-        setState({
-            name: customer.name,
-            email: customer.email,
-            address: customer.address,
-            phoneNumber: customer.phone,
-        });
+        if (customer) {
+            setState(customer);
+        }
     }, [customer]);
 
-
-    const handleChange = (e: { target: { name: any; value: any; }; }) => {
-        setState(prevState => ({
-            ...prevState,[e.target.name]: e.target.value
-        }))
-    }
-
-
-    let tempProfileName: string | undefined = "";
-    let tempProfileAddress: string | null | undefined = "";
-    let tempProfileEmail: string | null | undefined = "";
-    let tempProfilePhoneNumber: string | null | undefined = "";
-
-
-    // Function to toggle Profile page being editable
-    const changeEditableProfile = () => {
-
-        tempProfileName = customer.name;
-        tempProfileAddress = customer.address;
-        tempProfileEmail = customer.email;
-        tempProfilePhoneNumber = customer.phone;
-        
-        if (!toggleEditableProfile) {
-            setEditableProfile(true);
-        }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const updatedForm = { ...state, [name]: value };
+        setState(updatedForm);
+        setTouchedFields((prev) => ({ ...prev, [name]: true })); // Mark the field as touched
+        // Validate the form after each input change
+        validateForm(updatedForm, { ...touchedFields, [name]: true });
     };
 
-    // TODO Re add Async & updatedCustomer: Customer at a later point and bind it to the API
-    const saveProfileChanges = () => {
+    const validateForm = (form: typeof initialCustomerState, touchedFields: { name: boolean; email: boolean; address: boolean; phone: boolean }) => {
+        const newErrors: ProfileFormErrors = {};
+        // Validate fields based on whether they have been touched
+        if (touchedFields.name && !form.name) {
+            newErrors.name = "Name is required.";
+        }
+        if (touchedFields.email) {
+            if (!form.email) {
+                newErrors.email = "Email is required.";
+            } else {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(form.email)) {
+                    newErrors.email = "Email is not valid.";
+                }
+            }
+        }
+        if (touchedFields.address && !form.address) {
+            newErrors.address = "Address is required.";
+        }
+        if (touchedFields.phone) {
+            if (!form.phone) {
+                newErrors.phone = "Phone number is required.";
+            } else if (!/^\d{3}-\d{3}-\d{4}$/.test(form.phone) && !/^\d{8}$/.test(form.phone)) {
+                newErrors.phone = "Phone number must be in the format xxx-xxx-xxxx or 8 digits.";
+            }
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
-        //await MyApi.api.customerUpdateCustomer(updatedCustomer.id, updatedCustomer);
-        //setCustomer(updatedCustomer);
+    const saveProfileChanges = async () => {
+        // Validate the form before saving
+        if (!validateForm(state, touchedFields)) return; // Stop if validation fails
 
+        try {
+            await MyApi.api.customerUpdateCustomer(customer.id, state);
+
+            // Update the customer atom with the new data
+            setCustomer(state);
+            updateCustomerData(state);
+
+            // Show success notification
+            toast.success("Profile changes saved successfully!");
+        } catch (error) {
+            toast.error("Error saving profile changes. Please try again.");
+        }
         setEditableProfile(false);
-    }
+    };
 
     const cancelProfileChanges = () => {
-
-        state.name = tempProfileName;
-        state.address = tempProfileAddress;
-        state.email = tempProfileEmail;
-        state.phoneNumber = tempProfilePhoneNumber;
+        setState(customer); // Reset to customer state
         setEditableProfile(false);
-    }
+    };
 
+    const fieldProps = [
+        { label: "Profile Name", name: "name", error: errors.name },
+        { label: "Email", name: "email", error: errors.email },
+        { label: "Address", name: "address", error: errors.address },
+        { label: "Phone Number", name: "phone", error: errors.phone },
+    ];
 
-    if (!toggleEditableProfile) {
-        return (
-            <>
-                <div className="flex mt-5">
-                    <p> Profile Name</p>
-                </div>
-                <div>
+    return (
+        <div className="p-5">
+            {fieldProps.map(({ label, name, error }) => (
+                <div key={name} className="mt-5">
+                    <div className="flex mb-1">
+                        <p>{label}</p>
+                    </div>
                     <input
-                        className={`text-200 input`}
+                        className={`text-200 input ${error ? "border-red-500" : ""} w-full sm:w-1/3`} // Make input full width
                         type="text"
-                        name="name"
-                        value={state.name}
-                        readOnly={true}
+                        name={name}
+                        value={state[name as keyof typeof initialCustomerState]} // Ensure proper typing
+                        readOnly={!toggleEditableProfile}
+                        onChange={handleChange}
                     />
+                    {/* Use a wrapper div to reserve space for error messages */}
+                    <div className="h-5">
+                        {error && <div className="text-red-500 text-sm">{error}</div>}
+                    </div>
                 </div>
-                <div className="flex mt-3">
-                    <p> Email</p>
-                </div>
-                <div>
-                    <input
-                        className={`text-200 input`}
-                        type="text"
-                        name="email"
-                        value={state.email}
-                        readOnly={true}
-                    />
-                </div>
-                <div className="flex mt-3">
-                    <p> Address</p>
-                </div>
-                <div>
-                    <input
-                        className={`text-200 input`}
-                        type="text"
-                        name="address"
-                        value={state.address}
-                        readOnly={true}
-                    />
-                </div>
-                <div className="flex mt-3">
-                    <p> Phone Number</p>
-                </div>
-                <div>
-                    <input
-                        className={`text-200 input`}
-                        type="text"
-                        name="phoneNumber"
-                        value={state.phoneNumber}
-                        readOnly={true}
-                    />
-                </div>
-                <div className="flex mt-5">
-                    <button type="button" onClick={changeEditableProfile} className="text-white-200 bg-base-200 flex items-center">
+            ))}
+
+            <div className="flex mt-5">
+                {!toggleEditableProfile ? (
+                    <button
+                        onClick={() => setEditableProfile(true)}
+                        className="btn btn-primary"
+                    >
                         Change Info
                     </button>
-                </div>
-            </>
-        );
-    }
-    if (toggleEditableProfile) {
-        // @ts-ignore
-        return (
-            <>
-                <div className="flex mt-5">
-                    <p> Profile Name</p>
-                </div>
-                <div>
-                    <input
-                        className={`text-200 input`}
-                        type="text"
-                        name="name"
-                        value={state.name}
-                        readOnly={false}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="flex mt-3">
-                    <p> Email</p>
-                </div>
-                <div>
-                    <input
-                        className={`text-200 input`}
-                        type="text"
-                        name="email"
-                        value={state.email}
-                        readOnly={false}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="flex mt-3">
-                    <p> Address</p>
-                </div>
-                <div>
-                    <input
-                        className={`text-200 input`}
-                        type="text"
-                        name="address"
-                        value={state.address}
-                        readOnly={false}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="flex mt-3">
-                    <p> Phone Number</p>
-                </div>
-                <div>
-                    <input
-                        className={`text-200 input`}
-                        type="text"
-                        name="phoneNumber"
-                        value={state.phoneNumber}
-                        readOnly={false}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="flex mt-5">
-                    // TODO Change this to be able to run with Async at a later date
-                    <button type="button" onClick={saveProfileChanges}
-                            className=" bg-base-200 flex items-center pr-2 mr-8">
-                        Save Changes
-                    </button>
-                    <button type="button" onClick={cancelProfileChanges}
-                            className="bg-base-200 flex items-center">
-                        Cancel Changes
-                    </button>
-                </div>
-            </>
-        );
-    }
+                ) : (
+                    <div className="space-x-4">
+                        <button
+                            onClick={saveProfileChanges}
+                            className="btn btn-primary"
+                        >
+                            Save Changes
+                        </button>
+                        <button
+                            onClick={cancelProfileChanges}
+                            className="btn btn-ghost bg-gray-200"
+                        >
+                            Cancel Changes
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }
 
 export default MyProfile;

@@ -231,11 +231,11 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
                 </form>
                 <div className="text-center mt-4">or continue with</div>
                 <div className="flex justify-center space-x-2 mt-2">
-                    <button onClick={handleGoogleLogin} className="btn btn-primary text-gray-400 bg-white border-white hover:bg-gray-200 hover:border-gray-200">
+                    <button onClick={handleGoogleLogin} className="btn text-gray-400 bg-white border-white hover:bg-gray-200 hover:border-gray-200">
                         <GoogleLogo className="w-4 h-4 mr-1" />
                         Google
                     </button>
-                    <button onClick={handleFacebookLogin} className="btn btn-primary text-gray-400 bg-white border-white hover:bg-gray-200 hover:border-gray-200">
+                    <button onClick={handleFacebookLogin} className="btn text-gray-400 bg-white border-white hover:bg-gray-200 hover:border-gray-200">
                         <FacebookLogo className="w-6 h-6 mr-1" />
                         Facebook
                     </button>

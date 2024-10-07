@@ -1,6 +1,6 @@
 # Dunder Mifflin Infinity
 
-![image](https://github.com/user-attachments/assets/68243827-cd85-4f96-92c4-fc3929896906)
+![alt text](image.png)
 
 
 ## Description
@@ -37,7 +37,9 @@ Thomas O [GitHub](https://github.com/Yatokuri/)<br />
 * 0.1
     * Initial Release
 * 0.2
-    * Updated alpha 
+    * Updated Alpha
+* 0.3
+    * Beta Release
 
 
 ## License

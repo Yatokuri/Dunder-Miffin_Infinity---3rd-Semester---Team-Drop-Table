@@ -59,7 +59,11 @@ const CheckoutPage = () => {
         }
     }, [authState.isLoggedIn]); // Dependency array to run effect when login state changes
 
-
+    // Validate when state changes temp way not best way
+    useEffect(() => {
+        validateAllFields();
+    }, );
+    
     // Validate all steps
     const validateAllFields = () => {
         const newErrors = { ...errors };
@@ -143,11 +147,11 @@ const CheckoutPage = () => {
     };
 
     return (
-        <div className="container mx-auto p-8">
-            <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+        <div className="container mx-auto p-4 sm:p-8">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Checkout</h1>
 
             {/* Step Indicator */}
-            <div className="flex mb-1 items-center">
+            <div className="flex flex-wrap mb-1 justify-center items-center">
                 {[
                     { step: 1, label: 'Login' },
                     { step: 2, label: 'Shipping' },
@@ -156,12 +160,16 @@ const CheckoutPage = () => {
                     { step: 5, label: 'Receipt' }
                 ].map(({ step, label }, index) => (
                     <React.Fragment key={step}>
-                        <div className={`flex-1 text-center ${currentStep === step ? 'font-bold text-logo-color' : 'text-gray-700'}`}>
+                        <div className={`sm:flex-1 text-center ${currentStep === step ? 'font-bold text-logo-color' : 'text-gray-700'}`}>
                             <span className="block text-xs md:text-sm">{label}</span>
                         </div>
                         {/* Render the custom arrow if it's not the last step */}
                         {index < 4 && (
                             <span className="text-gray-500 text-[20px] md:text-[50px] -translate-y-0.5 md:-translate-y-1 mx-2">&gt;</span>
+                        )}
+                        {/* Add line break after the third step only on small screens */}
+                        {index === 2 && (
+                            <span className=" w-full items-center justify-center block sm:hidden" />
                         )}
                     </React.Fragment>
                 ))}
@@ -175,8 +183,8 @@ const CheckoutPage = () => {
 
             {/* Step 1: Log In */}
             {currentStep === 1 && (
-                <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
-                    <h2 className="text-2xl font-semibold mb-4">Log In</h2>
+                <div className="bg-base-100 p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-4">Log In</h2>
                     <form className="grid grid-cols-1 gap-4">
                         <div>
                             <label className="label">Email</label>
@@ -216,8 +224,9 @@ const CheckoutPage = () => {
             {currentStep === 2 && (
                 <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
                     {/* Container for Address and Shipping Options */}
-                    <div className="flex bg-base-100 rounded-lg shadow-md mb-4 p-4">
-                        <div className="flex-1 pr-4">
+                    <div className="flex flex-col sm:flex-row bg-base-100 rounded-lg shadow-md mb-4 p-4">
+                        {/* Address Section */}
+                        <div className="flex-1 pr-0 sm:pr-4 mb-4 sm:mb-0">
                             <h2 className="text-2xl font-semibold mb-4">Address</h2>
                             <form className="grid grid-cols-1 gap-4">
                                 <div>
@@ -260,21 +269,21 @@ const CheckoutPage = () => {
                                 </div>
                             </form>
                         </div>
-                        <div className="flex-1 pl-4">
+                        <div className="flex-1 pl-0 sm:pl-4">
                             <h2 className="text-2xl font-semibold mb-4">Shipping Options</h2>
                             <form className="grid grid-cols-1 gap-4">
                                 {shippingOptions.map(option => (
-                                    <div key={option.id} className="flex items-center">
+                                    <div key={option.id} className="flex flex-col sm:flex-row items-start sm:items-center p-2 sm:p-0 rounded-lg shadow-sm mb-2">
                                         <input
                                             type="radio"
                                             id={option.id}
                                             name="shipping"
                                             checked={selectedShippingOption.id === option.id}
                                             onChange={() => setSelectedShippingOption(option)}
-                                            className="mr-2"
+                                            className="mr-2 mb-2 radio radio-primary checked:bg-logo-color checked:border-logo-color border-gray-700"
                                         />
                                         <label htmlFor={option.id} className="flex-1">
-                                            <span className="font-semibold">{option.name}</span><br/>
+                                            <span className="font-semibold ">{option.name}</span><br/>
                                             Price:
                                             ${totalAmountBasket >= option.freeShippingRequirement ? '0.00' : option.price.toFixed(2)}<br/>
                                             Estimated Delivery: {option.deliveryTime}<br/>
@@ -309,8 +318,8 @@ const CheckoutPage = () => {
 
             {/* Step 3: Payment */}
             {currentStep === 3 && (
-                <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
-                    <h2 className="text-2xl font-semibold mb-4">Payment</h2>
+                <div className="bg-base-100 p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-4">Payment Details</h2>
                     <form className="grid grid-cols-1 gap-4">
                         <div>
                             <label className="label">Card Number</label>
@@ -360,11 +369,10 @@ const CheckoutPage = () => {
                 </div>
             )}
 
-
-            {/* Step 4: Confirm */}
+            {/* Step 4: Confirmation */}
             {currentStep === 4 && (
-                <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
-                    <h2 className="text-2xl font-semibold mb-4">Confirm Your Order</h2>
+                <div className="bg-base-100 p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-4">Confirm Your Order</h2>
 
                     {/* Customer Information */}
                     <h3 className="text-lg mb-2">Customer Information</h3>
@@ -374,7 +382,7 @@ const CheckoutPage = () => {
                     <p>Phone: {customer.phone}</p>
 
                     {/* Delivery Method */}
-                    <h3 className="text-lg mt-4 mb-2">Delivery Method</h3>
+                    <h3 className="text-lg mt-4 mb-2 font-bold">Delivery Method</h3>
                     <p>
                         {selectedShippingOption.name} - ${selectedShippingOption.price.toFixed(2)}
                     </p>
@@ -384,7 +392,7 @@ const CheckoutPage = () => {
                     <ul className="space-y-2">
                         {basket.map((item) => (
                             <li key={item.product_id} className="flex justify-between">
-                                <span>ID {item.product_id} (x{item.quantity})</span>
+                                <span className="truncate w-3/5">{item.quantity} - {item.name}</span>
                                 <span>${(item.price * item.quantity).toFixed(2)}</span>
                             </li>
                         ))}
@@ -424,8 +432,8 @@ const CheckoutPage = () => {
 
             {/* Step 5: Complete */}
             {currentStep === 5 && (
-                <div className="bg-base-100 p-6 rounded-lg shadow-md mb-6">
-                    <h2 className="text-2xl font-semibold mb-4">Thank You!</h2>
+                <div className="bg-base-100 p-4 sm:p-6 rounded-lg shadow-md mb-4 sm:mb-6">
+                    <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-4">Thank You!</h2>
                     <p>Your order has been placed successfully.</p>
                     <p>A confirmation email has been sent to {customer.email}.</p>
 

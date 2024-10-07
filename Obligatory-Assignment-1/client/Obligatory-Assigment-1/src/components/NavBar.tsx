@@ -16,15 +16,22 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 interface NavLinksProps {
     toggleDropdown: (name: string) => void;
     activeDropdown: string | null; // Track the currently active dropdown
+    toggleMenu: () => void
 }
 
 // Navigation Links Component
-const NavLinks: React.FC<NavLinksProps> = () => {
+const NavLinks: React.FC<NavLinksProps> = ({toggleMenu}) => {
     return (
         <>
-            <Link to={"/shop"} className="btn btn-ghost">Shop</Link>
-            <Link to={"/about"} className="btn btn-ghost">About Us</Link>
-            <Link to={"/customer-service/contact-us"} className="btn btn-ghost">Contact</Link>
+            <Link to={"/shop"} className="btn btn-ghost" onClick={() => {
+                toggleMenu();
+            }}>Shop</Link>
+            <Link to={"/about"} className="btn btn-ghost" onClick={() => {
+                toggleMenu();
+            }}>About Us</Link>
+            <Link to={"/customer-service/contact-us"} className="btn btn-ghost" onClick={() => {
+                toggleMenu();
+            }}>Contact</Link>
         </>
     );
 };
@@ -108,7 +115,7 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({ isOpen, toggle, userL
 
 // NavBar Component
 const NavBar: React.FC = () => {
-    const [isOpen, setIsOpen] = useState<boolean>(false); // Track burger menu open state
+    const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState<boolean>(false); // Track burger menu open state
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // Track active dropdown
     const [isLoginModalOpen, setLoginModalOpen] = useState<boolean>(false); // Track login modal state
     const [searchValue, setSearchValue] = useAtom(searchAtom);
@@ -134,7 +141,7 @@ const NavBar: React.FC = () => {
     };
 
     const toggleMenu = () => {
-        setIsOpen(!isOpen);
+        setIsBurgerMenuOpen(!isBurgerMenuOpen);
     };
 
     const toggleDropdown = (name: string) => {
@@ -148,8 +155,14 @@ const NavBar: React.FC = () => {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             const target = event.target as HTMLElement;
-            if (target && !target.closest('.dropdown')) { // Check if target is defined
+            const burgerMenu = document.querySelector('.burger-menu'); // Change this selector to match your burger menu element
+            if (
+                target &&
+                !target.closest('.dropdown') &&
+                !burgerMenu?.contains(target) // Close menu if clicked outside burger menu
+            ) {
                 setActiveDropdown(null); // Close dropdowns if clicked outside
+                setIsBurgerMenuOpen(false); // Close burger menu if clicked outside
             }
         };
 
@@ -171,11 +184,12 @@ const NavBar: React.FC = () => {
                 </div>
 
                 {/* Mobile Menu */}
-                {isOpen && (
+                {isBurgerMenuOpen && (
                     <div
                         className="md:hidden bg-base-100 p-4 transition-all duration-300 ease-in-out absolute top-16 left-0">
                         <div className="flex flex-col space-y-2">
                             <NavLinks
+                                toggleMenu={toggleMenu}
                                 toggleDropdown={toggleDropdown}
                                 activeDropdown={activeDropdown}
                             />
@@ -186,13 +200,14 @@ const NavBar: React.FC = () => {
                 {/* Desktop Menu */}
                 <div className="hidden md:flex justify-start space-x-4 items-center">
                     <NavLinks
+                        toggleMenu={toggleMenu}
                         toggleDropdown={toggleDropdown}
                         activeDropdown={activeDropdown}
                     />
                 </div>
 
                 {/* Search Field (Always Visible) */}
-                <div className="flex-grow mx-4">
+                <div className="flex-grow sm:mx-4 mr-4">
                     <input
                         type="text"
                         placeholder="Search"
@@ -203,14 +218,14 @@ const NavBar: React.FC = () => {
                 </div>
 
                 {/* Navigation Icons (Always Visible) */}
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center sm:space-x-4 sm:m-0 space-x-1 -m-5">
                     {/* Toggle Button for Mobile View */}
                     <button
                         onClick={toggleMenu}
                         className="block md:hidden btn btn-ghost"
                         aria-label="Toggle Menu"
                     >
-                        <BurgerMenuIcon className="w-6 h-6"/>
+                        <BurgerMenuIcon className="burger-menu w-6 h-6"/>
                     </button>
 
                     {/* Account Menu */}

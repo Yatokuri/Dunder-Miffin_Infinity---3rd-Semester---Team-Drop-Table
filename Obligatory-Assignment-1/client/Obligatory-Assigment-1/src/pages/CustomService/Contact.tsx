@@ -8,12 +8,10 @@ function Contact() {
 
             <ContactUs/>
 
-
-            <div className="flex justify-center">
-                    <Link  to={"/customer-service"}
-                           className="btn btn-primary">
-                        Back to Customer Service
-                    </Link>
+            <div className="flex justify-center mt-6 mb-4">
+                <Link to={"/customer-service"} className="btn btn-primary text-lg sm:text-base">
+                    Back to Customer Service
+                </Link>
             </div>
         </div>
     );

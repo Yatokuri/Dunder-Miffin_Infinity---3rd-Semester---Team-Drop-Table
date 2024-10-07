@@ -12,8 +12,8 @@ export const MyApi = new Api();
 interface ShopCardProps {
     product: Product;
     initialQuantity: number;
-    onAdd: (productId: number, newQuantity: number, price: number) => void;
-    onRemove: (productId: number, newQuantity: number, price: number) => void;
+    onAdd: (productId: number, newQuantity: number, price: number, name: string) => void;
+    onRemove: (productId: number, newQuantity: number, price: number, name: string) => void;
 }
 
 // Memoized ShopCard component
@@ -27,12 +27,12 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
 
     const handleAddClick = () => {
         setQuantity((prev: number) => prev + 1);
-        onAdd(product.id, quantity + 1, product.price);
+        onAdd(product.id, quantity + 1, product.price, product.name);
     };
 
     const handleRemoveClick = () => {
         setQuantity((prev: number) => prev - 1);
-        onRemove(product.id, quantity - 1, product.price);
+        onRemove(product.id, quantity - 1, product.price, product.name);
     };
 
     return (
@@ -58,7 +58,8 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
                         item={{
                             quantity,
                             product_id: product.id,
-                            price: product.price
+                            price: product.price,
+                            name: product.name
                         }}
                     />
 
@@ -85,27 +86,27 @@ function Shop() {
         return productInBasket ? productInBasket.quantity : 0;
     };
 
-    const handleAdd = (productId: number, newQuantity: number, price: number) => {
+    const handleAdd = (productId: number, newQuantity: number, price: number, name: string) => {
         const existingQuantity = getProductQuantity(productId);
         if (existingQuantity > 0) {
             // Update quantity for an existing product
-            updateQuantity(basket, productId, newQuantity, price, setBasket);
+            updateQuantity(basket, productId, newQuantity, price, name, setBasket);
             toast.success("Product quantity updated", { duration: 1000 });
         } else {
             // Add a new product to the basket
-            updateQuantity(basket, productId, newQuantity, price, setBasket);
+            updateQuantity(basket, productId, newQuantity, price, name, setBasket);
             toast.success("Product added to basket", { duration: 1000 });
         }
     };
 
-    const handleRemove = (productId: number, newQuantity: number, price: number) => {
+    const handleRemove = (productId: number, newQuantity: number, price: number, name: string) => {
         const existingQuantity = getProductQuantity(productId);
         if (existingQuantity > 1) {
             // Decrease quantity if more than 1
-            updateQuantity(basket, productId, newQuantity, price, setBasket);
+            updateQuantity(basket, productId, newQuantity, price, name, setBasket);
             toast.success("Product quantity decreased", { duration: 1000 });
         } else {
-            updateQuantity(basket, productId, 0, price, setBasket);
+            updateQuantity(basket, productId, 0, price, name, setBasket);
             toast.error("Product removed from basket");
         }
     };

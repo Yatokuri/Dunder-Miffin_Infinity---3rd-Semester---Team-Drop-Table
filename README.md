@@ -7,7 +7,7 @@
 
 # EASV Project Autumn 2024
 # Frontend:
-- React, Typescript (npm create vite@latest)
+- React, Typescript (vite)
 - React router dom
 - Jotai
 - Tailwindcss, DaisyUI

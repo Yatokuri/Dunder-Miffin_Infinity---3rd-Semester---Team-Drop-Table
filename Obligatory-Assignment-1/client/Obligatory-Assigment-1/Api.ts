@@ -706,5 +706,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "DELETE",
         ...params,
       }),
+
+      /**
+       * No description
+       *
+       * @tags Properties
+       * @name PropertiesGetAllProperties
+       * @request GET:/api/properties
+       */
+      propertiesGetAllProperties: (params: RequestParams = {}) =>
+          this.request<File, any>({
+              path: `/api/properties`,
+              method: "GET",
+              ...params,
+          }),
   };
 }

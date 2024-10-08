@@ -85,7 +85,7 @@ function Basket() {
                                             className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis ml-1"
                                             title={item.selectedProperty}
                                         >
-                                            ({truncateString(item.selectedProperty || 'Standard', maxNameLength)})
+                                            ({truncateString(item.selectedProperty || 'White', maxNameLength)})
                                         </span>
                                     </div>
                                     {/* Input field taking consistent space */}

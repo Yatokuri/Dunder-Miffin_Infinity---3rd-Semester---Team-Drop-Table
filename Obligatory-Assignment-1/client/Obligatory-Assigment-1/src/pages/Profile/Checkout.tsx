@@ -392,7 +392,7 @@ const CheckoutPage = () => {
                     <ul className="space-y-2">
                         {basket.map((item) => (
                             <li key={item.product_id} className="flex justify-between">
-                                <span className="truncate w-3/5">{item.quantity} - {item.name} ({item.selectedProperty})</span>
+                                <span className="truncate w-3/5">{item.quantity} - {item.name} ({item.selectedProperty || 'White'})</span>
                                 <span>${(item.price * item.quantity).toFixed(2)}</span>
                             </li>
                         ))}

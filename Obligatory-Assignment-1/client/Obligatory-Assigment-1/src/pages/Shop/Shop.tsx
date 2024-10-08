@@ -76,7 +76,7 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
                 </div>
                 <div className="flex justify-center">
                     <select value={selectedProperty} onChange={handlePropertyChange}>
-                        <option value="">Select a property</option> {/* Add a default option */}
+                        <option value="">White</option> {/* Add a default option */}
                         {properties.map((property) => (
                             <option key={property.id} value={property.propertyName}>
                                 {property.propertyName}

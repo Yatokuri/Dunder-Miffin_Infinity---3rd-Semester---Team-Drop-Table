@@ -710,6 +710,48 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags PaperProperties
+     * @name PaperPropertiesAddPropertyToPaper
+     * @request POST:/api/paper/{paperId}/properties/{propertyId}
+     */
+    paperPropertiesAddPropertyToPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${paperId}/properties/${propertyId}`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesRemovePropertyFromPaper
+     * @request DELETE:/api/paper/{paperId}/properties/{propertyId}
+     */
+    paperPropertiesRemovePropertyFromPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${paperId}/properties/${propertyId}`,
+        method: "DELETE",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesGetPropertiesForPaper
+     * @request GET:/api/paper/{paperId}/properties
+     */
+    paperPropertiesGetPropertiesForPaper: (paperId: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${paperId}/properties`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Properties
      * @name PropertiesGetAllProperties
      * @request GET:/api/properties

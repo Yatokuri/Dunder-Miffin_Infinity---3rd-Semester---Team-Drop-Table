@@ -1,6 +1,6 @@
 function AboutUs() {
     return (
-        <div className="hero bg-base-200 p-4 sm:p-5 md:p-6 lg:p-8">
+        <div className="hero bg-base-200 p-2 sm:p-5 md:p-6 lg:p-8">
             <div className="hero-content flex-col lg:flex-row">
                 <img
                     src="https://m.media-amazon.com/images/M/MV5BODYyM2QxM2MtOGIzMy00N2RkLWI1ZjctMTFjNDcxNzYyNWEwXkEyXkFqcGc@._V1_.jpg"

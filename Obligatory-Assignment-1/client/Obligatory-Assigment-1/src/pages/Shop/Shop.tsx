@@ -67,7 +67,7 @@ const ShopCard = React.memo(({product, initialQuantity, onAdd, onRemove}: ShopCa
                      alt={product.name}/>
             </figure>
             <div className="card-body flex flex-col flex-grow">
-                <h2 className="card-title">{product.name}</h2>
+                <h2 className="card-title block truncate max-w-full">{product.name}</h2>
                 <div className="card-actions justify-between items-center mt-auto">
                     <p className="flex-grow">Price: ${product.price}</p>
                     <p className="font-semibold">In basket: {quantity}</p>
@@ -166,9 +166,9 @@ function Shop() {
 
     return (
         <div className="text-black">
-            <h1 className="flex text-3xl font-bold bg-center justify-center mt-5">Limitless Paper in a Paperless World</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold bg-center text-center mt-5">Limitless Paper in a Paperless World</h1>
             <div className="mb-4">
-                <label htmlFor="sortPrice" className="mr-2 bg-center flex ml-5">Sort by Price:</label>
+                <label htmlFor="sortPrice" className="mr-2 bg-center flex ml-5 sm:mt-0 mt-5">Sort by Price:</label>
                 <select
                     id="sortPrice"
                     value={sortPrice}

@@ -17,6 +17,35 @@ public class PaperController(DMIContext context) : ControllerBase
     }
     
     [HttpGet]
+    [Route("api/paper/getstocks")]
+    public ActionResult GetStocksByIDs([FromQuery] string productIds)
+    {
+        if (string.IsNullOrEmpty(productIds))
+        {
+            return BadRequest("Product IDs are required.");
+        }
+
+        var idList = productIds.Split(',').Select(int.Parse).ToList();
+
+        var result = context.Papers
+            .Where(p => idList.Contains(p.Id))
+            .Select(p => new 
+            {
+                p.Id,
+                p.Stock
+            })
+            .ToList();
+
+        if (!result.Any())
+        {
+            return NotFound("No stocks found for the specified product IDs.");
+        }
+
+        return Ok(result);
+    }
+
+    
+    [HttpGet]
     [Route("api/paper/{id}")]
     public ActionResult GetPaper(int id)
     {

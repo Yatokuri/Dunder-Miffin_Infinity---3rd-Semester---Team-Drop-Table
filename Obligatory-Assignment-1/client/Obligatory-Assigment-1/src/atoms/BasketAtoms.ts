@@ -101,8 +101,8 @@ export const updateQuantity = (
     newQuantity: number,
     productPrice: number,
     productName: string,
-    setBasket: (updatedBasket: BasketItem[]) => void,
-    selectedProperty: string // Make sure this parameter is included
+    selectedProperty: string,
+    setBasket: (updatedBasket: BasketItem[]) => void
 ) => {
     const existingProductIndex = basket.findIndex(item => item.product_id === productId);
     let updatedBasket = [...basket];
@@ -110,7 +110,9 @@ export const updateQuantity = (
     if (existingProductIndex !== -1) {
         // If the product exists, update the quantity and selected property
         updatedBasket[existingProductIndex].quantity = newQuantity; // Update the quantity
-        updatedBasket[existingProductIndex].selectedProperty = selectedProperty; // Update the selected property
+        if(selectedProperty !== "N/A")  { //Don't update name when its N/A
+            updatedBasket[existingProductIndex].selectedProperty = selectedProperty; // Update the selected property
+        }
     } else {
         // If the product does not exist, add it to the basket
         const newItem: BasketItem = { product_id: productId, quantity: newQuantity, price: productPrice, name: productName, selectedProperty }; // Include selectedProperty

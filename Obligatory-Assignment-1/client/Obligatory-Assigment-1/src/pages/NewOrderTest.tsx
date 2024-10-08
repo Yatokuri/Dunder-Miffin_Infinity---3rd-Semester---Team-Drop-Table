@@ -134,7 +134,7 @@ const NewOrderTest = () => {
 
     // Update quantity using the atom's method
     const handleUpdateQuantity = (entry: OrderEntry) => {
-        updateQuantity(basket, entry.productId, entry.quantity, entry.price, "N/A", setBasket);
+        updateQuantity(basket, entry.productId, entry.quantity, entry.price, "N/A","N/A", setBasket);
     };
 
     const calculateOrderEntriesTotal = () => {

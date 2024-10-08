@@ -6,16 +6,17 @@ import {Api} from "../../../Api.ts";
 import {toast} from "react-hot-toast";
 import InputFieldPaperQuantity from "../../components/Orders/InputFieldPaperQuantity.tsx";
 import {searchAtom} from "../../atoms/atoms.ts";
-import {productPriceFilterAtom} from "../../atoms/ProductFilterAtoms.ts";
+import {productPriceFilterAtom, productPropertyFilterAtom} from "../../atoms/ProductFilterAtoms.ts";
 
 export const MyApi = new Api();
 
 // Define the props for the ShopCard component
 interface ShopCardProps {
-    product: Product;
-    initialQuantity: number;
-    onAdd: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void;
-    onRemove: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void;
+    product: Product,
+    initialQuantity: number,
+    onAdd: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void,
+    onRemove: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void,
+    stock?: number
 }
 
 interface Property {
@@ -23,7 +24,7 @@ interface Property {
     propertyName: string;
 }
 
-const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: ShopCardProps) => {
+const ShopCard = React.memo(({product, initialQuantity, onAdd, onRemove}: ShopCardProps) => {
     const [quantity, setQuantity] = useState(initialQuantity);
     const [properties, setProperties] = useState<Property[]>([]);
     const [selectedProperty, setSelectedProperty] = useState<string>("");
@@ -32,12 +33,13 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
         const fetchData = async () => {
             try {
                 const response = await MyApi.api.propertiesGetAllProperties();
+                // @ts-expect-error: Ignore an error if it doesn't exist
                 setProperties(response.data);
             } catch (error) {
                 console.error("Error fetching properties:", error);
             }
         };
-        fetchData();
+        fetchData().then();
     }, []);
 
     useEffect(() => {
@@ -61,7 +63,8 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
     return (
         <div className="card card-compact bg-base-100 shadow-xl flex flex-col w-full">
             <figure>
-                <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt={product.name} />
+                <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                     alt={product.name}/>
             </figure>
             <div className="card-body flex flex-col flex-grow">
                 <h2 className="card-title">{product.name}</h2>
@@ -71,8 +74,8 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
                 </div>
                 <div className="card-actions justify-between items-center mt-auto">
                     <button onClick={handleAddClick} className="btn bg-green-500 mr-2">+</button>
-                    <InputFieldPaperQuantity item={{ quantity, product_id: product.id, price: product.price, name: product.name }} />
-                    <button onClick={handleRemoveClick} className="btn bg-red-500 ml-2" disabled={quantity === 0}>-</button>
+                    <InputFieldPaperQuantity item={{quantity, product_id: product.id, price: product.price, name: product.name}} stock={product.stock}/>
+                    <button onClick={handleRemoveClick} className="btn bg-red-500 ml-2" disabled={quantity === 0}></button>
                 </div>
                 <div className="flex justify-center">
                     <select value={selectedProperty} onChange={handlePropertyChange}>
@@ -95,8 +98,8 @@ function Shop() {
     const [searchQuery] = useAtom(searchAtom); // Use the navbar search
     const [sortPrice, setSortPrice] = useState<string>("Normal");
     const [priceFilters] = useAtom(productPriceFilterAtom);
-    const [propertyFilter, setPropertyFilter] = useAtom(productPropertyFilterAtom);
-    const [availableProperties, setAvailableProperties] = useAtom(productPropertiesFilterAtom)
+    const [propertyFilter] = useAtom(productPropertyFilterAtom);
+
     // Load basket from localStorage when the component mounts
     useEffect(() => {
         loadBasketFromStorage(setBasket);
@@ -111,11 +114,11 @@ function Shop() {
         const existingQuantity = getProductQuantity(productId);
         if (existingQuantity > 0) {
             // Update quantity and property for an existing product
-            updateQuantity(basket, productId, newQuantity, price, name, setBasket, selectedProperty);
+            updateQuantity(basket, productId, newQuantity, price, name, selectedProperty, setBasket);
             toast.success("Product quantity updated", { duration: 1000 });
         } else {
             // Add a new product to the basket
-            updateQuantity(basket, productId, newQuantity, price, name, setBasket, selectedProperty);
+            updateQuantity(basket, productId, newQuantity, price, name, selectedProperty, setBasket);
             toast.success("Product added to basket", { duration: 1000 });
         }
     };
@@ -124,10 +127,10 @@ function Shop() {
         const existingQuantity = getProductQuantity(productId);
         if (existingQuantity > 1) {
             // Decrease quantity if more than 1
-            updateQuantity(basket, productId, newQuantity, price, name, setBasket, selectedProperty);
-            toast.error("Product quantity decreased", { duration: 1000 });
+            updateQuantity(basket, productId, newQuantity, price, name, selectedProperty, setBasket);
+            toast.error("Product quantity decreased", {duration: 1000});
         } else {
-            updateQuantity(basket, productId, 0, price, name, setBasket, selectedProperty);
+            updateQuantity(basket, productId, newQuantity, price, name, selectedProperty, setBasket);
             toast.error("Product removed from basket");
         }
     };
@@ -136,33 +139,22 @@ function Shop() {
         const fetchData = async () => {
             try {
                 const response = await MyApi.api.paperGetAllPapers(); // Fetch data
+                // @ts-expect-error: Ignore an error if it doesn't exist
                 setProducts(response.data);
             } catch (error) {
                 console.error("Error fetching products:", error);
             }
         };
-        fetchData();
+        fetchData().then();
     }, [setProducts]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await MyApi.api.propertiesGetAllProperties(); // Fetch data
-                setAvailableProperties(response.data);
-            } catch (error) {
-                console.error("Error fetching properties:", error);
-            }
-        };
-        fetchData();
-    }, [setAvailableProperties]);
-
-    // Handle filtering Products by properties, price, and search query
+    // Handle filtering Products by properties, price and search query
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()); // Search by Product Name
         const matchesPrice = sortPrice === "Normal" || sortPrice === "Ascending" || sortPrice === "Descending" || product.price.toString() === sortPrice;
         if (sortPrice === "Ascending" || sortPrice === "Descending" || sortPrice === "Normal") { return matchesSearch; }
         // Needs to be changed to check paper_properties when actually implemented - Currently not working
-        const matchesProperty = !propertyFilter || product.properties.includes(propertyFilter);
+        const matchesProperty = !propertyFilter
 
         return matchesSearch && matchesPrice && matchesProperty; // Combine filters
     })

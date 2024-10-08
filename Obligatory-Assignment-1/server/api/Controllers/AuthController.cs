@@ -11,24 +11,14 @@ namespace api.Controllers
 {
     [Route("api/auth")]
     [ApiController] // Add this to enable attribute routing
-    public class AuthController : ControllerBase
+    public class AuthController (DMIContext context) : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly DMIContext _context; // Your DbContext for database access
-
-        public AuthController(IConfiguration configuration, DMIContext context)
-        {
-            _configuration = configuration;
-            _context = context;
-        }
-
-
         // POST: api/auth/login
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            // Initialize customer to null
-            Customer customer = null;
+            // Initialize customer
+            Customer customer;
 
             // Check if the roleType is 'admin'
             if (request.RoleType == "admin")
@@ -55,7 +45,7 @@ namespace api.Controllers
 
         private Customer GetCustomerByEmail(string email)
         {
-            return _context.Customers.FirstOrDefault(x => x.Email == email);
+            return context.Customers.FirstOrDefault(x => x.Email == email) ?? new Customer { Id = 0 };
         }
 
 
@@ -65,10 +55,9 @@ namespace api.Controllers
         private string GenerateJwtToken(int userId, string role)
         {
             // Fetch values from environment variables
-            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
-            var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
-            var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
-
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "SecretKey";;
+            var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "http://localhost/";;
+            var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "http://localhost/";;
             
             // Check for null values and log them
             if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))

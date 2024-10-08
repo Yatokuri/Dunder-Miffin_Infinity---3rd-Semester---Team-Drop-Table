@@ -62,14 +62,10 @@ public class Program
             .AddJwtBearer(options =>
             {
                 // Load JWT settings from environment variables
-                var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
-                var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
-                var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
-
-                // Debugging output to check if environment variables are being read correctly
-                Console.WriteLine($"Inside AddJwtBearer - JWT_KEY: {jwtKey}");
-                Console.WriteLine($"Inside AddJwtBearer - JWT_ISSUER: {jwtIssuer}");
-                Console.WriteLine($"Inside AddJwtBearer - JWT_AUDIENCE: {jwtAudience}");
+                var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "SecretKey";;
+                var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "http://localhost/";;
+                var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "http://localhost/";;
+                
 
                 // Check for null values and log them (not necessary for hardcoded values, but good practice)
                 if (string.IsNullOrEmpty(jwtKey) || string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtAudience))

@@ -18,11 +18,27 @@ interface ShopCardProps {
     onRemove: (productId: number, newQuantity: number, price: number, name: string) => void;
 }
 
-// Memoized ShopCard component
+interface property {
+    id: number;
+    propertyName: string;
+}
+
 const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: ShopCardProps) => {
     const [quantity, setQuantity] = useState(initialQuantity);
+    const [properties, setProperties] = useState<property[]>([]); // Type the properties array to avoid errors
 
-    // Update local quantity when the product quantity in the basket changes
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await MyApi.api.propertiesGetAllProperties();
+                setProperties(response.data);
+            } catch (error) {
+                console.error("Error fetching properties:", error);
+            }
+        }
+        fetchData();
+    }, [setProperties]);
+
     useEffect(() => {
         setQuantity(initialQuantity);
     }, [initialQuantity]);
@@ -69,10 +85,20 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove }: Shop
                         -
                     </button>
                 </div>
+                <div className="flex justify-center">
+                    <select>
+                        {properties.map((property) => (
+                            <option key={property.id} value={property.propertyName}>
+                                {property.propertyName}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
         </div>
     );
 });
+
 
 function Shop() {
     const [products, setProducts] = useAtom(productAtom);
@@ -82,7 +108,7 @@ function Shop() {
     const [priceFilters] = useAtom(productPriceFilterAtom);
     const [propertyFilter, setPropertyFilter] = useAtom(productPropertyFilterAtom);
     const [availableProperties, setAvailableProperties] = useAtom(productPropertiesFilterAtom)
-    
+
 
     // Load basket from localStorage when the component mounts
     useEffect(() => {
@@ -144,15 +170,15 @@ function Shop() {
         };
         fetchData().then();
     }, [setAvailableProperties]);
-    
+
     // Handle filtering Products by properties, price and search query
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()); // Search by Product Name
         const matchesPrice = sortPrice === "Normal" || sortPrice === "Ascending" || sortPrice === "Descending" || product.price.toString() === sortPrice;
         if (sortPrice === "Ascending" || sortPrice === "Descending" || sortPrice === "Normal") {return matchesSearch;}
         // Needs to be changed to check paper_properties when actually implemented - Currently not working
-        const matchesProperty = !propertyFilter || product.properties.includes(propertyFilter); 
-        
+        const matchesProperty = !propertyFilter || product.properties.includes(propertyFilter);
+
         return matchesSearch && matchesPrice && matchesProperty; // Combine filters
     })
         .sort((a, b) => {
@@ -160,17 +186,17 @@ function Shop() {
         if (sortPrice === "Descending") return b.price - a.price;
         return 0; // Normal (no sorting)
     });
-    
-    
+
+
     return (
         <div className="text-black">
             <h1 className="flex text-3xl font-bold bg-center justify-center mt-5">Limitless Paper in a Paperless
                 World</h1>
             <div className="mb-4">
                 <label htmlFor="sortPrice" className="mr-2 bg-center flex ml-5">Sort by Price:</label>
-                <select 
-                    id="sortPrice" 
-                    value={sortPrice} 
+                <select
+                    id="sortPrice"
+                    value={sortPrice}
                     onChange={(e) => setSortPrice(e.target.value)}
                     className="border rounded p-1 flex-grow ml-5"
                 >
@@ -180,23 +206,9 @@ function Shop() {
                         </option>
                     ))}
                 </select>
-                
+
             </div>
-            <div className="mb-4">
-                <label htmlFor="propertyFilter" className="mr-2 bg-center flex ml-5">Filters</label>
-                    <select 
-                        id="propertyFilter" 
-                        // @ts-ignore
-                        value={propertyFilter}
-                        onChange={(e) => setPropertyFilter(e.target.value)}
-                        className="border rounded p-1 flex-grow ml-5"
-                    >
-                        <option value="">All</option>
-                        {availableProperties.map((property) => (
-                            <option key={property} value={property}>{property}</option>
-                        ))}
-                    </select>
-            </div>
+TODO: Create correct fetch of property api
             <div className="card-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
                 {filteredProducts.filter(product => !product.discontinued).map((product) => (
                     <ShopCard key={product.id} product={product} initialQuantity={getProductQuantity(product.id)}

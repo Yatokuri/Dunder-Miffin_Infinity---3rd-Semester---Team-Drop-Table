@@ -65,12 +65,16 @@ namespace api.Controllers
                 throw new ArgumentNullException("JWT settings are not properly configured.");
             }
 
+            // Generate a random unique identifier
+            var randomId = Guid.NewGuid().ToString();
+
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, $"User-{userId}"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Role, role), // Assign role based on user data
-                new Claim("UserId", userId.ToString()) // Add User ID as a claim
+                new Claim("UserId", userId.ToString()), // Add User ID as a claim
+                new Claim("RandomId", randomId) // Include the random unique identifier
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
@@ -80,7 +84,7 @@ namespace api.Controllers
                 issuer: jwtIssuer,
                 audience: jwtAudience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: creds);
 
             // Log token creation (for debugging purposes)

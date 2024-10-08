@@ -1,15 +1,10 @@
-import { useEffect } from 'react';
-import { atom, useAtom } from 'jotai';
-import { Api } from '../../../../../Api';
-import './PropertyTable.css';
-
-interface Property {
-    id: string;
-    name: string;
-}
+import DeleteProperty from '../DeleteProperty/DeleteProperty';
+import {useAtom} from "jotai";
+import {propertiesAtom} from "../../../../atoms/propertiesAtom.ts";
+import {useEffect} from "react";
+import {Api, Property} from "../../../../../Api.ts";
 
 export const MyApi = new Api();
-export const propertiesAtom = atom<Property[]>([]);
 
 function PropertyTable() {
     const [properties, setProperties] = useAtom(propertiesAtom);
@@ -42,6 +37,9 @@ function PropertyTable() {
             {properties.map((property, index) => (
                 <tr key={index}>
                     <td className="table-cell-padding">{property.name}</td>
+                    <td className="table-cell-padding">
+                        <DeleteProperty propertyId={property.id} />
+                    </td>
                 </tr>
             ))}
             </tbody>

@@ -14,6 +14,7 @@ interface Product {
 }
 
 export const MyApi = new Api();
+
 export const productsAtom = atom<Product[]>([]);
 
 function ProductTable() {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAtom } from 'jotai';
-import { propertiesAtom } from '../../../atoms/propertiesAtom';
-import {Api} from "../../../../Api.ts";
+import { propertiesAtom } from '../../../../atoms/propertiesAtom.ts';
+import {Api} from "../../../../../Api.ts";
 
 export const MyApi = new Api();
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import AddProduct from './Product/AddProduct/AddProduct';
 import ProductTable from './Product/ProductTable/ProductTable';
 import Modal from './Modal/Modal';
-import AddProperty from './Property/AddProperty.tsx';
+import AddProperty from './Property/AddProperty/AddProperty';
 import PropertyTable from './Property/PropertyTable/PropertyTable';
 
 function Admin() {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAtom } from 'jotai';
-import { loginFormAtom, authAtom, setAuthData } from '../../atoms/LoginAtoms';
+import {loginFormAtom, authAtom, setAuthData, isAdmin} from '../../atoms/LoginAtoms';
 import { clearCustomerData, CustomerAtoms, useCustomerData } from '../../atoms/CustomerAtoms';
 import EyeOnIcon from "../../assets/icons/EyeOnIcon.tsx";
 import EyeOffIcon from '../../assets/icons/EyeOffIcon.tsx';
@@ -116,6 +116,14 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
                 email: authForm.email,
                 isLoggedIn: true,
             };
+
+            const userRoleType = isAdmin(authForm.email) ? 'Admin' : 'User';
+            const loginResponse = await MyApi.api.authLogin({
+                email: authForm.email,
+                roleType: userRoleType, // Ensure the password is included
+            });
+            // @ts-expect-error: Ignore an error there don't exist
+            localStorage.setItem('token', loginResponse.data.token);
 
             // Save to localStorage and update the atom
             setAuthData(authData); // Save auth data with expiration

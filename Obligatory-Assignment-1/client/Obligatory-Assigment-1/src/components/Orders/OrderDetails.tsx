@@ -10,6 +10,7 @@ import StatusChange from "./OrderStatusChange.tsx";
 import {CustomerAtoms} from "../../atoms/CustomerAtoms.ts";
 import axios from "axios";
 import {authAtom} from "../../atoms/LoginAtoms.ts";
+import getAPIA from "../Utils/getAPIA.ts";
 
 const MyApi = new Api();
 
@@ -59,7 +60,7 @@ function OrderDetails({ isAdmin }: OrderDetailsProps) {
         setLoading(true); // Set loading to true before fetching
         setError(null); // Clear any previous errors
         try {
-            const response = await MyApi.api.orderGetOrderById(orderId);
+            const response = await MyApi.api.orderGetOrderById(orderId, getAPIA());
             const fetchedOrder = response.data;
             // Check if the fetched order belongs to the customer or if the user is admin
             if (!isAdmin && fetchedOrder.customerId !== customer.id) {
@@ -72,6 +73,8 @@ function OrderDetails({ isAdmin }: OrderDetailsProps) {
             if (axios.isAxiosError(error) && error.response) {
                 if (error.response.status === 404) {
                     setError("No orders found for this id.");
+                } else if (error.response.status === 403) {
+                    return <NoPermission />;
                 } else {
                     setError("Failed to load order details. Please try again later.");
                 }

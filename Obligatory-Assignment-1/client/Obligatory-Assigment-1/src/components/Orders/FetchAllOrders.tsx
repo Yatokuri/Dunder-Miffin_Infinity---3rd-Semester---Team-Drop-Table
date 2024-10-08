@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import {searchAtom} from "../../atoms/atoms.ts";
 import {orderAtom} from "../../atoms/OrderEntryAtoms.ts";
 import StatusChange from "./OrderStatusChange.tsx";
+import getAPIA from "../Utils/getAPIA.ts";
 
 export const MyApi = new Api();
 
@@ -27,7 +28,7 @@ function AddOrder() {
 
     useEffect(() => {
         setLoading(true); // Set loading to true when fetching starts
-        MyApi.api.orderGetAllOrders()
+        MyApi.api.orderGetAllOrders(getAPIA())
             .then((response) => {
                 // @ts-expect-error: Ignore an error there don't exit
                 setOrders(response.data);

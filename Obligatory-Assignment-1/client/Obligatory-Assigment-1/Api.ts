@@ -706,5 +706,92 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "DELETE",
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Properties
+     * @name PropertiesGetAllProperties
+     * @request GET:/api/properties
+     */
+    propertiesGetAllProperties: (params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/properties`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Properties
+     * @name PropertiesCreateProperty
+     * @request POST:/api/properties
+     */
+    propertiesCreateProperty: (
+      query?: {
+        PropertyName?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Paper, any>({
+        path: `/api/properties`,
+        method: "POST",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Properties
+     * @name PropertiesGetProperty
+     * @request GET:/api/properties/{id}
+     */
+    propertiesGetProperty: (id: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/properties/${id}`,
+        method: "GET",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Properties
+     * @name PropertiesUpdateProperty
+     * @request PUT:/api/properties/{id}
+     */
+    propertiesUpdateProperty: (
+      id: number,
+      query?: {
+        /** @format int32 */
+        id?: number;
+        PropertyName?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Paper, any>({
+        path: `/api/properties/${id}`,
+        method: "PUT",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Properties
+     * @name PropertiesDeleteProperty
+     * @request DELETE:/api/properties/{id}
+     */
+    propertiesDeleteProperty: (id: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/properties/${id}`,
+        method: "DELETE",
+        ...params,
+      }),
   };
 }

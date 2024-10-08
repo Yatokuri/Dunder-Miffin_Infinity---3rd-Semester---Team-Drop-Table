@@ -81,6 +81,12 @@ function Basket() {
                                         >
                                             {truncateString(item.name || 'Unknown', maxNameLength)}
                                         </span>
+                                        <span
+                                            className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis ml-1"
+                                            title={item.selectedProperty}
+                                        >
+                                            ({truncateString(item.selectedProperty || '', maxNameLength)})
+                                        </span>
                                     </div>
                                     {/* Input field taking consistent space */}
                                     <div className="sm:flex-grow w-1/4 justify-items-end">

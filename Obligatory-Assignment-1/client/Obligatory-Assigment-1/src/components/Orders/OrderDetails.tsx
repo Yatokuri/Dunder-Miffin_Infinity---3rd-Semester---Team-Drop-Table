@@ -37,6 +37,7 @@ interface Order {
             discontinued: boolean;
             stock: number;
             price: number;
+            propertyName: string;
         };
     }[];
 }
@@ -172,8 +173,9 @@ function OrderDetails({ isAdmin }: OrderDetailsProps) {
                             order.orderEntries.map((entry) => (
                                 <li key={entry.id} className="text-gray-700">
                                     Product Name: <span className="font-semibold">{entry.paper.name || "Unknown"}</span>,
-                                    Quantity: <span className="font-semibold">{entry.quantity || "Unknown"} </span>
-                                    Price: <span className="font-semibold"> ${entry.paper.price || "Unknown"}</span>
+                                    Quantity: <span className="font-semibold">{entry.quantity || "Unknown"} </span>,
+                                    Price: <span className="font-semibold"> ${entry.paper.price || "Unknown"}</span>,
+                                    Color: <span className="font-semibold">{entry.paper.propertyName || "Unknown"}</span>
                                 </li>
                             ))
                         ) : (

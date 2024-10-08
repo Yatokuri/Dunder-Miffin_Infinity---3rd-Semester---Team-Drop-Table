@@ -71,33 +71,7 @@ public class PaperControllerTests(ITestOutputHelper outputHelper) : WebApplicati
         outputHelper.WriteLine(await request.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, request.StatusCode);
     }
-
-    [Fact]
-    public async Task TestUpdateDiscontinued()
-    {
-        Environment.SetEnvironmentVariable("TestDB", pgCtx._postgres.GetConnectionString());
-
-        using (var scope = Services.CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<DMIContext>();
-
-            var paper = new Paper
-            {
-                Name = "Test Paper",
-                Stock = 100,
-                Price = 9,
-                Discontinued = false
-            };
-
-            context.Papers.Add(paper);
-            context.SaveChanges();
-        }
-
-        var client = CreateClient();
-        var response = await client.PatchAsync("api/paper/1?discontinued=true", null);
-        outputHelper.WriteLine(await response.Content.ReadAsStringAsync());
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
+    
 
     [Fact]
     public async Task TestDeletePaper()

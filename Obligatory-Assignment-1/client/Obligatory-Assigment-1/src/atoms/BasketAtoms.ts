@@ -6,6 +6,7 @@ type BasketItem = {
     quantity: number;
     price: number;
     name: string;
+    selectedProperty?: string; // Optional selected property
 };
 
 // Local storage keys
@@ -47,7 +48,7 @@ export const loadBasketFromStorage = (setBasket: (basket: BasketItem[]) => void)
     if (savedBasket && !isBasketExpired()) {
         setBasket(savedBasket);
     } else {
-        clearBasket(setBasket) //Clear everything
+        clearBasket(setBasket); // Clear everything if expired
     }
 };
 
@@ -78,7 +79,7 @@ export const addToBasket = (
         // If the product exists, update the quantity
         updatedBasket = basket.map((item) =>
             item.product_id === product.product_id
-                ? { ...item, quantity: item.quantity + product.quantity, name: product.name } // Increment the quantity and update the name
+                ? { ...item, quantity: item.quantity + product.quantity, name: product.name, selectedProperty: product.selectedProperty } // Update the quantity, name, and selectedProperty
                 : item
         );
     } else {
@@ -95,36 +96,34 @@ export const addToBasket = (
 
 // Function to update the quantity of an item
 export const updateQuantity = (
-    basket: BasketItem[],  // Current basket items
-    productId: number,     // ID of the product being updated
-    newQuantity: number,    // New quantity for the product
-    productPrice: number,   // Price of the product
-    productName: string,   // Name of the product
-    setBasket: (updatedBasket: BasketItem[]) => void // Function to update the basket state
+    basket: BasketItem[],
+    productId: number,
+    newQuantity: number,
+    productPrice: number,
+    productName: string,
+    setBasket: (updatedBasket: BasketItem[]) => void,
+    selectedProperty: string // Make sure this parameter is included
 ) => {
-    // Find the index of the product in the basket
     const existingProductIndex = basket.findIndex(item => item.product_id === productId);
-
-    // Create a shallow copy of the basket to avoid mutation
     let updatedBasket = [...basket];
 
     if (existingProductIndex !== -1) {
-        // If the product exists, update the quantity
+        // If the product exists, update the quantity and selected property
         updatedBasket[existingProductIndex].quantity = newQuantity; // Update the quantity
+        updatedBasket[existingProductIndex].selectedProperty = selectedProperty; // Update the selected property
     } else {
         // If the product does not exist, add it to the basket
-        const newItem: BasketItem = { product_id: productId, quantity: newQuantity, price: productPrice, name: productName}; // Create a new BasketItem
+        const newItem: BasketItem = { product_id: productId, quantity: newQuantity, price: productPrice, name: productName, selectedProperty }; // Include selectedProperty
         updatedBasket.push(newItem); // Add new item to the basket
     }
 
+    // Remove products with quantity 0
+    updatedBasket = updatedBasket.filter(item => item.quantity > 0);
+
     // Update the basket state
     setBasket(updatedBasket);
-    updatedBasket = updatedBasket.filter(item => item.quantity > 0); //Make sure the memory don't save product with quantity 0
-
-    // Persist the updated basket to local storage
     saveBasketToStorage(updatedBasket); // Save the updated basket to local storage
 };
-
 
 // Function to clear the basket
 export const clearBasket = (setBasket: (emptyBasket: BasketItem[]) => void) => {

@@ -114,6 +114,12 @@ function Basket() {
                                         <span className="w-1/2 text-right">
                                             Total: {formatPrice(item.quantity * item.price)}
                                         </span>
+                                        <span
+                                            className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis ml-1"
+                                            title={item.selectedProperty}
+                                        >
+                                            ({truncateString(item.selectedProperty || 'White', maxNameLength)})
+                                        </span>
                                     </div>
                                 </li>
                             );

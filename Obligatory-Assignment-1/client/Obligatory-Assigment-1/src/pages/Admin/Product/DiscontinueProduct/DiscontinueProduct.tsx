@@ -1,15 +1,15 @@
 import { Api } from "../../../../../Api.ts";
 import { useAtom } from "jotai";
 import { productsAtom } from "../ProductTable/ProductTable.tsx";
-import './DeleteProduct.css';
+import './DiscontinueProduct.css';
 
 export const MyApi = new Api();
 
 async function discontinueProductById(id: string) {
-    await MyApi.api.paperUpdateDiscontinued(id, { discontinued: true });
+    await MyApi.api.paperUpdateDiscontinue(id, { discontinued: true });
 }
 
-function DeleteProduct({ productId }: { productId: string }) {
+function DiscontinueProduct({ productId }: { productId: string }) {
     const [products, setProducts] = useAtom(productsAtom);
 
     const handleDelete = async () => {
@@ -26,4 +26,4 @@ function DeleteProduct({ productId }: { productId: string }) {
     );
 }
 
-export default DeleteProduct;
+export default DiscontinueProduct;

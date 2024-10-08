@@ -60,8 +60,8 @@ public class PaperController(DMIContext context) : ControllerBase
     }
     
     [HttpPatch]
-    [Route("api/paper/{id}")]
-    public ActionResult<Paper> UpdateDiscontinued(int id, bool discontinued)
+    [Route("api/paper/discontinue/{id}")]
+    public ActionResult<Paper> UpdateDiscontinue(int id, bool discontinued)
     {
         var paperEntity = context.Papers.FirstOrDefault(p => p.Id == id);
         if (paperEntity == null)
@@ -69,6 +69,21 @@ public class PaperController(DMIContext context) : ControllerBase
             return NotFound();
         }
         paperEntity.Discontinued = discontinued;
+        context.SaveChanges();
+        return Ok(paperEntity);
+    }
+    
+        
+    [HttpPatch]
+    [Route("api/paper/continue/{id}")]
+    public ActionResult<Paper> UpdateContinue(int id)
+    {
+        var paperEntity = context.Papers.FirstOrDefault(p => p.Id == id);
+        if (paperEntity == null)
+        {
+            return NotFound();
+        }
+        paperEntity.Discontinued = false;
         context.SaveChanges();
         return Ok(paperEntity);
     }

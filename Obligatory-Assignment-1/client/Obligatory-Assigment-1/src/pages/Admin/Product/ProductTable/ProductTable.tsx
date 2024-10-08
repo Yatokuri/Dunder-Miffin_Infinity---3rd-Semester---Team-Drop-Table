@@ -1,7 +1,7 @@
 import { Api } from "../../../../../Api.ts";
 import { atom, useAtom } from "jotai";
 import { useEffect, useState } from "react";
-import DeleteProduct from "../DeleteProduct/DeleteProduct.tsx";
+import DiscontinueProduct from "../DiscontinueProduct/DiscontinueProduct.tsx";
 import UpdateProduct from "../UpdateProduct/UpdateProduct.tsx";
 import './ProductTable.css';
 
@@ -69,7 +69,7 @@ function ProductTable() {
                             <td className="table-cell-padding">{product.price}</td>
                             <td className="table-cell-padding">
                                 <button className="btn btn-md lg:btn-lg bg-blue-600 text-white hover:bg-blue-700 mr-4" onClick={() => handleEdit(product.id)}>Edit</button>
-                                <DeleteProduct productId={product.id} />
+                                <DiscontinueProduct productId={product.id} />
                             </td>
                         </>
                     )}

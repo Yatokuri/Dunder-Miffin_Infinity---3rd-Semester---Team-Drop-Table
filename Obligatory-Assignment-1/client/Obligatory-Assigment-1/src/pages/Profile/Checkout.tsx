@@ -375,7 +375,7 @@ const CheckoutPage = () => {
                     <h2 className="text-xl sm:text-2xl font-semibold mb-2 sm:mb-4">Confirm Your Order</h2>
 
                     {/* Customer Information */}
-                    <h3 className="text-lg mb-2">Customer Information</h3>
+                    <h3 className="text-lg mb-2 font-bold">Your Information</h3>
                     <p>Name: {customer.name}</p>
                     <p>Email: {customer.email}</p>
                     <p>Address: {customer.address}</p>
@@ -388,7 +388,7 @@ const CheckoutPage = () => {
                     </p>
 
                     {/* OrderControl Summary */}
-                    <h3 className="text-lg mt-4 mb-2">Order Summary</h3>
+                    <h3 className="text-lg mt-4 mb-2 font-bold">Order Summary</h3>
                     <ul className="space-y-2">
                         {basket.map((item) => (
                             <li key={item.product_id} className="flex justify-between">

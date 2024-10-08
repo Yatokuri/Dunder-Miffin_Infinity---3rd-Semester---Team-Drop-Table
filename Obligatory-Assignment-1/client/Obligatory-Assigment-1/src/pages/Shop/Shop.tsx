@@ -186,6 +186,7 @@ function Shop() {
                 <label htmlFor="propertyFilter" className="mr-2 bg-center flex ml-5">Filters</label>
                     <select 
                         id="propertyFilter" 
+                        // @ts-ignore
                         value={propertyFilter}
                         onChange={(e) => setPropertyFilter(e.target.value)}
                         className="border rounded p-1 flex-grow ml-5"

@@ -26,18 +26,18 @@ public class Program
             }
         }
 
-// Construct the PostgreSQL connection string using environment variables
+// Construct the PostgresSQL connection string using environment variables
         var user = Environment.GetEnvironmentVariable("POSTGRES_USER");
         var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
         var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
 
         var connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
         
-        builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderStatusValidator>());
+        builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
         
         builder.Services.AddControllers();
 
-// Register the DbContext with PostgreSQL using the constructed connection string
+// Register the DbContext with PostgresSQL using the constructed connection string
         builder.Services.AddDbContext<DMIContext>(options =>
         {
             options.UseNpgsql(Environment.GetEnvironmentVariable("TestDB") ?? connectionString);

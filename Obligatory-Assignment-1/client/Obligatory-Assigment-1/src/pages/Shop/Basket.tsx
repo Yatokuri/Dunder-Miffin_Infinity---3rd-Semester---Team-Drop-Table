@@ -6,7 +6,7 @@ import {toast} from "react-hot-toast";
 import TrashIcon from '../../assets/icons/TrashbinIcon.tsx';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal.tsx';
 import InputFieldPaperQuantity from '../../components/Orders/InputFieldPaperQuantity.tsx';
-
+import {MyApi} from "./Shop.tsx";
 
 // Utility function to format price
 const formatPrice = (price: number) => {
@@ -26,25 +26,34 @@ function Basket() {
     const [totalAmount] = useAtom(TotalAmountAtom);
     const [isModalOpen, setModalOpen] = useState(false);
     const [maxNameLength, setMaxNameLength] = useState(18);
+    const [products, setProducts] = useState<{ [key: number]: { stock: number } }>({});
 
     // Load basket from local storage once when the component mounts
     useEffect(() => {
         loadBasketFromStorage(setBasket);
     }, [setBasket]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await MyApi.api.paperGetAllPapers(); // Fetch data
+                // @ts-expect-error: Ignore an error if it doesn't exist
+                setProducts(response.data);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+        fetchData().then();
+    }, [setProducts]);
+    
     // Track screen size and adjust max length dynamically
     useEffect(() => {
         const updateMaxNameLength = () => {
             const screenWidth = window.innerWidth;
-            if (screenWidth >= 640) {
-                setMaxNameLength(18);
-            } else { // Mobile screens
-                setMaxNameLength(28);
-            }
+            setMaxNameLength(screenWidth >= 640 ? 18 : 28);
         };
 
         updateMaxNameLength();
-
         // Listen for window resize and update max name length
         window.addEventListener("resize", updateMaxNameLength);
 
@@ -70,16 +79,40 @@ function Basket() {
             {basket.length > 0 ? (
                 <div>
                     <ul className="space-y-2">
-                        {basket.map((item) => (
-                            <li key={item.product_id} className="border-b py-2">
-                                {/* Product Name and Input Field in one line on large screens */}
-                                <div className="flex justify-between items-center">
-                                    <div className="flex-shrink-0 w-1/2 max-w-[160px]">
-                                        <span
-                                            className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis"
-                                            title={item.name}
-                                        >
-                                            {truncateString(item.name || 'Unknown', maxNameLength)}
+                        {basket.map((item) => {
+                            // Dynamically determine the stock based on the product_id
+                            const product = products[item.product_id];
+                            const stock = product ? product.stock : 0;
+                            return (
+                                <li key={item.product_id} className="border-b py-2">
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex-shrink-0 w-1/2 max-w-[160px]">
+                                            <span
+                                                className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis"
+                                                title={item.name}
+                                            >
+                                                {truncateString(item.name || 'Unknown', maxNameLength)}
+                                            </span>
+                                        </div>
+                                        <div className="sm:flex-grow w-1/4 justify-items-end">
+                                            <InputFieldPaperQuantity item={item} stock={stock} />
+                                        </div>
+                                        <div className="w-1/4 text-center flex-col hidden sm:flex">
+                                            <span>Price:</span>
+                                            <span>{formatPrice(item.price)}</span>
+                                        </div>
+                                        <div className="w-1/4 text-center flex-col hidden sm:flex">
+                                            <span>Total:</span>
+                                            <span>{formatPrice(item.quantity * item.price)}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between items-center sm:hidden mt-2">
+                                        <span className="w-1/2 text-left">
+                                            Price: {formatPrice(item.price)}
+                                        </span>
+                                        <span className="w-1/2 text-right">
+                                            Total: {formatPrice(item.quantity * item.price)}
                                         </span>
                                         <span
                                             className="font-semibold overflow-hidden whitespace-nowrap text-ellipsis ml-1"
@@ -88,32 +121,9 @@ function Basket() {
                                             ({truncateString(item.selectedProperty || 'White', maxNameLength)})
                                         </span>
                                     </div>
-                                    {/* Input field taking consistent space */}
-                                    <div className="sm:flex-grow w-1/4 justify-items-end">
-                                        <InputFieldPaperQuantity item={item} />
-                                    </div>
-                                    {/* Price and Total on one line on large screens */}
-                                    <div className="w-1/4 text-center flex-col hidden sm:flex">
-                                        <span>Price:</span>
-                                        <span>{formatPrice(item.price)}</span>
-                                    </div>
-                                    <div className="w-1/4 text-center flex-col hidden sm:flex">
-                                        <span>Total:</span>
-                                        <span>{formatPrice(item.quantity * item.price)}</span>
-                                    </div>
-                                </div>
-
-                                {/* Price and Total on a new line for mobile */}
-                                <div className="flex justify-between items-center sm:hidden mt-2">
-                                    <span className="w-1/2 text-left">
-                                        Price: {formatPrice(item.price)}
-                                    </span>
-                                    <span className="w-1/2 text-right">
-                                        Total: {formatPrice(item.quantity * item.price)}
-                                    </span>
-                                </div>
-                            </li>
-                        ))}
+                                </li>
+                            );
+                        })}
                     </ul>
                     <div className="mt-4 flex justify-between font-bold">
                         <span>Total Amount:</span>
@@ -128,7 +138,6 @@ function Basket() {
                         </button>
                     </div>
 
-                    {/* Confirmation Modal */}
                     <ConfirmationModal
                         isOpen={isModalOpen}
                         onClose={() => setModalOpen(false)}

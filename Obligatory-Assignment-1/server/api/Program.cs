@@ -1,7 +1,9 @@
+using System.Text;
 using dataAccess;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Service.Validators;
+using Microsoft.IdentityModel.Tokens;
 
 public class Program
 {
@@ -26,18 +28,17 @@ public class Program
             }
         }
 
-// Construct the PostgreSQL connection string using environment variables
+// Construct the PostgresSQL connection string using environment variables
         var user = Environment.GetEnvironmentVariable("POSTGRES_USER");
         var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
         var database = Environment.GetEnvironmentVariable("POSTGRES_DB");
 
         var connectionString = $"Host=localhost;Database={database};Username={user};Password={password};";
-        
-        builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<OrderStatusValidator>());
-        
+
+        builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
         builder.Services.AddControllers();
 
-// Register the DbContext with PostgreSQL using the constructed connection string
+// Register the DbContext with PostgresSQL using the constructed connection string
         builder.Services.AddDbContext<DMIContext>(options =>
         {
             options.UseNpgsql(Environment.GetEnvironmentVariable("TestDB") ?? connectionString);
@@ -54,7 +55,27 @@ public class Program
         });
 
         builder.Services.AddCors();
-        
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "SecretKey";
+                var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "http://localhost/";
+                var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "http://localhost/";
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtIssuer,
+                    ValidAudience = jwtAudience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                };
+            });
+
+
         var app = builder.Build();
         app.UseOpenApi();
         app.UseSwaggerUi();
@@ -69,7 +90,14 @@ public class Program
 
             opts.AllowAnyHeader();
         });
-        
+
+        // Use Authentication and Authorization Middleware
+        app.UseAuthentication(); // This must come before UseAuthorization
+        app.UseAuthorization();
+
+        // Map controllers
+        app.MapControllers();
+
         app.Run();
     }
 }

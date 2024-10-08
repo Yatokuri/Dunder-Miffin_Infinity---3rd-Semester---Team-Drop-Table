@@ -45,9 +45,10 @@ const getAuthData = (): AuthState | null => {
     return null;
 };
 
-// Function to clear authentication data
+// Function to clear authentication data and token
 export const clearAuthData = () => {
     localStorage.removeItem('authData'); // Clear authentication data
+    localStorage.removeItem('token'); // Clear token
     return initialAuthState; // Return initial state
 };
 

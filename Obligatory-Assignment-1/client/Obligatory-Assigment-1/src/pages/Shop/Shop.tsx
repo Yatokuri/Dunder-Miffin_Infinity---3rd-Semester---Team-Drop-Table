@@ -6,7 +6,7 @@ import {Api} from "../../../Api.ts";
 import {toast} from "react-hot-toast";
 import InputFieldPaperQuantity from "../../components/Orders/InputFieldPaperQuantity.tsx";
 import {searchAtom} from "../../atoms/atoms.ts";
-import {productPriceFilterAtom, productPropertiesFilterAtom, productPropertyFilterAtom} from "../../atoms/ProductFilterAtoms.ts";
+import {productPriceFilterAtom} from "../../atoms/ProductFilterAtoms.ts";
 
 export const MyApi = new Api();
 
@@ -85,8 +85,6 @@ function Shop() {
     const [searchQuery] = useAtom(searchAtom); // Use the navbar search
     const [sortPrice, setSortPrice] = useState<string>("Normal");
     const [priceFilters] = useAtom(productPriceFilterAtom);
-    const [propertyFilter, setPropertyFilter] = useAtom(productPropertyFilterAtom);
-    const [availableProperties, setAvailableProperties] = useAtom(productPropertiesFilterAtom)
     
     // Load basket from localStorage when the component mounts
     useEffect(() => {
@@ -136,28 +134,14 @@ function Shop() {
         fetchData().then();
     }, [setProducts]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await MyApi.api.propertiesGetAllProperties(); // Fetch data
-                // @ts-expect-error: Ignore an error if it doesn't exist
-                setAvailableProperties(response.data);
-            } catch (error) {
-                console.error("Error fetching properties:", error);
-            }
-        };
-        fetchData().then();
-    }, [setAvailableProperties]);
-
     // Handle filtering Products by properties, price and search query
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()); // Search by Product Name
         const matchesPrice = sortPrice === "Normal" || sortPrice === "Ascending" || sortPrice === "Descending" || product.price.toString() === sortPrice;
         if (sortPrice === "Ascending" || sortPrice === "Descending" || sortPrice === "Normal") {return matchesSearch;}
         // Needs to be changed to check paper_properties when actually implemented - Currently not working
-        const matchesProperty = !propertyFilter || product.properties.includes(propertyFilter);
 
-        return matchesSearch && matchesPrice && matchesProperty; // Combine filters
+        return matchesSearch && matchesPrice; // Combine filters
     })
         .sort((a, b) => {
             if (sortPrice === "Ascending") return a.price - b.price;
@@ -181,21 +165,6 @@ function Shop() {
                         <option key={filter} value={filter}>
                             {filter}
                         </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mb-4">
-                <label htmlFor="propertyFilter" className="mr-2 bg-center flex ml-5">Filters</label>
-                <select
-                    id="propertyFilter"
-                    // @ts-ignore
-                    value={propertyFilter}
-                    onChange={(e) => setPropertyFilter(e.target.value)}
-                    className="border rounded p-1 flex-grow ml-5"
-                >
-                    <option value="">All</option>
-                    {availableProperties.map((property) => (
-                        <option key={property} value={property}>{property}</option>
                     ))}
                 </select>
             </div>

@@ -28,11 +28,20 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
     
     const handleBlur = () => {
         document.body.classList.remove('overflow-hidden');
+        
+        if (inputValue === '' || parseInt(inputValue, 10) > stock) {
+            const validQuantity = Math.min(stock, parseInt(inputValue) || 0 );
+            setInputValue(validQuantity.toString());
+            handleQuantityChange(validQuantity.toString());
+            if (inputValue !== ''){
+                toast.error(`Only ${stock} items are available in stock.`);
+            }
+        }
     }
     
     const handleQuantityChange = (newQuantity: string) => {
         // Parse the new quantity
-        const quantity = newQuantity === '' ? 0 : parseInt(newQuantity, 10);
+        const quantity = parseInt(newQuantity, 10) || 0;
         const productId = item.product_id;
 
         // Update the basket based on the new quantity
@@ -43,9 +52,6 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
             toast.success("Product removed from basket");
         } else if (quantity <= stock) {
             updateQuantity(basket, productId, quantity, item.price, item.name, setBasket);
-        } else {
-            toast.error(`Only ${stock} items are available in stock.`)
-            setInputValue(stock.toString());
         }
     };
 
@@ -56,33 +62,19 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
             value={inputValue}
             onChange={(e) => {
                 const { value } = e.target;
-                const numericValue = parseInt(value, 10);
-
-                if (!isNaN(numericValue) && numericValue >= 0) {
-                    if (numericValue <= stock) {
-                        handleQuantityChange(value);
-                    } else {
-                        setInputValue(stock.toString());
-                        handleQuantityChange(stock.toString())
-                        toast.error(`You cannot exceed the available stock of ${stock} items.`);
-                    }
+                
+                if (!isNaN(Number(value)) && Number(value) >= 0) {
+                    const limitedValue = Math.min(Number(value), stock);
+                    setInputValue(limitedValue.toString());
+                    handleQuantityChange(limitedValue.toString())
+                    toast.error(`You cannot exceed the available stock of ${stock} items.`);
                 } else if (value === '') {
                     setInputValue('');
                     handleQuantityChange('')
                 }
             }}
             onFocus={handleFocus}
-            onBlur={() => {
-                handleBlur()
-                if (inputValue === '' || parseInt(inputValue, 10) > stock) {
-                    setInputValue(stock.toString());
-                    handleQuantityChange(stock.toString())
-                    if (inputValue !== ''){
-                        toast.error(`Only ${stock} items are available in stock.`);
-                    }
-                    
-                }
-            }}
+            onBlur={handleBlur}
             min={0}
             max={stock}
         />

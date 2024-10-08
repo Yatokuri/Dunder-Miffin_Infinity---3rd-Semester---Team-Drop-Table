@@ -65,9 +65,13 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
                 
                 if (!isNaN(Number(value)) && Number(value) >= 0) {
                     const limitedValue = Math.min(Number(value), stock);
-                    setInputValue(limitedValue.toString());
-                    handleQuantityChange(limitedValue.toString())
-                    toast.error(`You cannot exceed the available stock of ${stock} items.`);
+                    if (Number(value) <= stock){
+                        handleQuantityChange(limitedValue.toString())
+                    } else {
+                        setInputValue(limitedValue.toString());
+                        handleQuantityChange(limitedValue.toString())
+                        toast.error(`You cannot exceed the available stock of ${stock} items.`);
+                    }
                 } else if (value === '') {
                     setInputValue('');
                     handleQuantityChange('')

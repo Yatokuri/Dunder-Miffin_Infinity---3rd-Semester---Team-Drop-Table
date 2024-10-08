@@ -58,7 +58,7 @@ function ProductTable() {
             </tr>
             </thead>
             <tbody>
-            {products.filter(product => !product.discontinued).map((product, index) => (
+            {products.map((product, index) => (
                 <tr key={index}>
                     {isEditing === product.id ? (
                         <UpdateProduct product={product} onSave={handleSave} />
@@ -69,7 +69,7 @@ function ProductTable() {
                             <td className="table-cell-padding">{product.price}</td>
                             <td className="table-cell-padding">
                                 <button className="btn btn-md lg:btn-lg bg-blue-600 text-white hover:bg-blue-700 mr-4" onClick={() => handleEdit(product.id)}>Edit</button>
-                                <DiscontinueProduct productId={product.id} />
+                                <DiscontinueProduct productId={product.id} discontinued={product.discontinued} />
                             </td>
                         </>
                     )}

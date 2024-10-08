@@ -5,23 +5,27 @@ import './DiscontinueProduct.css';
 
 export const MyApi = new Api();
 
-async function discontinueProductById(id: string) {
-    await MyApi.api.paperUpdateDiscontinue(id, { discontinued: true });
+async function toggleProductDiscontinueStatus(id: string, discontinued: boolean) {
+    if (discontinued) {
+        await MyApi.api.paperUpdateContinue(id);
+    } else {
+        await MyApi.api.paperUpdateDiscontinue(id, { discontinued: true });
+    }
 }
 
-function DiscontinueProduct({ productId }: { productId: string }) {
+function DiscontinueProduct({ productId, discontinued }: { productId: string, discontinued: boolean }) {
     const [products, setProducts] = useAtom(productsAtom);
 
-    const handleDelete = async () => {
-        await discontinueProductById(productId);
+    const handleToggle = async () => {
+        await toggleProductDiscontinueStatus(productId, discontinued);
         setProducts(products.map(product =>
-            product.id === productId ? { ...product, discontinued: true } : product
+            product.id === productId ? { ...product, discontinued: !discontinued } : product
         ));
     };
 
     return (
-        <button className="btn btn-md lg:btn-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-200 mt-10" onClick={handleDelete}>
-            Discontinue
+        <button className="btn btn-md lg:btn-lg bg-blue-600 text-white hover:bg-blue-700 transition duration-200 mt-10" onClick={handleToggle}>
+            {discontinued ? 'Continue' : 'Discontinue'}
         </button>
     );
 }

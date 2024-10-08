@@ -31,13 +31,8 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
     }
     
     const handleQuantityChange = (newQuantity: string) => {
-        if (newQuantity === '') {
-            setInputValue('');
-            return;
-        }
-        
         // Parse the new quantity
-        const quantity = parseInt(newQuantity, 10);
+        const quantity = newQuantity === '' ? 0 : parseInt(newQuantity, 10);
         const productId = item.product_id;
 
         // Update the basket based on the new quantity
@@ -68,18 +63,24 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
                         handleQuantityChange(value);
                     } else {
                         setInputValue(stock.toString());
+                        handleQuantityChange(stock.toString())
                         toast.error(`You cannot exceed the available stock of ${stock} items.`);
                     }
                 } else if (value === '') {
                     setInputValue('');
+                    handleQuantityChange('')
                 }
             }}
             onFocus={handleFocus}
             onBlur={() => {
                 handleBlur()
-                if (parseInt(inputValue, 10) > stock) {
+                if (inputValue === '' || parseInt(inputValue, 10) > stock) {
                     setInputValue(stock.toString());
-                    toast.error(`Only ${stock} items are available in stock.`);
+                    handleQuantityChange(stock.toString())
+                    if (inputValue !== ''){
+                        toast.error(`Only ${stock} items are available in stock.`);
+                    }
+                    
                 }
             }}
             min={0}

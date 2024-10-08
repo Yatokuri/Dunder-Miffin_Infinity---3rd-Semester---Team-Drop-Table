@@ -33,7 +33,7 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove, stock 
             onAdd(product.id, quantity + 1, product.price, product.name);
         }
         else {
-            toast.error("No more stock available to add")
+            toast.error(`The available stock of ${product.name} is ${stock} and cannot be exceeded`)
         }
     };
 
@@ -68,7 +68,7 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove, stock 
                             price: product.price,
                             name: product.name
                         }}
-                    />
+                     stock={product.stock}/>
 
                     <button onClick={handleRemoveClick} className="btn bg-red-500 ml-2" disabled={quantity === 0}>
                         -

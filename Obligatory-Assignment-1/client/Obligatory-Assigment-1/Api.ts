@@ -9,6 +9,11 @@
  * ---------------------------------------------------------------
  */
 
+export interface LoginRequest {
+  email?: string;
+  roleType?: string;
+}
+
 export interface OrderDto {
   /** @format int32 */
   id?: number;
@@ -302,6 +307,22 @@ export class HttpClient<SecurityDataType = unknown> {
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
+    /**
+     * No description
+     *
+     * @tags Auth
+     * @name AuthLogin
+     * @request POST:/api/auth/login
+     */
+    authLogin: (data: LoginRequest, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/auth/login`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
     /**
      * No description
      *

@@ -1,6 +1,8 @@
-﻿using dataAccess;
+﻿using System.Security.Claims;
+using dataAccess;
 using dataAccess.Models;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using service.Request.OrderDto;
@@ -12,6 +14,7 @@ namespace api.Controllers;
 
 public class OrderController(DMIContext context) : ControllerBase
 {
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     [Route("api/order")]
     public ActionResult GetAllOrders()
@@ -34,6 +37,7 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok(orders);
     }
     
+    [Authorize]
     [HttpGet("api/order/{id}")]
     public ActionResult<OrderDto> GetOrderById(int id)
     {
@@ -45,7 +49,19 @@ public class OrderController(DMIContext context) : ControllerBase
 
         if (orderEntity == null)
         {
-            return NotFound();
+            return NotFound(); // Order not found
+        }
+
+        // Get the user ID from claims (assuming you have the UserId claim set during authentication)
+        var userId = User.FindFirstValue("UserId");
+            
+        // Check if the user is an admin or the owner of the order
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = orderEntity.Customer != null && orderEntity.Customer.Id.ToString() == userId;
+
+        if (!isAdmin && !isOwner)
+        {
+            return Forbid(); // Return a 403 Forbidden if the user is not authorized
         }
 
         // Manually map the Order entity to OrderDto

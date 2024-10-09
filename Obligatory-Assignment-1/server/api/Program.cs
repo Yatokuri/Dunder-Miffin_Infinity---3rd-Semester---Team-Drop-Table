@@ -3,7 +3,11 @@ using dataAccess;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using NSwag;
+using NSwag.AspNetCore;
+using NSwag.Generation.Processors.Security;
 
 public class Program
 {
@@ -46,13 +50,26 @@ public class Program
         });
 
         builder.Services.AddDbContext<DMIContext>(opt => opt.UseInMemoryDatabase("DMI"));
-
-        builder.Services.AddOpenApiDocument(configure =>
+        
+        builder.Services.AddOpenApiDocument(config =>
         {
-            configure.Title = "Dunder Mifflin Infinity";
-            configure.Description = "Try and test";
-            configure.Version = "v1";
+            config.DocumentName = "Dunder Mifflin Infinity";
+            config.Title = "Try and test";
+            config.Version  = "v1";
+    
+            // Add JWT Bearer token support
+            config.AddSecurity("Bearer", new OpenApiSecurityScheme
+            {
+                Type = OpenApiSecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "Enter 'Bearer' [space] and then your token."
+            });
+
+            // Add security requirements
+            config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("Bearer"));
         });
+
 
         builder.Services.AddCors();
 
@@ -77,8 +94,18 @@ public class Program
 
 
         var app = builder.Build();
+       
         app.UseOpenApi();
-        app.UseSwaggerUi();
+
+        
+   
+
+        app.UseOpenApi();
+        app.UseSwaggerUi(config =>
+        {
+            //config.CustomJavaScriptPath = "/SwaggerAutoLogin.js"; // Path to your JS file
+        });
+
 
         app.MapControllers();
 

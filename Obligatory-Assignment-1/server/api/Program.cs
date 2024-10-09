@@ -53,8 +53,8 @@ public class Program
         
         builder.Services.AddOpenApiDocument(config =>
         {
-            config.DocumentName = "Dunder Mifflin Infinity";
-            config.Title = "Try and test";
+            config.DocumentName = "v1";
+            config.Title = "Dunder Mifflin Infinity  - Try and test";
             config.Version  = "v1";
     
             // Add JWT Bearer token support
@@ -94,16 +94,13 @@ public class Program
 
 
         var app = builder.Build();
-       
+        app.UseStaticFiles();
         app.UseOpenApi();
-
-        
-   
-
-        app.UseOpenApi();
-        app.UseSwaggerUi(config =>
+        app.UseSwaggerUi(c =>
         {
-            //config.CustomJavaScriptPath = "/SwaggerAutoLogin.js"; // Path to your JS file
+            c.Path = "/swagger";
+            c.DocumentPath = "/swagger/v1/swagger.json"; 
+            c.CustomJavaScriptPath = "/js/SwaggerAutoLogin.js";
         });
 
 

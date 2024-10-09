@@ -23,6 +23,10 @@ import ProtectedAdminRoute from "./components/ProtectedRoute.tsx"; // Import the
 import OrderDetails from "./components/Orders/OrderDetails.tsx";
 import Shop from "./pages/Shop/Shop.tsx";
 import Basket from "./pages/Shop/Basket.tsx";
+import Rainbow from "./pages/CardPages/Rainbow/Rainbow.tsx";
+import Chinese from "./pages/CardPages/Chinese/Chinese.tsx";
+import Space from "./pages/CardPages/Space/Space.tsx";
+import Productivity from "./pages/CardPages/Productivity/Productivity.tsx";
 
 function App() {
     return (
@@ -63,6 +67,10 @@ function App() {
                         <Route path="/profile" element={<Profile/>}/>
                         <Route path="/shop" element={<Shop/>}/>
                         <Route path="/*" element={<NotFound/>}/>
+                        <Route path="/rainbow" element={<Rainbow/>}/>
+                        <Route path="/chinese" element={<Chinese/>}/>
+                        <Route path="/space" element={<Space/>}/>
+                        <Route path="/productivity" element={<Productivity/>}/>
                     </Routes>
                 </div>
                 <Footer/>

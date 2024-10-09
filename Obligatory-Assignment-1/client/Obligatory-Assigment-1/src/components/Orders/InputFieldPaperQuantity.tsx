@@ -40,18 +40,25 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
     }
     
     const handleQuantityChange = (newQuantity: string) => {
+        // Immediately update the input value
+        setInputValue(newQuantity);
+
+        // Exit early if the input is empty
+        if (newQuantity === '') return;
+
+
         // Parse the new quantity
         const quantity = parseInt(newQuantity, 10) || 0;
         const productId = item.product_id;
 
         // Update the basket based on the new quantity
         if (quantity === 0) {
-            updateQuantity(basket, productId, 0, item.price, item.name, setBasket);
+            updateQuantity(basket, productId, 0, item.price, item.name, "N/A", setBasket, );
             // Remove product if quantity is 0
             setBasket(basket.filter(item => item.product_id !== productId));
             toast.success("Product removed from basket");
         } else if (quantity <= stock) {
-            updateQuantity(basket, productId, quantity, item.price, item.name, setBasket);
+            updateQuantity(basket, productId, quantity, item.price, item.name,"N/A", setBasket);
         }
     };
 
@@ -62,7 +69,13 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
             value={inputValue}
             onChange={(e) => {
                 const { value } = e.target;
-                
+
+                // Check if the input value is not empty
+                if (value === '') {
+                    handleQuantityChange("");
+                    return;
+                }
+
                 if (!isNaN(Number(value)) && Number(value) >= 0) {
                     const limitedValue = Math.min(Number(value), stock);
                     if (Number(value) <= stock){
@@ -70,6 +83,7 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
                     } else {
                         setInputValue(limitedValue.toString());
                         handleQuantityChange(limitedValue.toString())
+                        toast.dismiss();
                         toast.error(`You cannot exceed the available stock of ${stock} items.`);
                     }
                 } else if (value === '') {

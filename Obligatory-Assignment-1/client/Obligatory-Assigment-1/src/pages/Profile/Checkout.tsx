@@ -17,6 +17,16 @@ const CheckoutPage = () => {
     const [shippingOptions] = useAtom(ShippingAtom); // Use shipping options atom
     const [selectedShippingOption, setSelectedShippingOption] = useAtom(SelectedShippingOptionAtom); // Use selected shipping option atom
 
+    const [touchedFields, setTouchedFields] = useState({
+        email: false,
+        password: false,
+        name: false,
+        address: false,
+        phone: false,
+        cardNumber: false,
+        expirationDate: false,
+        cvv: false,
+    });
 
 
     // Local state for payment details
@@ -59,23 +69,23 @@ const CheckoutPage = () => {
         }
     }, [authState.isLoggedIn]); // Dependency array to run effect when login state changes
 
-    // Validate when state changes temp way not best way
+    // Validate when touched fields change
     useEffect(() => {
-        validateAllFields();
-    }, );
-    
+        validateAllFields(touchedFields); // Pass touchedFields to validation
+    }, [touchedFields, customer, paymentDetails]);
+
     // Validate all steps
-    const validateAllFields = () => {
+    const validateAllFields = (touchedFields: { [key: string]: boolean }) => {
         const newErrors = { ...errors };
 
         // Step 1 validation
         if (currentStep === 1) {
-            if (!customer.email) {
+            if (touchedFields.email && !customer.email) {
                 newErrors.email = 'Email is required';
             } else {
                 newErrors.email = '';
             }
-            if (!fakePassword.password) {
+            if (touchedFields.password && !fakePassword.password) {
                 newErrors.password = 'Password is required';
             } else {
                 newErrors.password = '';
@@ -84,17 +94,17 @@ const CheckoutPage = () => {
 
         // Step 2 validation
         if (currentStep === 2) {
-            if (!customer.name) {
+            if (touchedFields.name && !customer.name) {
                 newErrors.name = 'Name is required';
             } else {
                 newErrors.name = '';
             }
-            if (!customer.address) {
+            if (touchedFields.address && !customer.address) {
                 newErrors.address = 'Address is required';
             } else {
                 newErrors.address = '';
             }
-            if (!customer.phone) {
+            if (touchedFields.phone && !customer.phone) {
                 newErrors.phoneNumber = 'Phone number is required';
             } else {
                 newErrors.phoneNumber = '';
@@ -103,17 +113,17 @@ const CheckoutPage = () => {
 
         // Step 3 validation
         if (currentStep === 3) {
-            if (!paymentDetails.cardNumber) {
+            if (touchedFields.cardNumber && !paymentDetails.cardNumber) {
                 newErrors.cardNumber = 'Card number is required';
             } else {
                 newErrors.cardNumber = '';
             }
-            if (!paymentDetails.expirationDate) {
+            if (touchedFields.expirationDate && !paymentDetails.expirationDate) {
                 newErrors.expirationDate = 'Expiration date is required';
             } else {
                 newErrors.expirationDate = '';
             }
-            if (!paymentDetails.cvv) {
+            if (touchedFields.cvv && !paymentDetails.cvv) {
                 newErrors.cvv = 'CVV is required';
             } else {
                 newErrors.cvv = '';
@@ -124,9 +134,27 @@ const CheckoutPage = () => {
         return Object.values(newErrors).every(error => error === '');
     };
 
+
     const handleNextStep = () => {
-        if (validateAllFields()) {
-            setCurrentStep(currentStep + 1);
+        // Prepare new touched fields
+        const newTouchedFields = { ...touchedFields }; // Start with the previous state
+
+        // Mark all fields as touched for the current step
+        if (currentStep === 1) {
+            newTouchedFields.email = true;
+            newTouchedFields.password = true;
+        } else if (currentStep === 2) {
+            newTouchedFields.name = true;
+            newTouchedFields.address = true;
+            newTouchedFields.phone = true;
+        } else if (currentStep === 3) {
+            newTouchedFields.cardNumber = true;
+            newTouchedFields.expirationDate = true;
+            newTouchedFields.cvv = true;
+        }
+        setTouchedFields(newTouchedFields);
+        if (validateAllFields(newTouchedFields)) {
+            setCurrentStep(currentStep + 1); // Move to the next step if valid
         }
     };
 
@@ -192,11 +220,17 @@ const CheckoutPage = () => {
                                 type="email"
                                 name="email"
                                 value={customer.email}
-                                onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                                onChange={(e) => {
+                                    const email = e.target.value;
+                                    setCustomer({ ...customer, email });
+                                    setTouchedFields((prev) => ({ ...prev, email: true }));
+                                }}
                                 placeholder="john.doe@example.com"
                                 className={`input input-bordered w-full ${errors.email ? 'border-red-500' : ''}`}
                             />
-                            {errors.email && <div className="h-2 text-red-500 text-sm">{errors.email}</div>}
+                            <div className="h-2">
+                                {errors.email && <div className="text-red-500 text-sm">{errors.email}</div>}
+                            </div>
                         </div>
                         <div>
                             <label className="label">Password</label>
@@ -204,9 +238,15 @@ const CheckoutPage = () => {
                                 type="password"
                                 placeholder="••••••"
                                 className={`input input-bordered w-full ${errors.password ? 'border-red-500' : ''}`}
-                                onChange={(e) => setFakePassword({ ...fakePassword, password: e.target.value })}
+                                onChange={(e) => {
+                                    const password = e.target.value;
+                                    setFakePassword({ ...fakePassword, password });
+                                    setTouchedFields((prev) => ({ ...prev, password: true }));
+                                }}
                             />
-                            {errors.password && <div className="h-2 text-red-500 text-sm">{errors.password}</div>}
+                            <div className="h-2">
+                                {errors.password && <div className="text-red-500 text-sm">{errors.password}</div>}
+                            </div>
                         </div>
                     </form>
                     <div className="flex justify-between mt-4">
@@ -235,11 +275,17 @@ const CheckoutPage = () => {
                                         type="text"
                                         name="name"
                                         value={customer.name}
-                                        onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                                        onChange={(e) => {
+                                            const name = e.target.value;
+                                            setCustomer({ ...customer, name });
+                                            setTouchedFields((prev) => ({ ...prev, name: true }));
+                                        }}
                                         placeholder="John Doe"
                                         className={`input input-bordered w-full ${errors.name ? 'border-red-500' : ''}`}
                                     />
-                                    {errors.name && <div className="h-2 text-red-500 text-sm">{errors.name}</div>}
+                                    <div className="h-2">
+                                        {errors.name && <div className="text-red-500 text-sm">{errors.name}</div>}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="label">Address</label>
@@ -247,11 +293,17 @@ const CheckoutPage = () => {
                                         type="text"
                                         name="address"
                                         value={customer.address}
-                                        onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
+                                        onChange={(e) => {
+                                            const address = e.target.value;
+                                            setCustomer({ ...customer, address });
+                                            setTouchedFields((prev) => ({ ...prev, address: true }));
+                                        }}
                                         placeholder="123 Main St"
                                         className={`input input-bordered w-full ${errors.address ? 'border-red-500' : ''}`}
                                     />
-                                    {errors.address && <div className="h-2 text-red-500 text-sm">{errors.address}</div>}
+                                    <div className="h-2">
+                                        {errors.address && <div className="text-red-500 text-sm">{errors.address}</div>}
+                                    </div>
                                 </div>
                                 <div>
                                     <label className="label">Phone Number</label>
@@ -259,13 +311,17 @@ const CheckoutPage = () => {
                                         type="text"
                                         name="phoneNumber"
                                         value={customer.phone}
-                                        onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
+                                        onChange={(e) => {
+                                            const phone = e.target.value;
+                                            setCustomer({ ...customer, phone });
+                                            setTouchedFields((prev) => ({ ...prev, phone: true }));
+                                        }}
                                         placeholder="(555) 123-4567"
                                         className={`input input-bordered w-full ${errors.phoneNumber ? 'border-red-500' : ''}`}
                                     />
-                                    {errors.phoneNumber && (
-                                        <div className="h-2 text-red-500 text-sm">{errors.phoneNumber}</div>
-                                    )}
+                                    <div className="h-2">
+                                        {errors.phoneNumber && <div className="text-red-500 text-sm">{errors.phoneNumber}</div>}
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -327,11 +383,17 @@ const CheckoutPage = () => {
                                 type="text"
                                 name="cardNumber"
                                 value={paymentDetails.cardNumber}
-                                onChange={(e) => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value })}
+                                onChange={(e) => {
+                                    const cardNumber = e.target.value;
+                                    setPaymentDetails({ ...paymentDetails, cardNumber });
+                                    setTouchedFields((prev) => ({ ...prev, cardNumber: true }));
+                                }}
                                 placeholder="1234 5678 9012 3456"
                                 className={`input input-bordered w-full ${errors.cardNumber ? 'border-red-500' : ''}`}
                             />
-                            {errors.cardNumber && <div className="h-2 text-red-500 text-sm">{errors.cardNumber}</div>}
+                            <div className="h-2">
+                                {errors.cardNumber && <div className="text-red-500 text-sm">{errors.cardNumber}</div>}
+                            </div>
                         </div>
                         <div>
                             <label className="label">Expiration Date</label>
@@ -339,11 +401,17 @@ const CheckoutPage = () => {
                                 type="text"
                                 name="expirationDate"
                                 value={paymentDetails.expirationDate}
-                                onChange={(e) => setPaymentDetails({ ...paymentDetails, expirationDate: e.target.value })}
+                                onChange={(e) => {
+                                    const expirationDate = e.target.value;
+                                    setPaymentDetails({ ...paymentDetails, expirationDate });
+                                    setTouchedFields((prev) => ({ ...prev, expirationDate: true }));
+                                }}
                                 placeholder="MM/YY"
                                 className={`input input-bordered w-full ${errors.expirationDate ? 'border-red-500' : ''}`}
                             />
-                            {errors.expirationDate && <div className="h-2 text-red-500 text-sm">{errors.expirationDate}</div>}
+                            <div className="h-2">
+                                {errors.expirationDate && <div className="text-red-500 text-sm">{errors.expirationDate}</div>}
+                            </div>
                         </div>
                         <div>
                             <label className="label">CVV</label>
@@ -351,11 +419,17 @@ const CheckoutPage = () => {
                                 type="text"
                                 name="cvv"
                                 value={paymentDetails.cvv}
-                                onChange={(e) => setPaymentDetails({ ...paymentDetails, cvv: e.target.value })}
+                                onChange={(e) => {
+                                    const cvv = e.target.value;
+                                    setPaymentDetails({ ...paymentDetails, cvv });
+                                    setTouchedFields((prev) => ({ ...prev, cvv: true }));
+                                }}
                                 placeholder="123"
                                 className={`input input-bordered w-full ${errors.cvv ? 'border-red-500' : ''}`}
                             />
-                            {errors.cvv && <div className="h-2 text-red-500 text-sm">{errors.cvv}</div>}
+                            <div className="h-2">
+                                {errors.cvv && <div className="text-red-500 text-sm">{errors.cvv}</div>}
+                            </div>
                         </div>
                     </form>
                     <div className="flex justify-between mt-4">
@@ -392,7 +466,14 @@ const CheckoutPage = () => {
                     <ul className="space-y-2">
                         {basket.map((item) => (
                             <li key={item.product_id} className="flex justify-between">
-                                <span className="truncate w-3/5">{item.quantity} - {item.name} ({item.selectedProperty || 'White'})</span>
+                    <span className="flex items-center w-4/5 overflow-hidden">
+                        <span className="truncate ">
+                            {item.quantity} - {item.name}
+                        </span>
+                        <span className="truncate text-xs text-gray-500 ml-1">
+                            ({item.selectedProperty || 'White'})
+                        </span>
+                    </span>
                                 <span>${(item.price * item.quantity).toFixed(2)}</span>
                             </li>
                         ))}

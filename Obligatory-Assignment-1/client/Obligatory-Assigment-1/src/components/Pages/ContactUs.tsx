@@ -1,6 +1,6 @@
 ﻿function ContactUs() {
     return (
-        <div className="hero bg-base-200 p-4 sm:p-5 md:p-6 lg:p-8">
+        <div className="hero bg-base-200 p-2 sm:p-5 md:p-6 lg:p-8">
             <div className="hero-content flex-col lg:flex-row">
                 <img
                     src="https://i.iheart.com/v3/re/new_assets/5f9acbf26e25de06d805edf7?ops=contain(1480,0)"

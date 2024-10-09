@@ -78,9 +78,6 @@ function InputFieldPaperQuantity({ item, stock}: InputFieldPaperQuantityProps) {
 
                 if (!isNaN(Number(value)) && Number(value) >= 0) {
                     const limitedValue = Math.min(Number(value), stock);
-
-
-
                     if (Number(value) <= stock){
                         handleQuantityChange(limitedValue.toString())
                     } else {

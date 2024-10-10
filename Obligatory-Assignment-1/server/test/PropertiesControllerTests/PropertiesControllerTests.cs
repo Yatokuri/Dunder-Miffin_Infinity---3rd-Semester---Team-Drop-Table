@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 using dataAccess.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace test.PropertiesControllerTests;
+namespace test;
 
 public class PropertiesControllerTests(ITestOutputHelper outputHelper) : WebApplicationFactory<Program>
 {

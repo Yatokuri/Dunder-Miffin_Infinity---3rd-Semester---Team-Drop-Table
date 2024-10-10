@@ -299,11 +299,9 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title Dunder Mifflin Infinity
+ * @title Dunder Mifflin Infinity  - Try and test
  * @version v1
  * @baseUrl http://localhost:5261
- *
- * Try and test
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
@@ -329,11 +327,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetAllCustomers
      * @request GET:/api/customer
+     * @secure
      */
     customerGetAllCustomers: (params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/customer`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -360,11 +360,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetCustomerById
      * @request GET:/api/customer/{id}
+     * @secure
      */
     customerGetCustomerById: (id: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/customer/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -405,11 +407,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetCustomerByEmail
      * @request GET:/api/customer/email/{email}
+     * @secure
      */
     customerGetCustomerByEmail: (email: string, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/customer/email/${email}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -419,11 +423,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetOrdersByCustomerId
      * @request GET:/api/customer/{id}/order
+     * @secure
      */
     customerGetOrdersByCustomerId: (id: number, params: RequestParams = {}) =>
       this.request<OrderDto[], any>({
         path: `/api/customer/${id}/order`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -434,11 +440,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Order
      * @name OrderGetAllOrders
      * @request GET:/api/order
+     * @secure
      */
     orderGetAllOrders: (params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -465,11 +473,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Order
      * @name OrderGetOrderById
      * @request GET:/api/order/{id}
+     * @secure
      */
     orderGetOrderById: (id: number, params: RequestParams = {}) =>
       this.request<OrderDto, any>({
         path: `/api/order/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -541,11 +551,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryGetAllOrderEntries
      * @request GET:/api/order-entry
+     * @secure
      */
     orderEntryGetAllOrderEntries: (params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order-entry`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -555,12 +567,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryCreateOrderEntry
      * @request POST:/api/order-entry
+     * @secure
      */
     orderEntryCreateOrderEntry: (data: CreateOrderEntryDto, params: RequestParams = {}) =>
       this.request<OrderEntry, any>({
         path: `/api/order-entry`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -572,11 +586,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryGetOrderEntryById
      * @request GET:/api/order-entry/{id}
+     * @secure
      */
     orderEntryGetOrderEntryById: (id: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order-entry/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -586,12 +602,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryUpdateOrderEntry
      * @request PUT:/api/order-entry/{id}
+     * @secure
      */
     orderEntryUpdateOrderEntry: (id: number, data: EditOrderEntryDto, params: RequestParams = {}) =>
       this.request<OrderEntry, any>({
         path: `/api/order-entry/${id}`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -603,11 +621,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryDeleteOrderEntry
      * @request DELETE:/api/order-entry/{id}
+     * @secure
      */
     orderEntryDeleteOrderEntry: (id: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order-entry/${id}`,
         method: "DELETE",
+        secure: true,
         ...params,
       }),
 
@@ -716,10 +736,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Paper
-     * @name PaperUpdateDiscontinued
-     * @request PATCH:/api/paper/{id}
+     * @name PaperDeletePaper
+     * @request DELETE:/api/paper/{id}
      */
-    paperUpdateDiscontinued: (
+    paperDeletePaper: (id: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${id}`,
+        method: "DELETE",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Paper
+     * @name PaperUpdateDiscontinue
+     * @request PATCH:/api/paper/discontinue/{id}
+     */
+    paperUpdateDiscontinue: (
       id: number,
       query?: {
         discontinued?: boolean;
@@ -727,7 +761,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       params: RequestParams = {},
     ) =>
       this.request<Paper, any>({
-        path: `/api/paper/${id}`,
+        path: `/api/paper/discontinue/${id}`,
         method: "PATCH",
         query: query,
         format: "json",
@@ -738,13 +772,56 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Paper
-     * @name PaperDeletePaper
-     * @request DELETE:/api/paper/{id}
+     * @name PaperUpdateContinue
+     * @request PATCH:/api/paper/continue/{id}
      */
-    paperDeletePaper: (id: number, params: RequestParams = {}) =>
+    paperUpdateContinue: (id: number, params: RequestParams = {}) =>
+      this.request<Paper, any>({
+        path: `/api/paper/continue/${id}`,
+        method: "PATCH",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesAddPropertyToPaper
+     * @request POST:/api/paper/{paperId}/properties/{propertyId}
+     */
+    paperPropertiesAddPropertyToPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
       this.request<File, any>({
-        path: `/api/paper/${id}`,
+        path: `/api/paper/${paperId}/properties/${propertyId}`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesRemovePropertyFromPaper
+     * @request DELETE:/api/paper/{paperId}/properties/{propertyId}
+     */
+    paperPropertiesRemovePropertyFromPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${paperId}/properties/${propertyId}`,
         method: "DELETE",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesGetPropertiesForPaper
+     * @request GET:/api/paper/{paperId}/properties
+     */
+    paperPropertiesGetPropertiesForPaper: (paperId: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${paperId}/properties`,
+        method: "GET",
         ...params,
       }),
 

@@ -10,6 +10,7 @@ import logo from '../../assets/LogoDMI.png';
 import toast from "react-hot-toast";
 import useDataWithExpirationCheck from "../hooks/CheckDataWithExpirationCheck";
 import {Api} from "../../../Api.ts";
+import getAPIA from "../Utils/getAPIA.ts";
 
 
 
@@ -131,7 +132,7 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
 
             // Fetch customer data based on the email using MyApi
             try {
-                const response = await MyApi.api.customerGetCustomerByEmail(authForm.email);
+                const response = await MyApi.api.customerGetCustomerByEmail(authForm.email, getAPIA());
 
                 if (response) {
                     // @ts-expect-error: Ignore an error if it doesn't exist

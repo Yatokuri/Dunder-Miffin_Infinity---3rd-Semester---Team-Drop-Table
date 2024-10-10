@@ -6,6 +6,9 @@ using dataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using dataAccess.Models;
+using FluentValidation.Results;
+using service.Request.AuthDto;
+using Service.Validators;
 
 namespace api.Controllers
 {
@@ -15,8 +18,17 @@ namespace api.Controllers
     {
         // POST: api/auth/login
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public IActionResult Login([FromBody] AuthDto request)
         {
+     
+            
+            var validator = new AuthValidatorLogin();
+            ValidationResult results = validator.Validate(request);
+            if (!results.IsValid)
+            {
+                return BadRequest(results.Errors);
+            }
+            
             // Initialize customer
             Customer customer;
 
@@ -94,12 +106,5 @@ namespace api.Controllers
         }
 
 
-    }
-
-    // Request model for login
-    public class LoginRequest
-    {
-        public string Email { get; set; } // User's email
-        public string RoleType { get; set; } // User's role type
     }
 }

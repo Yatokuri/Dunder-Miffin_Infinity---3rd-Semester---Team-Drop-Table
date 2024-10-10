@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using api.helpers;
 using dataAccess;
 using dataAccess.Models;
 using FluentValidation.Results;
@@ -188,7 +189,8 @@ public class OrderController(DMIContext context) : ControllerBase
         // Return the OrderDto with CreatedAtAction
         return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, orderDto);
     }
-
+    
+    [Authorize]
     [HttpPut]
     [Route("api/order/{id}")]
     public ActionResult<OrderDto> UpdateOrder(int id, [FromBody] OrderRequestDto orderDto)
@@ -290,9 +292,13 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok(orderResponseDto);
     }
 
+    [Authorize]
     [HttpPut("api/order/{id}/status")]
     public IActionResult UpdateOrderStatus(int id, [FromBody] string newStatus)
     {
+        
+        
+        
         // Validate the new status using FluentValidation
         var validator = new OrderStatusValidator();
         ValidationResult results = validator.Validate(newStatus);
@@ -322,7 +328,7 @@ public class OrderController(DMIContext context) : ControllerBase
     }
 
 
-    
+    [Authorize]
     [HttpPut]
     [Route("api/order/cancel/{id}")]
     public ActionResult CancelOrder(int id)

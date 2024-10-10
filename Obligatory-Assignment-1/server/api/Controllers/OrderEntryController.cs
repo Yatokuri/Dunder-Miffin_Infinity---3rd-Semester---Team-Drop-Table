@@ -1,8 +1,10 @@
 ﻿using dataAccess;
 using dataAccess.Models;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using service.Request.OrderEntryDto;
+using Service.Validators;
 
 namespace api.Controllers;
 
@@ -33,6 +35,14 @@ public class OrderEntryController(DMIContext context) : ControllerBase
     [Route("api/order-entry")]
     public ActionResult<OrderEntry> CreateOrderEntry([FromBody] CreateOrderEntryDto orderEntryDto)
     {
+        var validator = new CreateOrderEntryValidators();
+        ValidationResult results = validator.Validate(orderEntryDto);
+
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var orderEntryEntity = new OrderEntry()
         {
             ProductId = orderEntryDto.ProductId,
@@ -48,6 +58,14 @@ public class OrderEntryController(DMIContext context) : ControllerBase
     [Route("api/order-entry/{id}")]
     public ActionResult<OrderEntry> UpdateOrderEntry(int id, [FromBody] EditOrderEntryDto orderEntryDto)
     {
+        var validator = new UpdateOrderEntryValidators();
+        ValidationResult results = validator.Validate(orderEntryDto);
+
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var orderEntryEntity = context.OrderEntries.FirstOrDefault(x => x.Id == id);
         if (orderEntryEntity == null)
         {

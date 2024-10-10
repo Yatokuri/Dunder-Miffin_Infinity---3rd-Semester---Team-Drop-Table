@@ -1,7 +1,9 @@
 ﻿using dataAccess;
 using dataAccess.Models;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using service.Request;
+using Service.Validators;
 
 namespace api.Controllers;
 
@@ -20,11 +22,13 @@ public class PaperController(DMIContext context) : ControllerBase
     [Route("api/paper/getstocks")]
     public ActionResult GetStocksByIDs([FromQuery] string productIds)
     {
-        if (string.IsNullOrEmpty(productIds))
+        var validator = new GetStocksByIDsValidator();
+        ValidationResult results = validator.Validate(productIds);
+        if (!results.IsValid)
         {
-            return BadRequest("Product IDs are required.");
+            return BadRequest(results.Errors);
         }
-
+        
         var idList = productIds.Split(',').Select(int.Parse).ToList();
 
         var result = context.Papers
@@ -35,15 +39,12 @@ public class PaperController(DMIContext context) : ControllerBase
                 p.Stock
             })
             .ToList();
-
         if (!result.Any())
         {
             return NotFound("No stocks found for the specified product IDs.");
         }
-
         return Ok(result);
     }
-
     
     [HttpGet]
     [Route("api/paper/{id}")]
@@ -61,6 +62,13 @@ public class PaperController(DMIContext context) : ControllerBase
     [Route("api/paper")]
     public ActionResult<Paper> CreatePaper(CreatePaperDto paper)
     {
+        var validator = new CreatePaperValidator();
+        ValidationResult results = validator.Validate(paper);
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var paperEntity = new Paper()
         {
             Name = paper.name,
@@ -76,6 +84,13 @@ public class PaperController(DMIContext context) : ControllerBase
     [Route("api/paper/{id}")]
     public ActionResult<Paper> UpdatePaper(int id, EditPaperDto paper)
     {
+        var validator = new UpdatePaperValidator();
+        ValidationResult results = validator.Validate(paper);
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var paperEntity = context.Papers.FirstOrDefault(p => p.Id == id);
         if (paperEntity == null)
         {
@@ -102,7 +117,6 @@ public class PaperController(DMIContext context) : ControllerBase
         return Ok(paperEntity);
     }
     
-        
     [HttpPatch]
     [Route("api/paper/continue/{id}")]
     public ActionResult<Paper> UpdateContinue(int id)
@@ -130,6 +144,4 @@ public class PaperController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok();
     }
-    
 }
-

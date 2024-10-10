@@ -1,6 +1,7 @@
 ﻿using dataAccess;
 using dataAccess.Models;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using service.Request;
 using Service.Validators;
@@ -57,7 +58,7 @@ public class PaperController(DMIContext context) : ControllerBase
         }
         return Ok(result);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [Route("api/paper")]
     public ActionResult<Paper> CreatePaper(CreatePaperDto paper)
@@ -79,7 +80,7 @@ public class PaperController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok(paperEntity);
     }
-    
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     [Route("api/paper/{id}")]
     public ActionResult<Paper> UpdatePaper(int id, EditPaperDto paper)
@@ -102,7 +103,7 @@ public class PaperController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok(paperEntity);
     }
-    
+    [Authorize(Roles = "Admin")]
     [HttpPatch]
     [Route("api/paper/discontinue/{id}")]
     public ActionResult<Paper> UpdateDiscontinue(int id, bool discontinued)
@@ -116,7 +117,7 @@ public class PaperController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok(paperEntity);
     }
-    
+    [Authorize(Roles = "Admin")]
     [HttpPatch]
     [Route("api/paper/continue/{id}")]
     public ActionResult<Paper> UpdateContinue(int id)
@@ -130,8 +131,7 @@ public class PaperController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok(paperEntity);
     }
-    
-    [HttpDelete]
+    [Authorize(Roles = "Admin")]    [HttpDelete]
     [Route("api/paper/{id}")]
     public ActionResult DeletePaper(int id)
     {

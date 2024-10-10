@@ -2,14 +2,15 @@ import { Api } from "../../../../../Api.ts";
 import { useAtom } from "jotai";
 import { productsAtom } from "../ProductTable/ProductTable.tsx";
 import './DiscontinueProduct.css';
+import getAPIA from "../../../../components/Utils/getAPIA.ts";
 
 export const MyApi = new Api();
 
 async function toggleProductDiscontinueStatus(id: string, discontinued: boolean) {
     if (discontinued) {
-        await MyApi.api.paperUpdateContinue(id);
+        await MyApi.api.paperUpdateContinue(id, getAPIA());
     } else {
-        await MyApi.api.paperUpdateDiscontinue(id, { discontinued: true });
+        await MyApi.api.paperUpdateDiscontinue(id, { discontinued: true }, getAPIA());
     }
 }
 

@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import { CustomerAtoms, useCustomerData } from "../../atoms/CustomerAtoms.ts";
 import { Api } from "../../../Api.ts";
 import { toast } from "react-hot-toast";
+import getAPIA from "../Utils/getAPIA.ts";
 
 export const MyApi = new Api();
 
@@ -91,7 +92,7 @@ function MyProfile() {
         if (!validateForm(state, touchedFields)) return; // Stop if validation fails
 
         try {
-            await MyApi.api.customerUpdateCustomer(customer.id, state);
+            await MyApi.api.customerUpdateCustomer(customer.id, state, getAPIA());
 
             // Update the customer atom with the new data
             setCustomer(state);

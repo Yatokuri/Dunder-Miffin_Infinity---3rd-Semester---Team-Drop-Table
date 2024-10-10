@@ -299,11 +299,9 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title Dunder Mifflin Infinity
+ * @title Dunder Mifflin Infinity  - Try and test
  * @version v1
  * @baseUrl http://localhost:5261
- *
- * Try and test
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
@@ -434,11 +432,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Order
      * @name OrderGetAllOrders
      * @request GET:/api/order
+     * @secure
      */
     orderGetAllOrders: (params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -465,11 +465,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Order
      * @name OrderGetOrderById
      * @request GET:/api/order/{id}
+     * @secure
      */
     orderGetOrderById: (id: number, params: RequestParams = {}) =>
       this.request<OrderDto, any>({
         path: `/api/order/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -716,10 +718,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Paper
-     * @name PaperUpdateDiscontinued
-     * @request PATCH:/api/paper/{id}
+     * @name PaperDeletePaper
+     * @request DELETE:/api/paper/{id}
      */
-    paperUpdateDiscontinued: (
+    paperDeletePaper: (id: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${id}`,
+        method: "DELETE",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Paper
+     * @name PaperUpdateDiscontinue
+     * @request PATCH:/api/paper/discontinue/{id}
+     */
+    paperUpdateDiscontinue: (
       id: number,
       query?: {
         discontinued?: boolean;
@@ -727,7 +743,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       params: RequestParams = {},
     ) =>
       this.request<Paper, any>({
-        path: `/api/paper/${id}`,
+        path: `/api/paper/discontinue/${id}`,
         method: "PATCH",
         query: query,
         format: "json",
@@ -738,13 +754,56 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Paper
-     * @name PaperDeletePaper
-     * @request DELETE:/api/paper/{id}
+     * @name PaperUpdateContinue
+     * @request PATCH:/api/paper/continue/{id}
      */
-    paperDeletePaper: (id: number, params: RequestParams = {}) =>
+    paperUpdateContinue: (id: number, params: RequestParams = {}) =>
+      this.request<Paper, any>({
+        path: `/api/paper/continue/${id}`,
+        method: "PATCH",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesAddPropertyToPaper
+     * @request POST:/api/paper/{paperId}/properties/{propertyId}
+     */
+    paperPropertiesAddPropertyToPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
       this.request<File, any>({
-        path: `/api/paper/${id}`,
+        path: `/api/paper/${paperId}/properties/${propertyId}`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesRemovePropertyFromPaper
+     * @request DELETE:/api/paper/{paperId}/properties/{propertyId}
+     */
+    paperPropertiesRemovePropertyFromPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${paperId}/properties/${propertyId}`,
         method: "DELETE",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PaperProperties
+     * @name PaperPropertiesGetPropertiesForPaper
+     * @request GET:/api/paper/{paperId}/properties
+     */
+    paperPropertiesGetPropertiesForPaper: (paperId: number, params: RequestParams = {}) =>
+      this.request<File, any>({
+        path: `/api/paper/${paperId}/properties`,
+        method: "GET",
         ...params,
       }),
 

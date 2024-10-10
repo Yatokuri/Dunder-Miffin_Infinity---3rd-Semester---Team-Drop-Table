@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAtom } from 'jotai';
 import {loginFormAtom, authAtom} from '../../atoms/LoginAtoms';
-import { clearCustomerData, CustomerAtoms } from '../../atoms/CustomerAtoms';
+import {clearCustomerData, CustomerAtoms, setCustomerData} from '../../atoms/CustomerAtoms';
 import EyeOnIcon from "../../assets/icons/EyeOnIcon.tsx";
 import EyeOffIcon from '../../assets/icons/EyeOffIcon.tsx';
 import FacebookLogo from '../../assets/icons/FacebookIcon.tsx';
@@ -58,7 +58,7 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
     useEffect(() => {
         // Clear form fields when the component mounts
         setAuthForm({ email: '', password: '' });
-        clearCustomerData(); // Reset to default values
+        clearCustomerData(setCustomerData); // Reset to default values
 
         // Load customer data from the custom hook if available
         if (storedCustomerData) {setCustomer(storedCustomerData);} // If data is valid, update the atom state

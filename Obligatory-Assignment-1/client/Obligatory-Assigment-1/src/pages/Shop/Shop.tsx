@@ -7,6 +7,7 @@ import {toast} from "react-hot-toast";
 import InputFieldPaperQuantity from "../../components/Orders/InputFieldPaperQuantity.tsx";
 import {searchAtom} from "../../atoms/atoms.ts";
 import {productPriceFilterAtom, productPropertyFilterAtom} from "../../atoms/ProductFilterAtoms.ts";
+import paper_shop_picture1 from "../../assets/Shop_Pictures/paper_shop_picture1.png";
 
 export const MyApi = new Api();
 
@@ -63,7 +64,7 @@ const ShopCard = React.memo(({product, initialQuantity, onAdd, onRemove}: ShopCa
     return (
         <div className="card card-compact bg-base-100 shadow-xl flex flex-col w-full">
             <figure>
-                <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
+                <img src={paper_shop_picture1}
                      alt={product.name}/>
             </figure>
             <div className="card-body flex flex-col flex-grow">

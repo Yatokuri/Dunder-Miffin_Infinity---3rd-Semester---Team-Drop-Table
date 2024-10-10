@@ -94,7 +94,7 @@ public class CustomerControllerTests(ITestOutputHelper outputHelper) : WebApplic
             context.SaveChanges();
         }
 
-        var request = await CreateClient().GetAsync("api/customer/test@test.com");
+        var request = await CreateClient().GetAsync("api/customer/email/test@test.com");
         outputHelper.WriteLine(await request.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, request.StatusCode);
     }
@@ -122,6 +122,49 @@ public class CustomerControllerTests(ITestOutputHelper outputHelper) : WebApplic
         
     }
     
+    [Fact]
+public async Task TestUpdateCustomer()
+{
+    Environment.SetEnvironmentVariable("TestDB", pgCtx._postgres.GetConnectionString());
+
+    int customerId;
+    using (var scope = Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<DMIContext>();
+        
+        var customer = new Customer
+        {
+            Name = "Original Customer",
+            Address = "Original Address",
+            Phone = "12345678",
+            Email = "original@test.com",
+        };
+
+        context.Customers.Add(customer);
+        context.SaveChanges();
+
+        // Store the newly added customer's ID
+        customerId = customer.Id;
+    }
+
+    var client = CreateClient();
+    
+    var updatedCustomer = new
+    {
+        Id = customerId,
+        Name = "Updated Customer",
+        Address = "Updated Address",
+        Phone = "87654321",
+        Email = "updated@test.com"
+    };
+    
+    var response = await client.PutAsJsonAsync($"api/customer/{customerId}", updatedCustomer);
+    
+    var responseContent = await response.Content.ReadAsStringAsync();
+    outputHelper.WriteLine(responseContent);
+    
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+}
 
     [Fact]
     public async Task TestDeleteCustomer()

@@ -131,7 +131,8 @@ public class PaperController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok(paperEntity);
     }
-    [Authorize(Roles = "Admin")]    [HttpDelete]
+    [Authorize(Roles = "Admin")]    
+    [HttpDelete]
     [Route("api/paper/{id}")]
     public ActionResult DeletePaper(int id)
     {

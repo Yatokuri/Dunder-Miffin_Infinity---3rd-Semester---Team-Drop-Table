@@ -109,8 +109,6 @@ public class OrderController(DMIContext context) : ControllerBase
         return Ok(orderDto); // Return the DTO with a 200 OK status
     }
     
-
-    
     // Create a new order
     [HttpPost]
     [Route("api/order")]
@@ -269,7 +267,7 @@ public class OrderController(DMIContext context) : ControllerBase
         {
             return BadRequest(stockUpdateResult); // Return stock update errors if any
         }
-
+        
         context.SaveChanges(); 
 
         // Return the updated order as a DTO
@@ -288,7 +286,6 @@ public class OrderController(DMIContext context) : ControllerBase
                 Quantity = oe.Quantity,
             }).ToList()
         };
-
         return Ok(orderResponseDto);
     }
 
@@ -296,9 +293,6 @@ public class OrderController(DMIContext context) : ControllerBase
     [HttpPut("api/order/{id}/status")]
     public IActionResult UpdateOrderStatus(int id, [FromBody] string newStatus)
     {
-        
-        
-        
         // Validate the new status using FluentValidation
         var validator = new OrderStatusValidator();
         ValidationResult results = validator.Validate(newStatus);
@@ -326,8 +320,7 @@ public class OrderController(DMIContext context) : ControllerBase
         context.SaveChanges(); // Save changes to the database
         return Ok(order); // Return the updated order
     }
-
-
+    
     [Authorize]
     [HttpPut]
     [Route("api/order/cancel/{id}")]
@@ -383,9 +376,7 @@ public class OrderController(DMIContext context) : ControllerBase
                     product.Stock += orderEntry.Quantity; // Restock the product
                 }
             }
-
         }
-
         // Remove the orders and its entries from the database
         context.OrderEntries.RemoveRange(orderEntity.OrderEntries);
         context.Orders.Remove(orderEntity);
@@ -446,7 +437,6 @@ public class OrderController(DMIContext context) : ControllerBase
             // Return error response only if there are errors
             return errorResponse;
         }
-
     
     private class ErrorResponse
     {

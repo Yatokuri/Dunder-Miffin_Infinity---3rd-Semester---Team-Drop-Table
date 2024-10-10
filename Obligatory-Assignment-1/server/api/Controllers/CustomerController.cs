@@ -1,14 +1,19 @@
-﻿using dataAccess;
+﻿using System.Security.Claims;
+using dataAccess;
 using dataAccess.Models;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using service.Request.CustomerDto;
 using service.Response;
+using Service.Validators;
 
 namespace api.Controllers;
 
 public class CustomerController(DMIContext context) : ControllerBase
 {
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     [Route("api/customer")]
     public ActionResult GetAllCustomers()
@@ -17,31 +22,63 @@ public class CustomerController(DMIContext context) : ControllerBase
         return Ok(result);
     }
     
+    [Authorize]
     [HttpGet]
     [Route("api/customer/{id}")]
     public ActionResult GetCustomerById(int id)
     {
-        var result = context.Customers.FirstOrDefault(x => x.Id == id);
-        if (result == null)
+        // Get the user ID from claims (assuming the UserId claim is set during authentication)
+        var userId = User.FindFirstValue("UserId");
+    
+        // Fetch the customer record from the database
+        var customer = context.Customers.FirstOrDefault(x => x.Id == id);
+
+        if (customer == null)
         {
-            return NotFound();
+            return NotFound(); // Return 404 if customer not found
         }
-        return Ok(result);
+
+        // Check if the user is an admin or the owner of the customer record
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = customer.Id.ToString() == userId;
+
+        if (!isAdmin && !isOwner)
+        {
+            return Forbid(); // Return 403 Forbidden if the user is not authorized
+        }
+
+        return Ok(customer); // Return the customer info if authorized
     }
     
+    [Authorize]
     [HttpGet]
     [Route("api/customer/email/{email}")]
     public ActionResult GetCustomerByEmail(string email)
     {
-        var result = context.Customers.FirstOrDefault(x => x.Email == email);
-        if (result == null)
+        // Get the user ID from claims (assuming the UserId claim is set during authentication)
+        var userId = User.FindFirstValue("UserId");
+    
+        // Fetch the customer record by email
+        var customer = context.Customers.FirstOrDefault(x => x.Email == email);
+
+        if (customer == null)
         {
-            return NotFound();
+            return NotFound(); // Return 404 if customer not found
         }
-        return Ok(result);
+
+        // Check if the user is an admin or the owner of the customer record
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = customer.Id.ToString() == userId;
+
+        if (!isAdmin && !isOwner)
+        {
+            return Forbid(); // Return 403 Forbidden if the user is not authorized
+        }
+
+        return Ok(customer); // Return the customer info if authorized
     }
 
-    
+    [Authorize]
     [HttpGet("api/customer/{id}/order")]
     public ActionResult<IEnumerable<OrderDto>> GetOrdersByCustomerId(int id)
     {
@@ -81,6 +118,13 @@ public class CustomerController(DMIContext context) : ControllerBase
     [Route("api/customer")]
     public ActionResult<Customer> CreateCustomer([FromBody]CreateCustomerDto customer)
     {
+        var validator = new CreateCustomerValidator();
+        ValidationResult results = validator.Validate(customer);
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var customerEntity = new Customer()
         {
             Name = customer.Name,
@@ -97,6 +141,13 @@ public class CustomerController(DMIContext context) : ControllerBase
     [Route("api/customer/{id}")]
     public ActionResult<Customer> UpdateCustomer(int id, [FromBody]EditCustomerDto customer)
     {
+        var validator = new UpdateCustomerValidator();
+        ValidationResult results = validator.Validate(customer);
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var customerEntity = context.Customers.FirstOrDefault(x => x.Id == id);
         if (customerEntity == null)
         {
@@ -110,17 +161,36 @@ public class CustomerController(DMIContext context) : ControllerBase
         return Ok(customerEntity);
     }
     
+    [Authorize]
     [HttpDelete]
     [Route("api/customer/{id}")]
     public ActionResult DeleteCustomer(int id)
     {
+        // Retrieve the customer entity from the database
         var customerEntity = context.Customers.FirstOrDefault(x => x.Id == id);
+
         if (customerEntity == null)
         {
-            return NotFound();
+            return NotFound(); // Return 404 if customer is not found
         }
+
+        // Get the current user's ID from claims (set during authentication)
+        var userId = User.FindFirstValue("UserId");
+
+        // Check if the user is an admin or the owner of the customer record
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = customerEntity.Id.ToString() == userId;
+
+        if (!isAdmin && !isOwner)
+        {
+            return Forbid(); // Return 403 Forbidden if the user is not authorized
+        }
+
+        // If authorized, remove the customer from the database
         context.Customers.Remove(customerEntity);
         context.SaveChanges();
-        return Ok();
+
+        return Ok(); // Return 200 OK after successful deletion
     }
+
 }

@@ -1,7 +1,9 @@
 ﻿using dataAccess;
 using dataAccess.Models;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using service.Request;
+using Service.Validators;
 
 namespace api.Controllers;
 
@@ -32,6 +34,13 @@ public class PropertiesController(DMIContext context) : ControllerBase
     [Route("api/properties")]
     public ActionResult<Paper> CreateProperty(CreatePropertyDto property)
     {
+        var validator = new CreatePropertiesValidators();
+        ValidationResult results = validator.Validate(property);
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var propertyEntity = new Property()
         {
             PropertyName = property.PropertyName,
@@ -45,6 +54,13 @@ public class PropertiesController(DMIContext context) : ControllerBase
     [Route("api/properties/{id}")]
     public ActionResult<Paper> UpdateProperty(int id, EditPropertyDto property)
     {
+        var validator = new UpdatePropertiesValidators();
+        ValidationResult results = validator.Validate(property);
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var propertyEntity = context.Properties.FirstOrDefault(p => p.Id == id);
         if (propertyEntity == null)
         {
@@ -68,6 +84,4 @@ public class PropertiesController(DMIContext context) : ControllerBase
         context.SaveChanges();
         return Ok();
     }
-    
 }
-

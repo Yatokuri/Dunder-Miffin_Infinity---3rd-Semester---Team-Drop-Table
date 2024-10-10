@@ -115,6 +115,14 @@ public class OrderController(DMIContext context) : ControllerBase
     [Route("api/order")]
     public ActionResult<OrderDto> CreateOrder([FromBody] OrderRequestDto orderRequestDto)
     {
+        var validator = new CreateOrderValidator();
+        ValidationResult results = validator.Validate(orderRequestDto);
+
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         if (!orderRequestDto.OrderEntries.Any())
         {
             return BadRequest(new ErrorResponse { Errors = new List<string> { "Invalid order request." } });
@@ -185,6 +193,14 @@ public class OrderController(DMIContext context) : ControllerBase
     [Route("api/order/{id}")]
     public ActionResult<OrderDto> UpdateOrder(int id, [FromBody] OrderRequestDto orderDto)
     {
+        var validator = new UpdateOrderValidator();
+        ValidationResult results = validator.Validate(orderDto);
+
+        if (!results.IsValid)
+        {
+            return BadRequest(results.Errors);
+        }
+        
         var orderEntity = context.Orders
             .Include(o => o.OrderEntries)
             .ThenInclude(oe => oe.Product) 

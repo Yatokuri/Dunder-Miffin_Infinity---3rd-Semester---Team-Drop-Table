@@ -29,8 +29,8 @@ const Carousel: React.FC<CarouselProps> = ({ text, imageSrc, Picture }) => {
     }, [text]);
 
     return (
-        <div className="carousel-card flex flex-col items-center mb-5 hover:bg-gray-200">
-            <div className="card w-full max-w-xs md:max-w-md lg:max-w-lg shadow-lg rounded-lg overflow-hidden">
+        <div className="carousel-card flex flex-col items-center mb-5">
+            <div className="card w-full max-w-xs md:max-w-md lg:max-w-lg shadow-lg rounded-lg overflow-hidden hover:bg-gray-200">
                 <div className="relative w-full aspect-video">
                     <Link to={Picture}>
                         <img

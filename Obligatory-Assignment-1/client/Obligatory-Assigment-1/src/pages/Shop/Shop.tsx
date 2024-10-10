@@ -7,16 +7,19 @@ import {toast} from "react-hot-toast";
 import InputFieldPaperQuantity from "../../components/Orders/InputFieldPaperQuantity.tsx";
 import {searchAtom} from "../../atoms/atoms.ts";
 import {productPriceFilterAtom, productPropertyFilterAtom} from "../../atoms/ProductFilterAtoms.ts";
+import paper_shop_picture1 from "../../assets/Shop_Pictures/paper_shop_picture1.png";
+import paper_shop_picture2 from "../../assets/Shop_Pictures/paper_shop_picture2.png";
+import paper_shop_picture3 from "../../assets/Shop_Pictures/paper_shop_picture3.png";
 
 export const MyApi = new Api();
 
-// Define the props for the ShopCard component
 interface ShopCardProps {
-    product: Product,
-    initialQuantity: number,
-    onAdd: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void,
-    onRemove: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void,
-    stock?: number
+    product: Product;
+    initialQuantity: number;
+    onAdd: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void;
+    onRemove: (productId: number, newQuantity: number, price: number, name: string, selectedProperty: string) => void;
+    stock?: number;
+    imageSrc: string;
 }
 
 interface Property {
@@ -24,7 +27,10 @@ interface Property {
     propertyName: string;
 }
 
-const ShopCard = React.memo(({product, initialQuantity, onAdd, onRemove}: ShopCardProps) => {
+const imageSources = [paper_shop_picture1, paper_shop_picture2, paper_shop_picture3];
+
+
+const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove, imageSrc }: ShopCardProps) => {
     const [quantity, setQuantity] = useState(initialQuantity);
     const [properties, setProperties] = useState<Property[]>([]);
     const [selectedProperty, setSelectedProperty] = useState<string>("");
@@ -47,8 +53,14 @@ const ShopCard = React.memo(({product, initialQuantity, onAdd, onRemove}: ShopCa
     }, [initialQuantity]);
 
     const handleAddClick = () => {
-        setQuantity(prev => prev + 1);
-        onAdd(product.id, quantity + 1, product.price, product.name, selectedProperty);
+        if (quantity < product.stock) {
+            setQuantity(prev => prev + 1);
+            onAdd(product.id, quantity + 1, product.price, product.name, selectedProperty);
+        }
+        else {
+            toast.dismiss()
+            toast.error(`You cannot exceed the available stock of ${product.stock} items.`);
+        }
     };
 
     const handleRemoveClick = () => {
@@ -63,8 +75,7 @@ const ShopCard = React.memo(({product, initialQuantity, onAdd, onRemove}: ShopCa
     return (
         <div className="card card-compact bg-base-100 shadow-xl flex flex-col w-full">
             <figure>
-                <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-                     alt={product.name}/>
+                <img src={imageSrc} alt={product.name} /> {/* Use imageSrc prop */}
             </figure>
             <div className="card-body flex flex-col flex-grow">
                 <h2 className="card-title block truncate max-w-full">{product.name}</h2>
@@ -74,8 +85,8 @@ const ShopCard = React.memo(({product, initialQuantity, onAdd, onRemove}: ShopCa
                 </div>
                 <div className="card-actions justify-between items-center mt-auto">
                     <button onClick={handleAddClick} className="btn bg-green-500 mr-2">+</button>
-                    <InputFieldPaperQuantity item={{quantity, product_id: product.id, price: product.price, name: product.name}} stock={product.stock}/>
-                    <button onClick={handleRemoveClick} className="btn bg-red-500 ml-2" disabled={quantity === 0}></button>
+                    <InputFieldPaperQuantity item={{ quantity, product_id: product.id, price: product.price, name: product.name }} stock={product.stock} />
+                    <button onClick={handleRemoveClick} className="btn bg-red-500 ml-2" disabled={quantity === 0}>-</button>
                 </div>
                 <div className="flex justify-center">
                     <select value={selectedProperty} onChange={handlePropertyChange}>
@@ -166,7 +177,8 @@ function Shop() {
 
     return (
         <div className="text-black">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-center text-center mt-5">Limitless Paper in a Paperless World</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold bg-center text-center mt-5">Limitless Paper in a Paperless
+                World</h1>
             <div className="mb-4">
                 <label htmlFor="sortPrice" className="mr-2 bg-center flex ml-5 sm:mt-0 mt-5">Sort by Price:</label>
                 <select
@@ -183,7 +195,7 @@ function Shop() {
                 </select>
             </div>
             <div className="card-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
-                {filteredProducts.filter(product => !product.discontinued).map((product) => (
+                {filteredProducts.filter(product => !product.discontinued && product.stock > 0).map((product, index) => (
                     <ShopCard
                         key={product.id}
                         product={product}
@@ -191,6 +203,7 @@ function Shop() {
                         onAdd={handleAdd}
                         onRemove={handleRemove}
                         stock={product.stock}
+                        imageSrc={imageSources[index % imageSources.length]} // Use imageSrc from array
                     />
                 ))}
             </div>

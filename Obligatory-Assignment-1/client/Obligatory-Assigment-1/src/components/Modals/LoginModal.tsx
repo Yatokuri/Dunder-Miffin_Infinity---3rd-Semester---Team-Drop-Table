@@ -88,6 +88,8 @@ export function LoginModal({ onConfirm, onCancel }: LoginFormProps) {
 
         if (touchedFields.email && !authForm.email) {
             errors.emailValidationError = 'Email is required';
+        } else if (authForm.email && authForm.email.length > 100) {
+            errors.emailValidationError = "Email cannot be more than 100 characters.";
         }
 
         if (touchedFields.password) {

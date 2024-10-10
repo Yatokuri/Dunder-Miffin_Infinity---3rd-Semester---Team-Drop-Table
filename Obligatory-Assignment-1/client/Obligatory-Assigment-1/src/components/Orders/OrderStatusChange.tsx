@@ -4,7 +4,8 @@ import {Api} from "../../../Api.ts";
 import React, { useState } from "react";
 import { toast } from 'react-hot-toast';
 import ConfirmationModal from "../Modals/ConfirmationModal.tsx";
-import { cancelOrder } from './CancelOrder.ts'; // Import your cancelOrder function
+import { cancelOrder } from './CancelOrder.ts';
+import getAPIA from "../Utils/getAPIA.ts"; // Import your cancelOrder function
 
 
 
@@ -45,7 +46,7 @@ const StatusChange: React.FC<StatusChangeProps> = ({ orderId, currentStatus, onS
         setModalOpen(false);
 
         try {
-            await MyApi.api.orderUpdateOrderStatus(orderId, status);
+            await MyApi.api.orderUpdateOrderStatus(orderId, status, getAPIA());
             toast.success(`You have successfully updated the order status to ${status}!`, { duration: 3000 });
         } catch (error) {
             toast.error(`Failed to update status for order ${orderId}. Error: ${error || 'Unknown error occurred.'}`, { duration: 3000 });

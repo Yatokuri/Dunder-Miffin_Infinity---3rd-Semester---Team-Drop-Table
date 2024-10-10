@@ -1,11 +1,12 @@
 import {Api} from "../../../Api.ts";
 import toast from 'react-hot-toast';
+import getAPIA from "../Utils/getAPIA.ts";
 
 const MyApi = new Api();
 
 export const cancelOrder = async (orderId: number) => {
     try {
-        await MyApi.api.orderCancelOrder(orderId);
+        await MyApi.api.orderCancelOrder(orderId, getAPIA());
         toast.success("Order has been cancelled successfully."); // Show success toast
     } catch (error: any) {
         if (error.response) {

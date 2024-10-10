@@ -1,6 +1,9 @@
+using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 using dataAccess;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -8,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
+using test;
 
 public class Program
 {
@@ -73,8 +77,19 @@ public class Program
 
         builder.Services.AddCors();
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
+        // If TestDB is set, consider it a Testing environment
+        if (Environment.GetEnvironmentVariable("TestDB") != null)
+        {
+            Console.WriteLine("Running in Testing Environment");
+            builder.Environment.EnvironmentName = "Testing"; // Set environment to Testing
+            builder.Services.AddAuthentication("Test")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", null);
+        }
+        else
+        {
+            // Add JWT authentication when not in Testing environment
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
             {
                 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "SecretKey";
                 var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "http://localhost/";
@@ -91,7 +106,7 @@ public class Program
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
                 };
             });
-
+        }
 
         var app = builder.Build();
         app.UseStaticFiles();

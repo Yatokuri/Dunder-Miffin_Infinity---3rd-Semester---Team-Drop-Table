@@ -4,11 +4,19 @@ using service.Request;
 
 namespace Service.Validators
 {
-    public class PaperValidator : AbstractValidator<string>
+    
+    public class GetStocksByIDsValidator : AbstractValidator<string>
     {
-        public PaperValidator()
+        public GetStocksByIDsValidator()
         {
-
+            RuleFor(productIds => productIds)
+                .NotEmpty().WithMessage("Product Ids cannot be empty.")
+                .Must(IdsAreValid).WithMessage("Product Ids must be a comma-separated list of integers.");
+        }
+        private bool IdsAreValid(string productIds)
+        {
+            return productIds.Split(',')
+                .All(id => int.TryParse(id, out _));
         }
     }
     public class CreatePaperValidator : AbstractValidator<CreatePaperDto>
@@ -16,11 +24,12 @@ namespace Service.Validators
         public CreatePaperValidator()
         {
             RuleFor(paper => paper.name)
-                .NotEmpty().WithMessage("Name cannot be empty.");
+                .NotEmpty().WithMessage("Name cannot be empty.")
+                .MaximumLength(100).WithMessage("Name Cannot be more than 100 characters");
 
             RuleFor(paper => paper.price)
                 .NotEmpty().WithMessage("Price cannot be empty.")
-                .GreaterThanOrEqualTo(1).WithMessage("Order Date cannot be in the future.");
+                .GreaterThanOrEqualTo(1).WithMessage("Price needs to be greater than or equal to 1.");
 
             RuleFor(paper => paper.stock)
                 .NotEmpty().WithMessage("Stock cannot be empty")
@@ -32,12 +41,20 @@ namespace Service.Validators
     {
         public UpdatePaperValidator()
         {
-            RuleFor(order => order.Status)
-                .NotEmpty().WithMessage("Status cannot be empty.");
+            RuleFor(paper => paper.name)
+                .NotEmpty().WithMessage("Name cannot be empty.")
+                .MaximumLength(100).WithMessage("Name Cannot be more than 100 characters");
 
-            /*  RuleFor(order => order.DeliveryDate)
-                  .NotEmpty().WithMessage("Delivery Date cannot be empty.")
-                  .GreaterThan(DateTime.UtcNow.Date).WithMessage("Delivery Date must be in the future."); */
+            RuleFor(paper => paper.Id)
+                .NotEmpty().WithMessage("Id cannot be empty.");
+                
+            RuleFor(paper => paper.price)
+                .NotEmpty().WithMessage("Price cannot be empty.")
+                .GreaterThanOrEqualTo(1).WithMessage("PRice must be greater than or equal to 1.");
+            
+            RuleFor(paper => paper.stock)
+                .NotEmpty().WithMessage("Stock cannot be empty.")
+                .LessThanOrEqualTo(0).WithMessage("Stock must be greater than or equal to 0.");
         }
     }
 }

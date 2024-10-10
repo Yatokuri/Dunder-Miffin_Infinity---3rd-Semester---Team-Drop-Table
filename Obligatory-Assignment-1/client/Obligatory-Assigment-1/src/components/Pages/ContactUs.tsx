@@ -16,7 +16,7 @@
                         abilities.
                     </p>
                     <p className="mt-4 text-sm sm:text-base lg:text-lg">
-                        <strong>Email:</strong> Michael.Corporate@DunderMifflinInfinity.com
+                        <strong>Email:</strong> Info@DunderMifflinInfinity.com
                         <br/>
                         <strong>Tel:</strong> (212) 555-6733
                     </p>

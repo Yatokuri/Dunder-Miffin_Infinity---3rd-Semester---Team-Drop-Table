@@ -1,5 +1,3 @@
-import PageHeader from "../../components/PageHelpers/PageHeader.tsx";
-
 import CookiesImage from '/src/assets/customer-service/cta-ccc-cookies.avif';
 import TermImage from '/src/assets/customer-service/cta-ccc-terms-conditions.avif';
 import GDPRImage from '/src/assets/customer-service/cta-ccc-gdpr.avif';
@@ -11,9 +9,6 @@ import {Link} from "react-router-dom";
 function CustomService() {
     return (
         <div>
-            <PageHeader/>
-            <h1 className="flex justify-center font-bold">Customer Service</h1>
-
             <div className="bg-gray-100">
                 <div className="container mx-auto mt-12 px-4 pb-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -192,5 +192,4 @@ public class CustomerController(DMIContext context) : ControllerBase
 
         return Ok(); // Return 200 OK after successful deletion
     }
-
 }

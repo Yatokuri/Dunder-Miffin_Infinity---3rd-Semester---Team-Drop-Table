@@ -1,10 +1,12 @@
 using System.Net;
 using dataAccess;
+using dataAccess.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 using PgCtx;
 using Xunit.Abstractions;
 using dataAccess.Models;
 using Microsoft.Extensions.DependencyInjection;
+using MyNamespace;
 
 namespace test;
 
@@ -40,8 +42,9 @@ public class PaperControllerTests(ITestOutputHelper outputHelper) : WebApplicati
             context.Papers.Add(paper2);
             context.SaveChanges();
         }
-
-        var request = await CreateClient().GetAsync("api/paper");
+        
+        var client = JWTHelper.CreateClientWithAdminToken(this);
+        var request = await client.GetAsync("api/paper");
         outputHelper.WriteLine(await request.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, request.StatusCode);
     }
@@ -67,7 +70,8 @@ public class PaperControllerTests(ITestOutputHelper outputHelper) : WebApplicati
             context.SaveChanges();
         }
 
-        var request = await CreateClient().GetAsync("api/paper/1");
+        var client = JWTHelper.CreateClientWithAdminToken(this);
+        var request = await client.GetAsync("api/paper");
         outputHelper.WriteLine(await request.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, request.StatusCode);
     }
@@ -94,7 +98,8 @@ public class PaperControllerTests(ITestOutputHelper outputHelper) : WebApplicati
             context.SaveChanges();
         }
 
-        var client = CreateClient();
+
+        var client = JWTHelper.CreateClientWithAdminToken(this);
         var response = await client.DeleteAsync("api/paper/1");
         outputHelper.WriteLine(await response.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

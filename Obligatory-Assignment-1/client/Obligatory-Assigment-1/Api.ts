@@ -805,11 +805,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags PaperProperties
      * @name PaperPropertiesAddPropertyToPaper
      * @request POST:/api/paper/{paperId}/properties/{propertyId}
+     * @secure
      */
     paperPropertiesAddPropertyToPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/paper/${paperId}/properties/${propertyId}`,
         method: "POST",
+        secure: true,
         ...params,
       }),
 
@@ -819,11 +821,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags PaperProperties
      * @name PaperPropertiesRemovePropertyFromPaper
      * @request DELETE:/api/paper/{paperId}/properties/{propertyId}
+     * @secure
      */
     paperPropertiesRemovePropertyFromPaper: (paperId: number, propertyId: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/paper/${paperId}/properties/${propertyId}`,
         method: "DELETE",
+        secure: true,
         ...params,
       }),
 
@@ -833,11 +837,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags PaperProperties
      * @name PaperPropertiesGetPropertiesForPaper
      * @request GET:/api/paper/{paperId}/properties
+     * @secure
      */
     paperPropertiesGetPropertiesForPaper: (paperId: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/paper/${paperId}/properties`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -861,6 +867,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Properties
      * @name PropertiesCreateProperty
      * @request POST:/api/properties
+     * @secure
      */
     propertiesCreateProperty: (
       query?: {
@@ -872,6 +879,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/properties`,
         method: "POST",
         query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -896,6 +904,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Properties
      * @name PropertiesUpdateProperty
      * @request PUT:/api/properties/{id}
+     * @secure
      */
     propertiesUpdateProperty: (
       id: number,
@@ -910,6 +919,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/properties/${id}`,
         method: "PUT",
         query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -920,11 +930,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Properties
      * @name PropertiesDeleteProperty
      * @request DELETE:/api/properties/{id}
+     * @secure
      */
     propertiesDeleteProperty: (id: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/properties/${id}`,
         method: "DELETE",
+        secure: true,
         ...params,
       }),
   };

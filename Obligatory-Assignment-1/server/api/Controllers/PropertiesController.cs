@@ -1,6 +1,7 @@
 ﻿using dataAccess;
 using dataAccess.Models;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using service.Request;
 using Service.Validators;
@@ -30,6 +31,7 @@ public class PropertiesController(DMIContext context) : ControllerBase
         return Ok(result);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [Route("api/properties")]
     public ActionResult<Paper> CreateProperty(CreatePropertyDto property)
@@ -50,6 +52,7 @@ public class PropertiesController(DMIContext context) : ControllerBase
         return Ok(propertyEntity);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut]
     [Route("api/properties/{id}")]
     public ActionResult<Paper> UpdateProperty(int id, EditPropertyDto property)
@@ -71,6 +74,7 @@ public class PropertiesController(DMIContext context) : ControllerBase
         return Ok(propertyEntity);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete]
     [Route("api/properties/{id}")]
     public ActionResult DeleteProperty(int id)

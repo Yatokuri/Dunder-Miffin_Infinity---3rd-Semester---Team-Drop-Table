@@ -5,6 +5,7 @@ using PgCtx;
 using Xunit.Abstractions;
 using dataAccess.Models;
 using Microsoft.Extensions.DependencyInjection;
+using MyNamespace;
 
 namespace test.PropertiesControllerTests;
 
@@ -34,8 +35,8 @@ public class PropertiesControllerTests(ITestOutputHelper outputHelper) : WebAppl
             context.Properties.Add(property2);
             context.SaveChanges();
         }
-
-        var request = await CreateClient().GetAsync("api/properties");
+        var client = JWTHelper.CreateClientWithAdminToken(this);
+        var request = await client.GetAsync("api/properties");
         outputHelper.WriteLine(await request.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, request.StatusCode);
     }
@@ -57,8 +58,8 @@ public class PropertiesControllerTests(ITestOutputHelper outputHelper) : WebAppl
             context.Properties.Add(property);
             context.SaveChanges();
         }
-
-        var request = await CreateClient().GetAsync("api/properties/1");
+        var client = JWTHelper.CreateClientWithAdminToken(this);
+        var request = await client.GetAsync("api/properties");
         outputHelper.WriteLine(await request.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, request.StatusCode);
     }
@@ -80,8 +81,8 @@ public class PropertiesControllerTests(ITestOutputHelper outputHelper) : WebAppl
             context.Properties.Add(property);
             context.SaveChanges();
         }
-
-        var client = CreateClient();
+        
+        var client = JWTHelper.CreateClientWithAdminToken(this);
         var response = await client.DeleteAsync("api/properties/1");
         outputHelper.WriteLine(await response.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

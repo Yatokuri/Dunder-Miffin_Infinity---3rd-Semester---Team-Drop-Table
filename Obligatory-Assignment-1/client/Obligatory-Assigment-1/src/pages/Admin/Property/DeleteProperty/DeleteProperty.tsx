@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { propertiesAtom } from '../../../../atoms/propertiesAtom.ts';
 import { Api } from '../../../../../Api.ts';
+import getAPIA from "../../../../components/Utils/getAPIA.ts";
 
 export const MyApi = new Api();
 
@@ -29,7 +30,7 @@ function DeleteProperty({ propertyId }: DeletePropertyProps) {
     const handleDelete = async () => {
         if (isDisabled) return;
         try {
-            await MyApi.api.propertiesDeleteProperty(propertyId);
+            await MyApi.api.propertiesDeleteProperty(propertyId, getAPIA());
             setProperties(properties.filter(property => property.id !== propertyId));
         } catch (error) {
             console.error("Error deleting property:", error);

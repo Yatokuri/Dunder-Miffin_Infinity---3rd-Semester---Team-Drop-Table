@@ -92,8 +92,10 @@ function App() {
 function LocationListener({ setSearch }: { setSearch: (value: string) => void }) {
     const location = useLocation();
 
-    React.useEffect(() => {
-        setSearch('');
+    React.useEffect(() => { // Only clear the search value if the user is not on the "/shop" page
+        if (location.pathname !== '/shop') {
+            setSearch('');
+        }
     }, [location, setSearch]);
 
     return null; // This component does not render anything

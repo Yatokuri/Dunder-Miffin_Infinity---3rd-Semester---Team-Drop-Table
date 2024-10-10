@@ -1,7 +1,7 @@
 // CheckoutPage.tsx
 import { useAtom } from 'jotai';
 import { BasketAtom, TotalAmountAtom } from '../../atoms/BasketAtoms.ts'; // Corrected path
-import { clearCustomerData, CustomerAtoms } from '../../atoms/CustomerAtoms.ts'; // Corrected path
+import {clearCustomerData, CustomerAtoms, setCustomerData} from '../../atoms/CustomerAtoms.ts'; // Corrected path
 import { authAtom, clearAuthData, loginFormAtom } from "../../atoms/LoginAtoms.ts"; // Import the auth atom
 import { ShippingAtom, SelectedShippingOptionAtom } from '../../atoms/ShippingAtom.ts'; // Import shipping atoms
 import { useState, useEffect } from 'react';
@@ -170,7 +170,7 @@ const CheckoutPage = () => {
 
     const handleLogout = () => {
         clearAuthData(); // Clear authentication data from localStorage
-        clearCustomerData(); // -||-
+        clearCustomerData(setCustomerData); // -||-
         setAuthState({ email: '', isLoggedIn: false }); // Set user as logged out
         setLoginForm({ email: '', password: '' }); // Reset login form state
     }

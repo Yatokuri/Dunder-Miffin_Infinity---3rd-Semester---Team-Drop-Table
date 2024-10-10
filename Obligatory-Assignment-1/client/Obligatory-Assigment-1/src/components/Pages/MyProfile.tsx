@@ -57,6 +57,8 @@ function MyProfile() {
         // Validate fields based on whether they have been touched
         if (touchedFields.name && !form.name) {
             newErrors.name = "Name is required.";
+        } else if (form.name && form.name.length > 100) {
+            newErrors.name = "Name cannot be more than 100 characters.";
         }
         if (touchedFields.email) {
             if (!form.email) {
@@ -70,6 +72,8 @@ function MyProfile() {
         }
         if (touchedFields.address && !form.address) {
             newErrors.address = "Address is required.";
+        } else if (form.name && form.name.length > 100) {
+            newErrors.name = "Address cannot be more than 100 characters.";
         }
         if (touchedFields.phone) {
             if (!form.phone) {

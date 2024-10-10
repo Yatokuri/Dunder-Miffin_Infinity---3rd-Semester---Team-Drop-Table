@@ -14,7 +14,7 @@ function CustomService() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                         {/* First Card */}
-                        <div className="card bg-base-100 shadow-md p-6">
+                        <div className="card bg-base-100 shadow-md p-6 hover:bg-gray-200">
                             <figure>
                                 <picture>
                                     <source media="(min-width: 768px)" srcSet={ContactImage}/>
@@ -36,7 +36,7 @@ function CustomService() {
                         </div>
 
                         {/* Second Card */}
-                        <div className="card bg-base-100 shadow-md p-6">
+                        <div className="card bg-base-100 shadow-md p-6 hover:bg-gray-200">
                             <figure>
                                 <picture>
                                     <source media="(min-width: 768px)" srcSet={OrderImage}/>
@@ -60,7 +60,7 @@ function CustomService() {
                         </div>
 
                         {/* Third Card */}
-                        <div className="card bg-base-100 shadow-md p-6">
+                        <div className="card bg-base-100 shadow-md p-6 hover:bg-gray-200">
                             <figure>
                                 <picture>
                                     <source media="(min-width: 768px)" srcSet={FAQImage}/>
@@ -88,7 +88,7 @@ function CustomService() {
 
                         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
                             {/* Tile 1 - Sales and Delivery Conditions */}
-                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md">
+                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md hover:bg-gray-200">
                                 <a target="_self" className="flex flex-col h-full"
                                    href="/customer-service/sales-and-delivery-conditions">
                                     <div className="flex-shrink-0">
@@ -108,7 +108,7 @@ function CustomService() {
                             </li>
 
                             {/* Tile 2 - GDPR */}
-                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md">
+                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md hover:bg-gray-200">
                                 <a target="_self" className="flex flex-col h-full"
                                    href="/customer-service/gdpr-data-protection-policy">
                                     <div className="flex-shrink-0">
@@ -127,7 +127,7 @@ function CustomService() {
                             </li>
 
                             {/* Tile 3 - Cookies */}
-                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md">
+                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md hover:bg-gray-200">
                                 <a target="_self" className="flex flex-col h-full"
                                    href="/customer-service/cookie-policy">
                                     <div className="flex-shrink-0">
@@ -146,7 +146,7 @@ function CustomService() {
                             </li>
 
                             {/* Tile 4 - Whistleblowing */}
-                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md">
+                            <li className="flex flex-col h-full snap-start bg-white border border-gray-200 rounded-lg shadow-md hover:bg-gray-200">
                                 <a target="_self" className="flex flex-col h-full"
                                    href="/customer-service/whistleblowing-policy">
                                     <div className="flex-shrink-0">

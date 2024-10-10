@@ -28,14 +28,27 @@ public class UpdateOrderValidator : AbstractValidator<OrderRequestDto>
             .NotEmpty().WithMessage("Status cannot be empty.");
         
         RuleFor(order => order.Order.OrderDate)
-            .NotNull().WithMessage("Order Date cannot be empty.");
+            .NotEmpty().WithMessage("Order Date cannot be empty.")
+            .LessThanOrEqualTo(DateTime.Now).WithMessage("Order Date cannot be in the future.");
         
         RuleFor(order => order.OrderEntries)
             .NotEmpty().WithMessage("Order must have at least one entry.");
         
+        
         RuleFor(order => order.Order.DeliveryDate)
-            .NotNull().WithMessage("Delivery Date cannot be empty.")
-            .GreaterThan(DateTime.UtcNow.ToShortDateString()).WithMessage("Delivery Date must be in the future.");
+            .NotEmpty().WithMessage("Delivery Date cannot be empty.")
+            .Must(BeInTheFuture).WithMessage("Delivery Date must be in the future.");
+        
+    }
+    
+    private bool BeInTheFuture(DateOnly? deliveryDate)
+    {
+        if (deliveryDate == null)
+        {
+            return false; // Ensures that DeliveryDate is not null
+        }
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        return deliveryDate.Value > today;
     }
 }
 
@@ -48,6 +61,7 @@ public class OrderStatusValidator : AbstractValidator<string>
 
         RuleFor(status => status)
             .NotEmpty()
-            .Must(status => validStatuses.Contains(status));
+            .Must(status => validStatuses.Contains(status))
+            .WithMessage("Status must be one of the valid statuses: Pending, Processing, Shipped, Delivered, Cancelled, or Returned.");
     }
 }

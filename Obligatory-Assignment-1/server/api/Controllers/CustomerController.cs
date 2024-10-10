@@ -137,29 +137,52 @@ public class CustomerController(DMIContext context) : ControllerBase
         return Ok(customerEntity);
     }
     
+    [Authorize]
     [HttpPut]
     [Route("api/customer/{id}")]
     public ActionResult<Customer> UpdateCustomer(int id, [FromBody]EditCustomerDto customer)
     {
+        // Validate the incoming customer data
         var validator = new UpdateCustomerValidator();
         ValidationResult results = validator.Validate(customer);
         if (!results.IsValid)
         {
-            return BadRequest(results.Errors);
+            return BadRequest(results.Errors); // Return validation errors if any
         }
-        
+
+        // Retrieve the customer entity from the database
         var customerEntity = context.Customers.FirstOrDefault(x => x.Id == id);
         if (customerEntity == null)
         {
-            return NotFound();
+            return NotFound(); // Return 404 if the customer is not found
         }
+
+        // Get the current user's ID from the claims (assuming UserId is stored in claims during authentication)
+        var userId = User.FindFirstValue("UserId");
+
+        // Check if the user is an admin or the owner of the customer account
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = customerEntity.Id.ToString() == userId;
+
+        // If the user is neither an admin nor the owner, return a 403 Forbidden response
+        if (!isAdmin && !isOwner)
+        {
+            return Forbid(); // Return 403 if unauthorized
+        }
+
+        // Update the customer entity with the new values
         customerEntity.Name = customer.Name;
         customerEntity.Address = customer.Address;
         customerEntity.Phone = customer.Phone;
         customerEntity.Email = customer.Email;
+
+        // Save the updated customer entity in the database
         context.SaveChanges();
+
+        // Return the updated customer entity
         return Ok(customerEntity);
     }
+
     
     [Authorize]
     [HttpDelete]

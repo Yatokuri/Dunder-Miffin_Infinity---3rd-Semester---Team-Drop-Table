@@ -177,7 +177,8 @@ function Shop() {
 
     return (
         <div className="text-black">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-center text-center mt-5">Limitless Paper in a Paperless World</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold bg-center text-center mt-5">Limitless Paper in a Paperless
+                World</h1>
             <div className="mb-4">
                 <label htmlFor="sortPrice" className="mr-2 bg-center flex ml-5 sm:mt-0 mt-5">Sort by Price:</label>
                 <select
@@ -194,7 +195,7 @@ function Shop() {
                 </select>
             </div>
             <div className="card-list grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
-                {filteredProducts.filter(product => !product.discontinued).map((product, index) => (
+                {filteredProducts.filter(product => !product.discontinued && product.stock > 0).map((product, index) => (
                     <ShopCard
                         key={product.id}
                         product={product}

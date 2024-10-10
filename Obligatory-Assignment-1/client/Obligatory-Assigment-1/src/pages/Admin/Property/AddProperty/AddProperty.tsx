@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useAtom } from 'jotai';
 import { propertiesAtom } from '../../../../atoms/propertiesAtom.ts';
 import {Api} from "../../../../../Api.ts";
+import getAPIA from "../../../../components/Utils/getAPIA.ts";
 
 export const MyApi = new Api();
 
 async function createProperty(name: string) {
     const response = await MyApi.api.propertiesCreateProperty({
         PropertyName: name
-    });
+    }, getAPIA());
     return response.data;
 }
 

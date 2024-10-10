@@ -327,11 +327,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetAllCustomers
      * @request GET:/api/customer
+     * @secure
      */
     customerGetAllCustomers: (params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/customer`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -358,11 +360,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetCustomerById
      * @request GET:/api/customer/{id}
+     * @secure
      */
     customerGetCustomerById: (id: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/customer/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -403,11 +407,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetCustomerByEmail
      * @request GET:/api/customer/email/{email}
+     * @secure
      */
     customerGetCustomerByEmail: (email: string, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/customer/email/${email}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -417,11 +423,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Customer
      * @name CustomerGetOrdersByCustomerId
      * @request GET:/api/customer/{id}/order
+     * @secure
      */
     customerGetOrdersByCustomerId: (id: number, params: RequestParams = {}) =>
       this.request<OrderDto[], any>({
         path: `/api/customer/${id}/order`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -543,11 +551,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryGetAllOrderEntries
      * @request GET:/api/order-entry
+     * @secure
      */
     orderEntryGetAllOrderEntries: (params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order-entry`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -557,12 +567,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryCreateOrderEntry
      * @request POST:/api/order-entry
+     * @secure
      */
     orderEntryCreateOrderEntry: (data: CreateOrderEntryDto, params: RequestParams = {}) =>
       this.request<OrderEntry, any>({
         path: `/api/order-entry`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -574,11 +586,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryGetOrderEntryById
      * @request GET:/api/order-entry/{id}
+     * @secure
      */
     orderEntryGetOrderEntryById: (id: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order-entry/${id}`,
         method: "GET",
+        secure: true,
         ...params,
       }),
 
@@ -588,12 +602,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryUpdateOrderEntry
      * @request PUT:/api/order-entry/{id}
+     * @secure
      */
     orderEntryUpdateOrderEntry: (id: number, data: EditOrderEntryDto, params: RequestParams = {}) =>
       this.request<OrderEntry, any>({
         path: `/api/order-entry/${id}`,
         method: "PUT",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -605,11 +621,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags OrderEntry
      * @name OrderEntryDeleteOrderEntry
      * @request DELETE:/api/order-entry/{id}
+     * @secure
      */
     orderEntryDeleteOrderEntry: (id: number, params: RequestParams = {}) =>
       this.request<File, any>({
         path: `/api/order-entry/${id}`,
         method: "DELETE",
+        secure: true,
         ...params,
       }),
 

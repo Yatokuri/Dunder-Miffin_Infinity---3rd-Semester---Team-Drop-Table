@@ -20,16 +20,22 @@ public class CreateOrderValidator : AbstractValidator<OrderRequestDto>
     }
 }
 
-public class UpdateOrderValidator : AbstractValidator<EditOrderDto>
+public class UpdateOrderValidator : AbstractValidator<OrderRequestDto>
 {
     public UpdateOrderValidator()
     {
-        RuleFor(order => order.Status)
+        RuleFor(order => order.Order.Status)
             .NotEmpty().WithMessage("Status cannot be empty.");
-
-      /*  RuleFor(order => order.DeliveryDate)
-            .NotEmpty().WithMessage("Delivery Date cannot be empty.")
-            .GreaterThan(DateTime.UtcNow.Date).WithMessage("Delivery Date must be in the future."); */
+        
+        RuleFor(order => order.Order.OrderDate)
+            .NotNull().WithMessage("Order Date cannot be empty.");
+        
+        RuleFor(order => order.OrderEntries)
+            .NotEmpty().WithMessage("Order must have at least one entry.");
+        
+        RuleFor(order => order.Order.DeliveryDate)
+            .NotNull().WithMessage("Delivery Date cannot be empty.")
+            .GreaterThan(DateTime.UtcNow.ToShortDateString()).WithMessage("Delivery Date must be in the future.");
     }
 }
 

@@ -54,7 +54,7 @@ namespace Service.Validators
             
             RuleFor(paper => paper.stock)
                 .NotEmpty().WithMessage("Stock cannot be empty.")
-                .LessThanOrEqualTo(0).WithMessage("Stock must be greater than or equal to 0.");
+                .GreaterThanOrEqualTo(0).WithMessage("Stock must be greater than or equal to 0.");
         }
     }
 }

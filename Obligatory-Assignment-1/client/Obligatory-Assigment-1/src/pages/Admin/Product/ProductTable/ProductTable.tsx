@@ -38,13 +38,15 @@ function ProductTable() {
     };
 
     const handleSave = async (updatedProduct: Product) => {
-        // Update the product in the backend
-        await MyApi.api.paperUpdatePaper(updatedProduct.id, updatedProduct);
-        // Update the product in the state
-        setProducts(products.map(product =>
-            product.id === updatedProduct.id ? updatedProduct : product
-        ));
-        setIsEditing(null);
+        try {
+            await MyApi.api.paperUpdatePaper(updatedProduct.id, updatedProduct);
+            setProducts(products.map(product =>
+                product.id === updatedProduct.id ? updatedProduct : product
+            ));
+            setIsEditing(null);
+        } catch (error) {
+            console.error("Error updating product:", error);
+        }
     };
 
     return (

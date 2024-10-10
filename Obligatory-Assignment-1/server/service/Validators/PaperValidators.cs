@@ -32,7 +32,7 @@ namespace Service.Validators
                 .GreaterThanOrEqualTo(1).WithMessage("Price needs to be greater than or equal to 1.");
 
             RuleFor(paper => paper.stock)
-                .NotEmpty().WithMessage("Stock cannot be empty")
+                .NotNull().WithMessage("Stock cannot be Null")
                 .GreaterThanOrEqualTo(0).WithMessage("Stock must be greater than or equal to 0.");
         }
     }
@@ -50,11 +50,11 @@ namespace Service.Validators
                 
             RuleFor(paper => paper.price)
                 .NotEmpty().WithMessage("Price cannot be empty.")
-                .GreaterThanOrEqualTo(1).WithMessage("PRice must be greater than or equal to 1.");
+                .GreaterThanOrEqualTo(1).WithMessage("Price must be greater than or equal to 1.");
             
             RuleFor(paper => paper.stock)
-                .NotEmpty().WithMessage("Stock cannot be empty.")
-                .LessThanOrEqualTo(0).WithMessage("Stock must be greater than or equal to 0.");
+                .NotNull().WithMessage("Stock cannot be Null.")
+                .GreaterThanOrEqualTo(0).WithMessage("Stock must be greater than or equal to 0.");
         }
     }
 }

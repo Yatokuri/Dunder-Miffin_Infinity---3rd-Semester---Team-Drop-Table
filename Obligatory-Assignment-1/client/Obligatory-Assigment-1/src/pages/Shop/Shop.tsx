@@ -53,8 +53,14 @@ const ShopCard = React.memo(({ product, initialQuantity, onAdd, onRemove, imageS
     }, [initialQuantity]);
 
     const handleAddClick = () => {
-        setQuantity(prev => prev + 1);
-        onAdd(product.id, quantity + 1, product.price, product.name, selectedProperty);
+        if (quantity < product.stock) {
+            setQuantity(prev => prev + 1);
+            onAdd(product.id, quantity + 1, product.price, product.name, selectedProperty);
+        }
+        else {
+            toast.dismiss()
+            toast.error(`You cannot exceed the available stock of ${product.stock} items.`);
+        }
     };
 
     const handleRemoveClick = () => {
